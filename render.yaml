@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: coachhq
+    runtime: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: APEX_HOST
+        value: coachhq.app
+      - key: ENV
+        value: production
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      # Secrets (SUPABASE_SERVICE_KEY, STRIPE_SECRET_KEY, etc.) are set
+      # via the Render dashboard or Render API — never committed.

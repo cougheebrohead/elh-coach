@@ -1,0 +1,2 @@
+fitapp-core @ git+https://github.com/cougheebrohead/fitapp-core.git@main
+sentry-sdk>=2.0

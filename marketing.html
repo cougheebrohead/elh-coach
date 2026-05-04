@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0F172A">
+<title>CoachHQ — Run your coaching business like the pros do</title>
+<meta name="description" content="Branded apps, client roster, real-time messaging, food + workout tracking — built for trainers, dietitians, and online coaches who don't want to glue together five tools.">
+<meta property="og:title" content="CoachHQ">
+<meta property="og:description" content="The platform serious coaches run their business on.">
+<meta property="og:type" content="website">
+<link rel="icon" href="/favicon.svg">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --bg-card: #111827;
+  --border: #1f2937;
+  --text: #f8fafc;
+  --text-dim: #94a3b8;
+  --text-faint: #64748b;
+  --accent: #22c55e;
+  --accent-2: #16a34a;
+  --warn: #f59e0b;
+  --serif: 'Iowan Old Style', 'Charter', 'Hoefler Text', Georgia, serif;
+  --sans: 'Inter', -apple-system, system-ui, 'Segoe UI', sans-serif;
+  --container: 1180px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font: 17px/1.6 var(--sans); -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+a { color: var(--accent); text-decoration: none; transition: color .15s; }
+a:hover { color: var(--accent-2); }
+.container { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+
+/* ── Nav ────────────────────────────── */
+nav {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(10,14,26,0.85); backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+}
+nav .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+nav .logo { font: 700 20px var(--sans); letter-spacing: -0.02em; color: var(--text); }
+nav .logo span { color: var(--accent); }
+nav .links { display: flex; gap: 32px; align-items: center; }
+nav .links a { color: var(--text-dim); font-weight: 500; }
+nav .links a:hover { color: var(--text); }
+nav .cta {
+  background: var(--accent); color: #052e16;
+  padding: 8px 18px; border-radius: 8px; font-weight: 600;
+}
+nav .cta:hover { background: #4ade80; color: #052e16; }
+
+/* ── Hero ───────────────────────────── */
+.hero { padding: 120px 0 80px; text-align: center; }
+.hero .eyebrow {
+  display: inline-block; padding: 6px 14px;
+  background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25);
+  border-radius: 100px; color: var(--accent);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+  margin-bottom: 20px;
+}
+.hero h1 {
+  font: 800 clamp(40px, 7vw, 76px)/1.05 var(--sans);
+  letter-spacing: -0.025em; max-width: 920px; margin: 0 auto 24px;
+}
+.hero h1 em { font-style: normal; color: var(--accent); }
+.hero .lead {
+  font-size: 21px; line-height: 1.5; color: var(--text-dim);
+  max-width: 680px; margin: 0 auto 40px;
+}
+.hero .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 14px 24px; border-radius: 10px; font-weight: 600; font-size: 15px;
+  border: none; cursor: pointer; transition: transform .12s, background .15s;
+}
+.btn-primary { background: var(--accent); color: #052e16; }
+.btn-primary:hover { background: #4ade80; transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--text-dim); }
+
+/* ── Section ────────────────────────── */
+section { padding: 80px 0; }
+section h2 {
+  font: 800 clamp(32px, 5vw, 48px)/1.1 var(--sans);
+  letter-spacing: -0.02em; max-width: 720px; margin-bottom: 16px;
+}
+section .lead-2 { font-size: 18px; color: var(--text-dim); max-width: 620px; line-height: 1.55; }
+.section-eyebrow {
+  font-size: 13px; font-weight: 700; color: var(--accent);
+  letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px;
+}
+
+/* ── Feature grid ───────────────────── */
+.features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 48px; }
+.feature {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px;
+}
+.feature .icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+  margin-bottom: 16px;
+}
+.feature h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.feature p { color: var(--text-dim); font-size: 15px; line-height: 1.55; }
+
+/* ── Pricing ────────────────────────── */
+.pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-top: 48px; }
+.tier {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; position: relative;
+}
+.tier.featured {
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 0 1px var(--accent), 0 20px 60px rgba(34,197,94,0.15);
+  transform: scale(1.02);
+}
+.tier .badge {
+  position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+  background: var(--accent); color: #052e16;
+  padding: 4px 12px; border-radius: 100px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;
+}
+.tier h3 { font-size: 14px; color: var(--text-dim); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 8px; }
+.tier .price { font: 800 44px/1 var(--sans); letter-spacing: -0.02em; margin-bottom: 4px; }
+.tier .price small { font-size: 16px; color: var(--text-dim); font-weight: 500; letter-spacing: 0; }
+.tier .annual { font-size: 13px; color: var(--accent); margin-bottom: 24px; }
+.tier ul { list-style: none; margin: 24px 0; }
+.tier li { padding: 10px 0; border-top: 1px solid var(--border); font-size: 14px; color: var(--text-dim); display: flex; gap: 10px; align-items: flex-start; }
+.tier li::before { content: "✓"; color: var(--accent); flex-shrink: 0; font-weight: 700; }
+.tier .btn { width: 100%; justify-content: center; }
+
+/* ── Footer ────────────────────────── */
+footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 48px 0 32px; margin-top: 80px; }
+footer .grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 32px; }
+@media (max-width: 720px) { footer .grid { grid-template-columns: 1fr 1fr; } }
+footer h4 { font-size: 13px; color: var(--text-dim); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 16px; }
+footer ul { list-style: none; }
+footer li { margin-bottom: 10px; }
+footer a { color: var(--text-faint); font-size: 14px; }
+footer a:hover { color: var(--text); }
+footer .copyright { color: var(--text-faint); font-size: 13px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; }
+@media (max-width: 720px) {
+  .hero { padding: 80px 0 40px; }
+  nav .links { display: none; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a class="logo" href="/">Coach<span>HQ</span></a>
+    <div class="links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="/legal/privacy">Privacy</a>
+      <a class="cta" href="/signup">Start free trial</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero container">
+  <div class="eyebrow">Now in early access</div>
+  <h1>Run your coaching business <em>like the pros do.</em></h1>
+  <p class="lead">A branded client app, full roster management, real-time messaging, food + workout tracking — built for trainers, dietitians, and online coaches who don't want to glue together five tools.</p>
+  <div class="actions">
+    <a class="btn btn-primary" href="/signup">Start 14-day trial →</a>
+    <a class="btn btn-ghost" href="#pricing">See pricing</a>
+  </div>
+</header>
+
+<section id="features">
+  <div class="container">
+    <div class="section-eyebrow">Built for coaches</div>
+    <h2>Everything your clients need. None of the everything-else.</h2>
+    <p class="lead-2">Every tool you've ever cobbled together — branded check-ins, food logging, allergy alerts, workout programming, weekly check-ins — in one place. Branded with your colors and logo on day one.</p>
+
+    <div class="features">
+      <div class="feature">
+        <div class="icon">🎨</div>
+        <h3>Your brand, day one</h3>
+        <p>Pick your color, drop your logo, set your subdomain. Your clients see your name on every screen, every email, every push.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🍳</div>
+        <h3>AI-grade food logging</h3>
+        <p>Photo scans, barcodes, USDA + Open Food Facts, voice. Allergy alerts the second a client logs a food they shouldn't.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">💬</div>
+        <h3>In-app messaging</h3>
+        <p>Real-time chat with read receipts. Nudges fire automatically when a client misses a meal log or skips a workout.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📊</div>
+        <h3>Roster at a glance</h3>
+        <p>Open the app and see every client's last week of meals, workouts, water, sleep — sorted by who needs you most.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">📲</div>
+        <h3>iOS + Android + web</h3>
+        <p>Native iOS app, full PWA on Android and desktop. Your clients install once and never think about it again.</p>
+      </div>
+      <div class="feature">
+        <div class="icon">🔒</div>
+        <h3>Their data is yours</h3>
+        <p>Export anytime. Cancel anytime. No long contracts, no penalty fees, no held-hostage data.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="container">
+    <div class="section-eyebrow">Pricing</div>
+    <h2>Pay for what your business looks like, not what we wish it did.</h2>
+    <p class="lead-2">Three tiers. No setup fees. Annual prepay = 2 months free.</p>
+
+    <div class="pricing">
+
+      <div class="tier">
+        <h3>Coach</h3>
+        <div class="price">$89<small>/mo</small></div>
+        <div class="annual">or $890/yr (save 17%)</div>
+        <ul>
+          <li>Up to 25 active clients</li>
+          <li>Branded subdomain (your.coachhq.app)</li>
+          <li>Custom logo + brand color</li>
+          <li>Full client app (iOS + web)</li>
+          <li>Real-time messaging</li>
+          <li>Food + workout tracking</li>
+        </ul>
+        <a class="btn btn-ghost" href="/signup?plan=coach">Start trial</a>
+      </div>
+
+      <div class="tier featured">
+        <span class="badge">Most popular</span>
+        <h3>Studio</h3>
+        <div class="price">$399<small>/mo</small></div>
+        <div class="annual">or $3,990/yr (save 17%)</div>
+        <ul>
+          <li>Up to 5 trainers</li>
+          <li>Up to 200 active clients</li>
+          <li>Custom domain (yourbiz.com)</li>
+          <li>Stripe Connect for sub-trainer payouts</li>
+          <li>Advanced analytics + reports</li>
+          <li>Everything in Coach</li>
+        </ul>
+        <a class="btn btn-primary" href="/signup?plan=studio">Start trial</a>
+      </div>
+
+      <div class="tier">
+        <h3>Brand</h3>
+        <div class="price">$2,500<small>/mo</small></div>
+        <div class="annual">or $25,000/yr (save 17%)</div>
+        <ul>
+          <li>Unlimited trainers + clients</li>
+          <li>Full white-label (no CoachHQ branding)</li>
+          <li>BAA available</li>
+          <li>API access</li>
+          <li>SSO, dedicated support, SLAs</li>
+          <li>Everything in Studio</li>
+        </ul>
+        <a class="btn btn-ghost" href="/signup?plan=brand">Talk to sales</a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="grid">
+      <div>
+        <div class="logo" style="font-size:22px;font-weight:700;margin-bottom:12px">Coach<span style="color:var(--accent)">HQ</span></div>
+        <p style="color:var(--text-faint);font-size:14px;line-height:1.55;max-width:320px">The platform serious coaches run their business on.</p>
+      </div>
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="/signup">Start trial</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="mailto:hello@coachhq.app">Contact</a></li>
+          <li><a href="/legal/privacy">Privacy</a></li>
+          <li><a href="/legal/terms">Terms</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>For coaches</h4>
+        <ul>
+          <li><a href="/signup">Sign up</a></li>
+          <li><a href="/login">Log in</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="copyright">
+      <span>© CoachHQ. Made by ELH.</span>
+      <span>v1</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

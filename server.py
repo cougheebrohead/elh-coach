@@ -1,0 +1,649 @@
+"""CoachHQ HTTP server — Python stdlib, multi-tenant from request 1.
+
+Architecture:
+    1. Host header → tenant resolver (subdomain or custom domain)
+    2. Tenant config (brand, plan, limits) cached in-process
+    3. Bearer-token sessions, scoped to (user_id, tenant_id)
+    4. All DB queries through scoped helpers that include tenant_id
+    5. Stripe Checkout for plan upgrades, webhook for activation
+
+This file deliberately mirrors FitApp's server.py shape (same Python
+stdlib, same patterns) so the team can move between the two without
+relearning. The multi-tenant scope is the only meaningful diff.
+"""
+
+from __future__ import annotations
+
+import base64
+import hashlib
+import hmac
+import http.server
+import json
+import os
+import re
+import secrets
+import socketserver
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import datetime, timedelta, timezone
+from typing import Any
+
+# ── App version (Render injects RENDER_GIT_COMMIT) ─────────────────
+APP_VERSION = (os.environ.get("RENDER_GIT_COMMIT") or "dev")[:12]
+APP_URL = os.environ.get("APP_URL", "https://coachhq.onrender.com")
+APEX_HOST = os.environ.get("APEX_HOST", "coachhq.app")
+
+# ── Sentry (no-op when DSN unset) ───────────────────────────────────
+SENTRY_ENABLED = False
+_SENTRY_DSN = os.environ.get("SENTRY_DSN", "").strip()
+if _SENTRY_DSN:
+    try:
+        import sentry_sdk
+        sentry_sdk.init(
+            dsn=_SENTRY_DSN,
+            traces_sample_rate=0.05,
+            send_default_pii=False,
+            release=APP_VERSION,
+            environment=os.environ.get("SENTRY_ENV", "production"),
+        )
+        SENTRY_ENABLED = True
+        print("[CoachHQ] Sentry initialized", flush=True)
+    except Exception as e:
+        print(f"[CoachHQ] Sentry init failed: {e}", flush=True)
+
+
+def _capture(exc: BaseException) -> None:
+    if SENTRY_ENABLED:
+        try:
+            import sentry_sdk
+            sentry_sdk.capture_exception(exc)
+        except Exception:
+            pass
+
+
+# ── Project modules ────────────────────────────────────────────────
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from db import db                # noqa: E402
+from tenants import tenant_resolver, plan_limits, brand_default  # noqa: E402
+from auth import (               # noqa: E402
+    hash_password, verify_password,
+    issue_session, validate_session, revoke_session,
+)
+from billing import (            # noqa: E402
+    create_checkout, handle_stripe_webhook,
+    PLAN_PRICES,
+)
+from ratelimit import allow      # noqa: E402
+
+PORT = int(os.environ.get("PORT", "8080"))
+SERVED_AT = time.time()
+
+MIME = {
+    ".html": "text/html; charset=utf-8",
+    ".js":   "application/javascript",
+    ".css":  "text/css",
+    ".json": "application/json",
+    ".svg":  "image/svg+xml",
+    ".png":  "image/png",
+    ".jpg":  "image/jpeg",
+    ".webp": "image/webp",
+    ".woff2": "font/woff2",
+}
+
+
+# ════════════════════════════════════════════════════════════════════
+#  HTTP handler
+# ════════════════════════════════════════════════════════════════════
+
+class Handler(http.server.SimpleHTTPRequestHandler):
+    server_version = f"CoachHQ/{APP_VERSION}"
+
+    # ─── helpers ─────────────────────────────────────────────────────
+    def log_message(self, fmt: str, *args: Any) -> None:
+        # silence default per-request logs; Render captures stdout
+        pass
+
+    def _client_ip(self) -> str:
+        return (self.headers.get("X-Forwarded-For", "") or self.client_address[0] or "").split(",")[0].strip()
+
+    def _path(self) -> str:
+        return urllib.parse.urlparse(self.path).path or "/"
+
+    def _qparams(self) -> dict[str, list[str]]:
+        return urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+
+    def _body(self) -> dict[str, Any]:
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        if length <= 0 or length > 5_000_000:
+            return {}
+        raw = self.rfile.read(length).decode("utf-8", errors="replace")
+        try:
+            return json.loads(raw)
+        except json.JSONDecodeError:
+            return {}
+
+    def _raw_body(self) -> bytes:
+        length = int(self.headers.get("Content-Length", "0") or "0")
+        return self.rfile.read(length) if 0 < length <= 25_000_000 else b""
+
+    def _security_headers(self) -> None:
+        self.send_header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+        self.send_header("Permissions-Policy", "camera=(self), microphone=()")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self'; "
+            "img-src 'self' data: https:; "
+            "style-src 'self' 'unsafe-inline'; "
+            "script-src 'self' 'unsafe-inline' https://js.stripe.com; "
+            "font-src 'self' data:; "
+            "connect-src 'self' https://api.stripe.com https://*.sentry.io https://*.supabase.co; "
+            "frame-src https://js.stripe.com https://hooks.stripe.com;"
+        )
+
+    def _cors(self) -> None:
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type,Authorization,X-Lang,X-Local-Date,X-Tz-Offset")
+
+    def _j(self, payload: Any, status: int = 200) -> None:
+        body = json.dumps(payload).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-store")
+        self._cors()
+        self._security_headers()
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _resolve_tenant(self) -> dict[str, Any] | None:
+        host = (self.headers.get("Host") or "").split(":")[0].lower()
+        return tenant_resolver(host)
+
+    def _serve_static(self, name: str, mime: str, cache: bool = False) -> None:
+        fpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
+        if not os.path.isfile(fpath):
+            self.send_response(404); self.end_headers(); return
+        with open(fpath, "rb") as f:
+            data = f.read()
+        self.send_response(200)
+        self.send_header("Content-Type", mime)
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "public, max-age=3600" if cache else "no-cache")
+        self._security_headers()
+        self.end_headers()
+        self.wfile.write(data)
+
+    def _serve_branded_index(self, tenant: dict[str, Any]) -> None:
+        """Serve index.html with tenant brand variables injected."""
+        fpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.html")
+        if not os.path.isfile(fpath):
+            self.send_response(404); self.end_headers(); return
+        with open(fpath, "rb") as f:
+            html = f.read().decode("utf-8")
+        brand_block = json.dumps({
+            "tenant_id":   tenant["id"],
+            "tenant_slug": tenant["slug"],
+            "name":        tenant["name"],
+            "primary":     tenant["brand_primary"],
+            "accent":      tenant["brand_accent"],
+            "logo_url":    tenant.get("logo_url") or "",
+            "app_name":    tenant["app_name"],
+        })
+        injected = html.replace(
+            "<!--BRAND_INJECT-->",
+            f'<script>window.__BRAND__ = {brand_block};</script>',
+        )
+        body = injected.encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("Cache-Control", "no-cache")
+        self._security_headers()
+        self.end_headers()
+        self.wfile.write(body)
+
+    # ─── auth ────────────────────────────────────────────────────────
+    def _auth_user(self, tenant_id: str | None) -> dict[str, Any] | None:
+        h = self.headers.get("Authorization", "")
+        if not h.startswith("Bearer "):
+            return None
+        token = h[7:].strip()
+        if not token:
+            return None
+        sess = validate_session(token)
+        if not sess:
+            return None
+        # Scope check: session must match resolved tenant
+        if tenant_id and sess.get("tenant_id") != tenant_id:
+            return None
+        return sess
+
+    def _rate(self, scope: str, limit: int, window_sec: int) -> bool:
+        ip = self._client_ip()
+        if not allow(f"{scope}:{ip}", limit, window_sec):
+            self._j({"error": "Too many requests. Try again shortly."}, 429)
+            return False
+        return True
+
+    # ─── routing ─────────────────────────────────────────────────────
+    def do_OPTIONS(self) -> None:
+        self.send_response(204); self._cors(); self.send_header("Content-Length", "0"); self.end_headers()
+
+    def do_GET(self) -> None:
+        path = self._path()
+        host = (self.headers.get("Host") or "").split(":")[0].lower()
+        tenant = self._resolve_tenant()
+
+        # Apex (marketing site) — no tenant resolved
+        if not tenant or host == APEX_HOST or host.startswith("www."):
+            return self._do_get_apex(path)
+
+        # Tenant-scoped paths
+        if path == "/api/health":
+            return self._j({"ok": True, "tenant": tenant["slug"], "version": APP_VERSION})
+        if path == "/api/me":
+            return self._api_me(tenant)
+        if path == "/api/clients":
+            return self._api_list_clients(tenant)
+        if path.startswith("/api/messages/"):
+            client_id = path.rsplit("/", 1)[-1]
+            return self._api_messages(tenant, client_id)
+        if path == "/api/billing/portal":
+            return self._api_billing_portal(tenant)
+
+        # Static + branded SPA
+        if path in ("", "/", "/coach", "/client", "/login", "/signup"):
+            return self._serve_branded_index(tenant)
+        ext = os.path.splitext(path)[1]
+        if ext in MIME:
+            return self._serve_static(path.lstrip("/"), MIME[ext], cache=True)
+        return self._serve_branded_index(tenant)
+
+    def do_POST(self) -> None:
+        path = self._path()
+        host = (self.headers.get("Host") or "").split(":")[0].lower()
+        tenant = self._resolve_tenant()
+
+        # Apex routes (no tenant)
+        if not tenant or host == APEX_HOST:
+            if path == "/api/signup-tenant":
+                return self._api_signup_tenant()
+            if path == "/api/contact":
+                return self._api_contact()
+            if path == "/api/stripe/webhook":
+                return self._api_stripe_webhook()
+            return self._j({"error": "not found"}, 404)
+
+        # Tenant-scoped POSTs
+        if path == "/api/login":
+            return self._api_login(tenant)
+        if path == "/api/logout":
+            return self._api_logout(tenant)
+        if path == "/api/invite-client":
+            return self._api_invite_client(tenant)
+        if path == "/api/log-meal":
+            return self._api_log_meal(tenant)
+        if path.startswith("/api/messages/"):
+            client_id = path.rsplit("/", 1)[-1]
+            return self._api_send_message(tenant, client_id)
+        if path == "/api/checkout":
+            return self._api_checkout(tenant)
+        return self._j({"error": "not found"}, 404)
+
+    # ────────────────────────────────────────────────────────────────
+    #  Apex (marketing + signup)
+    # ────────────────────────────────────────────────────────────────
+    def _do_get_apex(self, path: str) -> None:
+        if path == "/api/health":
+            return self._j({"ok": True, "version": APP_VERSION, "ts": int(time.time())})
+        if path in ("", "/", "/index.html"):
+            return self._serve_static("marketing.html", "text/html; charset=utf-8")
+        if path == "/pricing":
+            return self._serve_static("pricing.html", "text/html; charset=utf-8")
+        if path == "/signup":
+            return self._serve_static("signup.html", "text/html; charset=utf-8")
+        if path == "/legal/terms":
+            return self._serve_static("terms.html", "text/html; charset=utf-8")
+        if path == "/legal/privacy":
+            return self._serve_static("privacy.html", "text/html; charset=utf-8")
+        ext = os.path.splitext(path)[1]
+        if ext in MIME:
+            return self._serve_static(path.lstrip("/"), MIME[ext], cache=True)
+        return self._serve_static("marketing.html", "text/html; charset=utf-8")
+
+    def _api_signup_tenant(self) -> None:
+        """Create a new tenant + owner user, then send to Stripe Checkout.
+        The webhook activates the subscription on payment success."""
+        if not self._rate("signup-tenant", limit=5, window_sec=60):
+            return
+        d = self._body()
+        slug = re.sub(r"[^a-z0-9-]", "", (d.get("slug") or "").lower())[:40]
+        name = (d.get("name") or "").strip()[:120]
+        email = (d.get("email") or "").strip().lower()[:200]
+        password = (d.get("password") or "")
+        plan = (d.get("plan") or "coach").lower()
+        billing = (d.get("billing_cycle") or "monthly").lower()
+        if not slug or len(slug) < 2 or not name or not email or len(password) < 8:
+            return self._j({"error": "Fill in slug, name, email, and password (8+ chars)."}, 400)
+        if plan not in ("coach", "studio", "brand"):
+            return self._j({"error": "Invalid plan."}, 400)
+        if billing not in ("monthly", "annual"):
+            billing = "monthly"
+        if not re.match(r"^[a-z0-9-]+$", slug):
+            return self._j({"error": "Slug must be lowercase letters, numbers, dashes."}, 400)
+
+        # Check slug availability
+        existing = db.fetch_one("select id from tenants where slug = $1", slug)
+        if existing:
+            return self._j({"error": f"'{slug}' is taken. Try another."}, 400)
+
+        limits = plan_limits(plan)
+        defaults = brand_default()
+        tenant_id = db.fetch_one(
+            """insert into tenants
+                (slug, name, plan, brand_primary, brand_accent, app_name,
+                 billing_status, max_coaches, max_clients)
+               values ($1,$2,$3,$4,$5,$2,'trial',$6,$7)
+               returning id""",
+            slug, name, plan, defaults["primary"], defaults["accent"],
+            limits["max_coaches"], limits["max_clients"],
+        )["id"]
+
+        owner_id = db.fetch_one(
+            """insert into users (tenant_id, email, password_hash, role, name)
+               values ($1, $2, $3, 'owner', $2)
+               returning id""",
+            tenant_id, email, hash_password(password),
+        )["id"]
+        db.execute("update tenants set owner_user_id = $1 where id = $2", owner_id, tenant_id)
+        db.execute(
+            "insert into coach_profiles (user_id, tenant_id) values ($1, $2)",
+            owner_id, tenant_id,
+        )
+
+        # Stripe Checkout
+        try:
+            checkout = create_checkout(
+                tenant_id=tenant_id, owner_email=email, plan=plan, billing_cycle=billing,
+                success_url=f"https://{slug}.{APEX_HOST}/?welcome=1",
+                cancel_url=f"https://{APEX_HOST}/signup?cancelled=1",
+            )
+        except Exception as e:
+            _capture(e)
+            return self._j({"error": "Payments not configured yet — contact us."}, 500)
+        return self._j({
+            "ok": True,
+            "tenant_id": tenant_id,
+            "slug": slug,
+            "checkout_url": checkout["url"],
+        })
+
+    def _api_contact(self) -> None:
+        if not self._rate("contact", limit=10, window_sec=60):
+            return
+        d = self._body()
+        # Persist contact form (simple model — admin reads via SQL until UI exists)
+        db.execute(
+            """insert into audit_log (action, resource_type, details_json, digest)
+               values ('contact.submit', 'contact', $1, $2)""",
+            json.dumps({
+                "email": (d.get("email") or "")[:200],
+                "name":  (d.get("name") or "")[:120],
+                "msg":   (d.get("message") or "")[:5000],
+                "ip":    self._client_ip()[:64],
+            }),
+            hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest(),
+        )
+        return self._j({"ok": True})
+
+    def _api_stripe_webhook(self) -> None:
+        body = self._raw_body()
+        sig = self.headers.get("Stripe-Signature", "")
+        try:
+            handle_stripe_webhook(body, sig)
+        except Exception as e:
+            _capture(e)
+            return self._j({"error": str(e)}, 400)
+        return self._j({"ok": True})
+
+    # ────────────────────────────────────────────────────────────────
+    #  Tenant-scoped APIs
+    # ────────────────────────────────────────────────────────────────
+    def _api_login(self, tenant: dict[str, Any]) -> None:
+        if not self._rate("login", limit=10, window_sec=60):
+            return
+        d = self._body()
+        email = (d.get("email") or "").strip().lower()
+        password = d.get("password") or ""
+        u = db.fetch_one(
+            "select id, password_hash, role, name from users where tenant_id = $1 and email = $2",
+            tenant["id"], email,
+        )
+        if not u or not verify_password(password, u["password_hash"]):
+            return self._j({"error": "Invalid email or password."}, 401)
+        token = issue_session(
+            user_id=u["id"], tenant_id=tenant["id"],
+            ip=self._client_ip(), ua=self.headers.get("User-Agent", "")[:300],
+        )
+        db.execute("update users set last_login_at = now() where id = $1", u["id"])
+        return self._j({
+            "token": token,
+            "user": {"id": u["id"], "email": email, "role": u["role"], "name": u["name"]},
+            "tenant": {"id": tenant["id"], "slug": tenant["slug"], "name": tenant["name"]},
+        })
+
+    def _api_logout(self, tenant: dict[str, Any]) -> None:
+        h = self.headers.get("Authorization", "")
+        if h.startswith("Bearer "):
+            revoke_session(h[7:].strip())
+        return self._j({"ok": True})
+
+    def _api_me(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess:
+            return self._j({"error": "unauthorized"}, 401)
+        u = db.fetch_one(
+            "select id, email, role, name, photo_url from users where id = $1",
+            sess["user_id"],
+        )
+        return self._j({
+            "user": u,
+            "tenant": {
+                "id": tenant["id"], "slug": tenant["slug"], "name": tenant["name"],
+                "plan": tenant["plan"], "primary": tenant["brand_primary"],
+                "accent": tenant["brand_accent"], "logo_url": tenant.get("logo_url"),
+                "app_name": tenant["app_name"],
+            },
+        })
+
+    def _api_list_clients(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess or sess["role"] not in ("coach", "admin", "owner"):
+            return self._j({"error": "forbidden"}, 403)
+        rows = db.fetch_all(
+            """select u.id, u.email, u.name, cc.started_at, cc.status
+               from coach_clients cc
+               join users u on u.id = cc.client_id
+               where cc.tenant_id = $1 and cc.coach_id = $2 and cc.status = 'active'
+               order by cc.started_at desc""",
+            tenant["id"], sess["user_id"],
+        )
+        return self._j({"clients": rows})
+
+    def _api_invite_client(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess or sess["role"] not in ("coach", "admin", "owner"):
+            return self._j({"error": "forbidden"}, 403)
+        d = self._body()
+        email = (d.get("email") or "").strip().lower()
+        name = (d.get("name") or "").strip()
+        if not email or not name:
+            return self._j({"error": "Email and name required."}, 400)
+        # Seat-cap check
+        used = db.fetch_one(
+            "select count(*) as n from coach_clients where tenant_id = $1 and status = 'active'",
+            tenant["id"],
+        )["n"]
+        if used >= tenant["max_clients"]:
+            return self._j({"error": f"Plan limit reached ({tenant['max_clients']} clients). Upgrade to add more."}, 402)
+        # Idempotent: client may already exist as a user in this tenant
+        existing = db.fetch_one(
+            "select id from users where tenant_id = $1 and email = $2",
+            tenant["id"], email,
+        )
+        if existing:
+            client_id = existing["id"]
+        else:
+            tmp_pw = secrets.token_urlsafe(16)
+            client_id = db.fetch_one(
+                """insert into users (tenant_id, email, password_hash, role, name)
+                   values ($1, $2, $3, 'client', $4)
+                   returning id""",
+                tenant["id"], email, hash_password(tmp_pw), name,
+            )["id"]
+            db.execute(
+                "insert into client_profiles (user_id, tenant_id) values ($1, $2)",
+                client_id, tenant["id"],
+            )
+        # Roster row
+        db.execute(
+            """insert into coach_clients (tenant_id, coach_id, client_id)
+               values ($1, $2, $3)
+               on conflict (tenant_id, coach_id, client_id) do nothing""",
+            tenant["id"], sess["user_id"], client_id,
+        )
+        return self._j({"ok": True, "client_id": client_id})
+
+    def _api_log_meal(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess:
+            return self._j({"error": "unauthorized"}, 401)
+        d = self._body()
+        items = d.get("items") or []
+        if not items:
+            return self._j({"error": "items[] required"}, 400)
+        totals = {
+            "calories": sum(int(i.get("calories") or 0) for i in items),
+            "protein":  sum(float(i.get("protein") or 0) for i in items),
+            "carbs":    sum(float(i.get("carbs") or 0) for i in items),
+            "fat":      sum(float(i.get("fat") or 0) for i in items),
+        }
+        log_date = (d.get("date") or datetime.now(timezone.utc).date().isoformat())[:10]
+        db.execute(
+            """insert into meals (tenant_id, client_id, log_date, items_json, totals_json, source)
+               values ($1, $2, $3, $4, $5, $6)""",
+            tenant["id"], sess["user_id"], log_date,
+            json.dumps(items), json.dumps(totals),
+            (d.get("source") or "manual"),
+        )
+        return self._j({"ok": True, "totals": totals})
+
+    def _api_messages(self, tenant: dict[str, Any], client_id: str) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess:
+            return self._j({"error": "unauthorized"}, 401)
+        # Both coach and client can see their thread; coach sees by client_id
+        if sess["role"] == "client":
+            client_id = sess["user_id"]
+        rows = db.fetch_all(
+            """select id, sender_id, body, sent_at, read_at, is_nudge
+               from messages
+               where tenant_id = $1 and client_id = $2
+               order by sent_at desc
+               limit 100""",
+            tenant["id"], client_id,
+        )
+        return self._j({"messages": rows})
+
+    def _api_send_message(self, tenant: dict[str, Any], client_id: str) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess:
+            return self._j({"error": "unauthorized"}, 401)
+        d = self._body()
+        body = (d.get("body") or "").strip()[:5000]
+        if not body:
+            return self._j({"error": "body required"}, 400)
+        # If sender is the client, set client_id = self; coach is the assigned one
+        if sess["role"] == "client":
+            client_id = sess["user_id"]
+            cc = db.fetch_one(
+                "select coach_id from coach_clients where tenant_id = $1 and client_id = $2 and status = 'active'",
+                tenant["id"], client_id,
+            )
+            if not cc:
+                return self._j({"error": "no coach assigned"}, 400)
+            coach_id = cc["coach_id"]
+        else:
+            coach_id = sess["user_id"]
+        db.execute(
+            """insert into messages (tenant_id, coach_id, client_id, sender_id, body)
+               values ($1, $2, $3, $4, $5)""",
+            tenant["id"], coach_id, client_id, sess["user_id"], body,
+        )
+        return self._j({"ok": True})
+
+    def _api_billing_portal(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess or sess["role"] not in ("owner", "admin"):
+            return self._j({"error": "forbidden"}, 403)
+        from billing import create_billing_portal
+        try:
+            url = create_billing_portal(tenant)
+            return self._j({"url": url})
+        except Exception as e:
+            _capture(e)
+            return self._j({"error": str(e)}, 400)
+
+    def _api_checkout(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess or sess["role"] not in ("owner", "admin"):
+            return self._j({"error": "forbidden"}, 403)
+        d = self._body()
+        plan = (d.get("plan") or "coach").lower()
+        billing = (d.get("billing_cycle") or "monthly").lower()
+        u = db.fetch_one("select email from users where id = $1", sess["user_id"])
+        try:
+            checkout = create_checkout(
+                tenant_id=tenant["id"], owner_email=u["email"],
+                plan=plan, billing_cycle=billing,
+                success_url=f"{self._tenant_url(tenant)}/?upgraded=1",
+                cancel_url=f"{self._tenant_url(tenant)}/?upgrade_cancelled=1",
+            )
+            return self._j({"url": checkout["url"]})
+        except Exception as e:
+            _capture(e)
+            return self._j({"error": str(e)}, 400)
+
+    def _tenant_url(self, tenant: dict[str, Any]) -> str:
+        if tenant.get("custom_domain"):
+            return f"https://{tenant['custom_domain']}"
+        return f"https://{tenant['slug']}.{APEX_HOST}"
+
+
+# ════════════════════════════════════════════════════════════════════
+#  Server bootstrap
+# ════════════════════════════════════════════════════════════════════
+
+class ThreadedServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+    daemon_threads = True
+    allow_reuse_address = True
+
+
+def main() -> None:
+    print(f"[CoachHQ] starting on :{PORT}", flush=True)
+    with ThreadedServer(("0.0.0.0", PORT), Handler) as s:
+        try:
+            s.serve_forever()
+        except KeyboardInterrupt:
+            print("[CoachHQ] shutting down", flush=True)
+
+
+if __name__ == "__main__":
+    main()

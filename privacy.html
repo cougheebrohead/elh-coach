@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy Policy — CoachHQ</title>
+<style>
+:root { --bg:#0a0e1a; --text:#e2e8f0; --text-dim:#94a3b8; --border:#1f2937; --accent:#22c55e; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font:16px/1.7 'Inter',-apple-system,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+.nav { display:flex; align-items:center; justify-content:space-between; padding:18px 32px; border-bottom:1px solid var(--border); }
+.nav a { color:var(--text-dim); text-decoration:none; font-size:14px; margin-left:24px; }
+.logo { font:800 22px -apple-system,sans-serif; letter-spacing:-0.02em; }
+.logo span { color:var(--accent); }
+.wrap { max-width:760px; margin:0 auto; padding:64px 24px; }
+h1 { font:800 36px/1.1 -apple-system,sans-serif; letter-spacing:-0.02em; margin-bottom:8px; }
+.dt { color:var(--text-dim); font-size:14px; margin-bottom:32px; }
+h2 { font-size:20px; margin:32px 0 12px; font-weight:700; }
+p, li { color:#cbd5e1; }
+li { margin-bottom:8px; }
+ul { padding-left:22px; margin-bottom:14px; }
+strong { color:var(--text); }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <a href="/" style="text-decoration:none"><div class="logo">Coach<span>HQ</span></div></a>
+  <div>
+    <a href="/pricing">Pricing</a>
+    <a href="/signup">Start trial</a>
+  </div>
+</div>
+
+<div class="wrap">
+  <h1>Privacy Policy</h1>
+  <div class="dt">Last updated: May 3, 2026</div>
+
+  <p>This policy describes how CoachHQ ("we", "us", "Service") collects, uses, and protects information from coaches, businesses (tenants), and the clients those tenants serve. We take privacy seriously: <strong>we do not sell your data, and we never have</strong>.</p>
+
+  <h2>1. What we collect</h2>
+  <ul>
+    <li><strong>Tenant data:</strong> business name, owner name &amp; email, billing details (handled by Stripe — we never store full card numbers).</li>
+    <li><strong>Coach data:</strong> name, email, role within a tenant.</li>
+    <li><strong>Client data:</strong> name, email, body metrics, meal logs, messages, glucose/BP readings, cycle data, condition flags. <strong>This may include PHI.</strong></li>
+    <li><strong>Usage data:</strong> IP address, browser, device, page views — used for security, debugging, and aggregate product improvement.</li>
+  </ul>
+
+  <h2>2. How we use it</h2>
+  <ul>
+    <li>To provide the Service to you and your clients.</li>
+    <li>To send transactional emails (invites, billing, security).</li>
+    <li>To provide aggregated analytics to tenant admins about their own clients only.</li>
+    <li>To detect and prevent abuse, fraud, and unauthorized access.</li>
+  </ul>
+  <p><strong>We never use client health data to train AI models, sell to advertisers, or share with third parties for their own marketing.</strong></p>
+
+  <h2>3. Tenant isolation</h2>
+  <p>Every CoachHQ tenant is logically isolated. Coaches in tenant A cannot see clients, messages, or data in tenant B. We enforce this with row-level security in our database and isolation tests in CI.</p>
+
+  <h2>4. Subprocessors</h2>
+  <ul>
+    <li><strong>Supabase</strong> — primary database (US region, encrypted at rest)</li>
+    <li><strong>Render</strong> — application hosting (US region)</li>
+    <li><strong>Stripe</strong> — payment processing</li>
+    <li><strong>Resend</strong> — transactional email delivery</li>
+    <li><strong>Sentry</strong> — error monitoring (PII scrubbed before send)</li>
+  </ul>
+  <p>Brand-tier tenants requiring HIPAA receive a BAA covering all subprocessors above.</p>
+
+  <h2>5. Your rights</h2>
+  <p>If you are a tenant owner: you can export, correct, or delete any client data via the admin app at any time. If you are a client of a tenant: contact your coach or email <a href="mailto:privacy@coachhq.app" style="color:var(--accent)">privacy@coachhq.app</a> for direct access requests.</p>
+  <p>EEA, UK, and California residents have additional rights (access, rectification, erasure, portability, opt-out of "sale" — which we do not do). Submit requests to the email above; we respond within 30 days.</p>
+
+  <h2>6. Retention</h2>
+  <p>Active tenant data is retained for the life of the subscription. After cancellation, data is retained for 30 days (for export) and then permanently deleted, unless legally required to be retained longer.</p>
+
+  <h2>7. Security</h2>
+  <ul>
+    <li>TLS 1.2+ everywhere, HSTS preload</li>
+    <li>Passwords: PBKDF2-SHA256, 200,000 iterations</li>
+    <li>Sessions: SHA-256 hashed bearer tokens, 30-day TTL</li>
+    <li>Database: row-level security, AES-256 at rest</li>
+    <li>PHI access is logged with tamper-evident audit chains</li>
+  </ul>
+
+  <h2>8. Children</h2>
+  <p>The Service is not directed at children under 13. Tenants who serve minor clients must have parental consent on file before any client data is entered.</p>
+
+  <h2>9. Changes</h2>
+  <p>We will notify you by email of material changes at least 14 days before they take effect.</p>
+
+  <h2>10. Contact</h2>
+  <p>Privacy: <a href="mailto:privacy@coachhq.app" style="color:var(--accent)">privacy@coachhq.app</a> · Security: <a href="mailto:security@coachhq.app" style="color:var(--accent)">security@coachhq.app</a></p>
+</div>
+
+</body>
+</html>
