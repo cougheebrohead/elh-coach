@@ -350,7 +350,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             """insert into tenants
                 (slug, name, plan, brand_primary, brand_accent, app_name,
                  billing_status, max_coaches, max_clients)
-               values ($1,$2,$3,$4,$5,$2,'trial',$6,$7)
+               values ($1,$2,$3,$4,$5,$2,'trial',$6::int,$7::int)
                returning id""",
             slug, name, plan, defaults["primary"], defaults["accent"],
             limits["max_coaches"], limits["max_clients"],
