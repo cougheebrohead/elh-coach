@@ -258,12 +258,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if path == "/api/billing/portal":
             return self._api_billing_portal(tenant)
 
-        # Static + branded SPA
-        if path in ("", "/", "/coach", "/client", "/login", "/signup"):
+        # Static + branded SPA. Anything under /api/ that didn't match is 404.
+        if path.startswith("/api/"):
+            return self._j({"error": "not found"}, 404)
+        if path in ("", "/", "/coach", "/client", "/login", "/signup", "/account", "/dashboard"):
             return self._serve_branded_index(tenant)
         ext = os.path.splitext(path)[1]
         if ext in MIME:
             return self._serve_static(path.lstrip("/"), MIME[ext], cache=True)
+        # SPA route — serve branded index so client-side routing can take over
         return self._serve_branded_index(tenant)
 
     def do_POST(self) -> None:
@@ -301,7 +304,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     #  Apex (marketing + signup)
     # ────────────────────────────────────────────────────────────────
     def _do_get_apex(self, path: str) -> None:
-        if path == "/api/health":
+        if path in ("/health", "/api/health"):
             return self._j({"ok": True, "version": APP_VERSION, "ts": int(time.time())})
         if path in ("", "/", "/index.html"):
             return self._serve_static("marketing.html", "text/html; charset=utf-8")
@@ -309,14 +312,24 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self._serve_static("pricing.html", "text/html; charset=utf-8")
         if path == "/signup":
             return self._serve_static("signup.html", "text/html; charset=utf-8")
-        if path == "/legal/terms":
+        if path == "/login":
+            return self._serve_static("login.html", "text/html; charset=utf-8")
+        if path in ("/terms", "/legal/terms"):
             return self._serve_static("terms.html", "text/html; charset=utf-8")
-        if path == "/legal/privacy":
+        if path in ("/privacy", "/legal/privacy"):
             return self._serve_static("privacy.html", "text/html; charset=utf-8")
         ext = os.path.splitext(path)[1]
         if ext in MIME:
             return self._serve_static(path.lstrip("/"), MIME[ext], cache=True)
-        return self._serve_static("marketing.html", "text/html; charset=utf-8")
+        # Unknown route — JSON 404 for /api/*, HTML 404 otherwise
+        if path.startswith("/api/"):
+            return self._j({"error": "not found"}, 404)
+        self.send_response(404)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header("Content-Length", "9")
+        self._security_headers()
+        self.end_headers()
+        self.wfile.write(b"Not found")
 
     def _api_signup_tenant(self) -> None:
         """Create a new tenant + owner user, then send to Stripe Checkout.
