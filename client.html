@@ -3,20 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#22C55E">
+<meta name="theme-color" content="#0A1628">
 <title>Client App</title>
 <!--BRAND_INJECT-->
 <style>
 :root {
-  --primary: #0F172A;
-  --accent:  #22C55E;
-  --bg:      #0a0e1a;
-  --bg-card: #111827;
-  --bg-soft: #1f2937;
-  --border:  #1f2937;
-  --text:    #f8fafc;
-  --text-dim:#94a3b8;
-  --good: #22c55e; --warn:#f59e0b; --bad:#ef4444;
+  --primary:   #0A1628;
+  --primary-2: #1B2A40;
+  --accent:    #3C4858;
+  --accent-2:  #5A6776;
+  --bg:        #FAFAF8;
+  --bg-card:   #FFFFFF;
+  --bg-soft:   #F0EEE9;
+  --border:    #E8E5DF;
+  --border-soft:#F0EEE9;
+  --text:      #0A0A0C;
+  --text-dim:  #5C5F66;
+  --text-faint:#8A8E94;
+  --good:      #15803D;
+  --warn:      #B45309;
+  --bad:       #991B1B;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{background:var(--bg);color:var(--text);font:16px/1.5 'Inter',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
@@ -63,7 +69,7 @@ nav.tabbar button .icon{font-size:22px}
 .login h1{font:800 32px sans-serif;margin-bottom:6px;letter-spacing:-0.02em}
 .login .lead{color:var(--text-dim);margin-bottom:28px}
 input[type=email],input[type=password],input[type=number],input[type=text]{display:block;width:100%;padding:13px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;outline:none;margin-bottom:12px;color:var(--text);font:inherit}
-.btn-primary{display:block;width:100%;padding:14px;background:var(--accent);color:#052e16;border-radius:10px;font-weight:700;font-size:15px;margin-top:8px;border:none}
+.btn-primary{display:block;width:100%;padding:14px;background:var(--accent);color:#FFFFFF;border-radius:10px;font-weight:700;font-size:15px;margin-top:8px;border:none}
 
 .modal{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:none;align-items:flex-end;justify-content:center;z-index:100}
 .modal.on{display:flex}
@@ -76,10 +82,10 @@ input[type=email],input[type=password],input[type=number],input[type=text]{displ
 .sheet .row.k3{grid-template-columns:repeat(3,1fr)}
 
 .engagement-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:600}
-.engagement-pill.crushing{background:rgba(34,197,94,0.15);color:#86EFAC}
-.engagement-pill.on_track{background:rgba(59,130,246,0.15);color:#93C5FD}
-.engagement-pill.slipping{background:rgba(245,158,11,0.15);color:#FCD34D}
-.engagement-pill.ghosting{background:rgba(239,68,68,0.15);color:#FCA5A5}
+.engagement-pill.crushing{background:rgba(10,22,40,0.15);color:#15803D}
+.engagement-pill.on_track{background:#DCEAF8;color:#1E40AF}
+.engagement-pill.slipping{background:#FBE9C8;color:#92400E}
+.engagement-pill.ghosting{background:#FBE0E0;color:#991B1B}
 
 .empty{text-align:center;padding:32px 16px;color:var(--text-dim)}
 .empty h4{color:var(--text);font-weight:600;margin-bottom:6px}
@@ -109,7 +115,7 @@ input[type=email],input[type=password],input[type=number],input[type=text]{displ
       <div class="card ring-card">
         <div class="ring">
           <svg viewBox="0 0 100 100" width="200" height="200">
-            <circle cx="50" cy="50" r="44" fill="none" stroke="#1f2937" stroke-width="6"/>
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#E8E5DF" stroke-width="6"/>
             <circle id="ring-prog" cx="50" cy="50" r="44" fill="none" stroke="var(--accent)"
                     stroke-width="6" stroke-linecap="round"
                     stroke-dasharray="276.46" stroke-dashoffset="276"/>
@@ -181,7 +187,7 @@ input[type=email],input[type=password],input[type=number],input[type=text]{displ
 </div>
 
 <script>
-const BRAND = window.__BRAND__ || {name:'ELH Coach',primary:'#0F172A',accent:'#22C55E'};
+const BRAND = window.__BRAND__ || {name:'ELH Coach',primary:'#FFFFFF',accent:'#0A1628'};
 document.documentElement.style.setProperty('--primary', BRAND.primary);
 document.documentElement.style.setProperty('--accent', BRAND.accent);
 document.title = BRAND.app_name || BRAND.name;
@@ -287,7 +293,7 @@ async function loadMessages() {
     list.innerHTML = d.messages.map(m => {
       const mine = m.sender_id === me.user.id;
       return '<div style="margin:8px 0;display:flex;justify-content:'+(mine?'flex-end':'flex-start')+'">' +
-             '<div style="background:'+(mine?'var(--accent)':'var(--bg-card)')+';color:'+(mine?'#052e16':'var(--text)')+';padding:10px 14px;border-radius:14px;max-width:80%;border:1px solid '+(mine?'var(--accent)':'var(--border)')+'">' +
+             '<div style="background:'+(mine?'var(--accent)':'var(--bg-card)')+';color:'+(mine?'#FFFFFF':'var(--text)')+';padding:10px 14px;border-radius:14px;max-width:80%;border:1px solid '+(mine?'var(--accent)':'var(--border)')+'">' +
              m.body + '<div style="font-size:11px;opacity:.7;margin-top:4px">'+new Date(m.sent_at).toLocaleString()+'</div></div></div>';
     }).join('');
   } catch (e) {

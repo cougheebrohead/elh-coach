@@ -3,670 +3,1180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ELH COACH · The Coaching Platform Built for Retention</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<title>ELH COACH — Product Prospectus</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,800;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --ink:#0A0F1C;
-  --ink-2:#0F172A;
-  --ink-3:#1E293B;
-  --line:#1E2A3D;
-  --green:#22C55E;
-  --green-deep:#16A34A;
-  --green-dark:#0E3D24;
-  --green-mist:#0E281A;
-  --gold:#F4B942;
-  --rose:#EC4899;
-  --rose-deep:#BE185D;
-  --rose-mist:#3C1424;
-  --paper:#FAFAF8;
-  --cream:#F5F1E8;
-  --bone:#EFEAD8;
-  --text:#F8FAFC;
-  --text-dim:#94A3B8;
-  --text-faint:#64748B;
-  --display:'Fraunces',Georgia,serif;
+  --charcoal:#0F172A;
+  --green:#16A34A;
+  --green-dk:#0E3D24;
+  --green-lt:#22C55E;
+  --gold:#D4A054;
+  --gold-dk:#B8853A;
+  --rose:#BE185D;
+  --rose-lt:#EC4899;
+  --rose-mist:#FDF2F8;
+  --blue:#2563EB;
+  --blue-mist:#EFF6FF;
+  --orange:#EA580C;
+  --orange-mist:#FFF7ED;
+  --white:#fff;
+  --off-white:#fafaf8;
+  --gray-50:#f7f7f6;
+  --gray-100:#efefed;
+  --gray-200:#e0dfdc;
+  --gray-300:#c8c6c1;
+  --gray-400:#a09e97;
+  --gray-500:#6b6962;
+  --gray-600:#4a4844;
+  --gray-700:#333230;
+  --serif:'Fraunces',Georgia,serif;
   --sans:'Inter',-apple-system,sans-serif;
 }
-html { font-size:16px; scroll-behavior:smooth; }
-body { background:var(--ink); color:var(--text); font:400 17px/1.6 var(--sans); -webkit-font-smoothing:antialiased; }
+html { font-size:16px; }
+body { font-family:var(--sans); color:var(--charcoal); background:var(--white); line-height:1.7; -webkit-font-smoothing:antialiased; }
+.page { max-width:880px; margin:0 auto; padding:64px 56px; page-break-after:always; position:relative; }
+.page:last-child { page-break-after:avoid; }
+.page-inner { min-height:calc(100vh - 128px); }
 
-/* ── PAGE / SECTION ── */
-.section { width:100%; padding:120px 60px; position:relative; overflow:hidden; }
-.section.tight { padding:80px 60px; }
-.section.huge { padding:160px 60px; }
-.wrap { max-width:1200px; margin:0 auto; position:relative; z-index:1; }
-.wrap-narrow { max-width:900px; margin:0 auto; position:relative; z-index:1; }
+.bleed { width:100%; padding:120px 60px; position:relative; overflow:hidden; }
+.bleed-inner { max-width:980px; margin:0 auto; }
+.bleed-green { background:linear-gradient(135deg, var(--green-dk) 0%, var(--green) 100%); color:#fff; }
+.bleed-charcoal { background:var(--charcoal); color:#fff; }
+.bleed-cream { background:var(--off-white); }
+.bleed-gold { background:var(--gold); color:var(--charcoal); }
+.bleed-rose { background:var(--rose); color:#fff; }
+.bleed-blue { background:var(--blue); color:#fff; }
 
-/* ── COLOR PALETTES (alternating sections) ── */
-.bg-ink { background:var(--ink); color:var(--text); }
-.bg-ink-2 { background:var(--ink-2); color:var(--text); }
-.bg-green { background:var(--green-deep); color:#fff; }
-.bg-green-dark { background:var(--green-dark); color:#fff; }
-.bg-rose { background:var(--rose-deep); color:#fff; }
-.bg-paper { background:var(--paper); color:var(--ink); }
-.bg-cream { background:var(--cream); color:var(--ink); }
+.bleed h1 { font:600 84px/0.96 var(--serif); letter-spacing:-0.025em; margin-bottom:24px; }
+.bleed h1 em { font-style:italic; color:var(--gold); font-weight:500; }
+.bleed-cream h1 em { color:var(--green); }
+.bleed-rose h1 em, .bleed-blue h1 em { color:var(--gold); }
+.bleed-gold h1 em { color:var(--charcoal); opacity:0.7; }
+.bleed p.huge { font:400 28px/1.4 var(--serif); margin-top:24px; max-width:840px; }
+.bleed-green p.huge, .bleed-charcoal p.huge, .bleed-rose p.huge, .bleed-blue p.huge { color:rgba(255,255,255,0.92); }
+.bleed-cream p.huge { color:var(--gray-700); }
+.bleed .eyebrow { font:700 11px/1 var(--sans); letter-spacing:0.28em; text-transform:uppercase; color:var(--gold); margin-bottom:24px; }
+.bleed-cream .eyebrow { color:var(--green); }
 
-/* ── TYPOGRAPHY ── */
-.eyebrow { font:700 11px/1 var(--sans); letter-spacing:0.28em; text-transform:uppercase; color:var(--green); margin-bottom:24px; }
-.bg-paper .eyebrow, .bg-cream .eyebrow { color:var(--green-deep); }
-.bg-rose .eyebrow { color:var(--gold); }
+.stat-massive { display:grid; grid-template-columns:repeat(3,1fr); gap:48px; margin-top:80px; }
+.stat-massive.four { grid-template-columns:repeat(4,1fr); gap:32px; }
+.stat-massive .v { font:600 110px/0.92 var(--serif); letter-spacing:-0.025em; color:var(--gold); }
+.stat-massive.four .v { font-size:88px; }
+.bleed-cream .stat-massive .v { color:var(--green); }
+.bleed-gold .stat-massive .v { color:var(--charcoal); }
+.stat-massive .l { font:600 12px/1.45 var(--sans); letter-spacing:0.18em; text-transform:uppercase; margin-top:14px; }
+.bleed-green .stat-massive .l, .bleed-charcoal .stat-massive .l, .bleed-rose .stat-massive .l, .bleed-blue .stat-massive .l { color:rgba(255,255,255,0.78); }
+.bleed-cream .stat-massive .l { color:var(--gray-500); }
 
-h1.hero { font:800 140px/0.92 var(--display); letter-spacing:-0.04em; margin-bottom:32px; }
-h1.hero em { font-style:italic; font-weight:500; color:var(--green); }
-h1.section-h { font:700 88px/0.98 var(--display); letter-spacing:-0.03em; margin-bottom:24px; }
-h1.section-h em { font-style:italic; font-weight:500; }
-h2 { font:700 64px/1.04 var(--display); letter-spacing:-0.025em; margin-bottom:20px; }
-h2 em { font-style:italic; font-weight:500; }
-h3 { font:700 32px/1.15 var(--display); letter-spacing:-0.015em; margin-bottom:14px; }
-h4 { font:700 14px/1.2 var(--sans); letter-spacing:0.16em; text-transform:uppercase; color:var(--green); margin-bottom:14px; }
-.bg-paper h4, .bg-cream h4 { color:var(--green-deep); }
+/* Cover */
+.cover { display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:100vh; text-align:center; padding:80px 50px; background:#fff; position:relative; }
+.cover::before { content:''; position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(90deg, var(--green) 0%, var(--gold) 33%, var(--rose) 66%, var(--blue) 100%); }
+.cover::after { content:''; position:absolute; bottom:0; left:0; right:0; height:6px; background:linear-gradient(90deg, var(--green) 0%, var(--gold) 33%, var(--rose) 66%, var(--blue) 100%); }
+.cover-border { position:absolute; top:24px; left:24px; right:24px; bottom:24px; border:1px solid var(--gray-200); pointer-events:none; }
+.cover-logo { width:60px; height:60px; border:2px solid var(--green); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:50px; font:700 22px var(--serif); color:var(--green); }
+.cover-title { font-family:var(--serif); font-size:64px; font-weight:700; color:var(--charcoal); letter-spacing:14px; text-transform:uppercase; margin-bottom:20px; line-height:1.1; }
+.cover-rule { width:120px; height:2px; background:var(--gold); margin:0 auto 24px; }
+.cover-subtitle { font-family:var(--serif); font-size:22px; font-style:italic; color:var(--gray-500); margin-bottom:8px; letter-spacing:2px; }
+.cover-type { font-size:13px; font-weight:600; color:var(--green); letter-spacing:5px; text-transform:uppercase; margin-top:30px; margin-bottom:60px; }
+.cover-meta { font-size:13px; color:var(--gray-500); line-height:2; letter-spacing:0.5px; }
+.cover-meta strong { color:var(--charcoal); font-weight:600; }
+.cover-year { font-family:var(--serif); font-size:18px; color:var(--gold); letter-spacing:6px; margin:40px 0; }
+.cover-confidential { position:absolute; bottom:40px; left:0; right:0; text-align:center; font-size:10px; font-weight:700; color:var(--gray-400); letter-spacing:4px; text-transform:uppercase; }
 
-p { font-size:18px; line-height:1.7; color:var(--text-dim); margin-bottom:18px; }
-.bg-paper p, .bg-cream p { color:var(--ink-3); }
-p.lead { font-size:24px; line-height:1.5; color:var(--text); max-width:880px; }
-.bg-paper p.lead, .bg-cream p.lead { color:var(--ink); }
-p.huge { font-size:32px; line-height:1.35; font-weight:400; max-width:980px; }
-.source { font-size:12px; color:var(--text-faint); font-style:italic; margin-top:20px; }
-.bg-paper .source, .bg-cream .source { color:#6B6962; }
+.section-number { font-size:11px; font-weight:700; color:var(--gold); letter-spacing:4px; text-transform:uppercase; margin-bottom:8px; display:block; }
+.section-title { font-family:var(--serif); font-size:38px; font-weight:700; color:var(--charcoal); margin-bottom:6px; line-height:1.2; }
+.section-subtitle { font-family:var(--serif); font-size:18px; font-style:italic; color:var(--gray-500); margin-bottom:30px; }
+.section-rule { width:60px; height:3px; background:var(--green); margin-bottom:35px; }
+.section-header-bar { border-top:3px solid var(--green); padding-top:20px; margin-bottom:35px; }
 
-/* ── COVER ── */
-.cover {
-  min-height:100vh;
-  background:
-    radial-gradient(ellipse at 75% 0%, rgba(34,197,94,0.18), transparent 55%),
-    radial-gradient(ellipse at 0% 100%, rgba(236,72,153,0.10), transparent 55%),
-    var(--ink);
-  display:flex; flex-direction:column; justify-content:center;
-  padding:80px 80px;
-  position:relative;
-}
-.cover::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:8px;
-  background:linear-gradient(90deg, var(--green) 0%, var(--gold) 50%, var(--rose) 100%);
-}
-.cover-mark { font:800 14px/1 var(--sans); letter-spacing:0.32em; text-transform:uppercase; color:var(--green); margin-bottom:80px; }
-.cover-mark .dot { color:var(--gold); margin:0 8px; }
-.cover h1 { font-size:160px; line-height:0.92; }
-.cover-tag { font:500 28px/1.4 var(--display); font-style:italic; color:var(--text-dim); max-width:780px; margin-top:32px; }
-.cover-foot {
-  position:absolute; bottom:60px; left:80px; right:80px;
-  display:flex; justify-content:space-between; align-items:flex-end;
-  border-top:1px solid var(--line); padding-top:24px;
-  font:600 12px/1 var(--sans); letter-spacing:0.18em; text-transform:uppercase; color:var(--text-faint);
-}
+h3 { font-family:var(--serif); font-size:22px; font-weight:600; color:var(--charcoal); margin-top:30px; margin-bottom:14px; line-height:1.3; }
+h4 { font-size:14px; font-weight:700; color:var(--green); letter-spacing:2px; text-transform:uppercase; margin-top:28px; margin-bottom:12px; }
+p { font-size:14px; line-height:1.8; color:var(--gray-600); margin-bottom:16px; }
+.lead { font-size:16px; color:var(--charcoal); line-height:1.85; margin-bottom:20px; }
+.logline { font-family:var(--serif); font-size:20px; font-style:italic; color:var(--green-dk); border-left:4px solid var(--gold); padding:16px 24px; margin:30px 0; background:var(--gray-50); line-height:1.6; }
+.source { font-size:11px; color:var(--gray-400); font-style:italic; margin-top:8px; }
 
-/* ── HERO IMAGES / SCREENSHOTS ── */
-.hero-img-wrap {
-  margin:60px auto 0;
-  max-width:1200px;
-  border-radius:24px;
-  overflow:hidden;
-  box-shadow:0 60px 120px -30px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
-}
+.metrics-row { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin:30px 0; }
+.metrics-row.three { grid-template-columns:repeat(3,1fr); }
+.metric-card { background:var(--gray-50); border:1px solid var(--gray-100); border-top:3px solid var(--green); padding:22px 16px; text-align:center; }
+.metric-card.gold { border-top-color:var(--gold); }
+.metric-card.rose { border-top-color:var(--rose); }
+.metric-card.blue { border-top-color:var(--blue); }
+.metric-value { font-family:var(--serif); font-size:32px; font-weight:700; color:var(--green); display:block; margin-bottom:4px; letter-spacing:-0.01em; }
+.metric-card.gold .metric-value { color:var(--gold-dk); }
+.metric-card.rose .metric-value { color:var(--rose); }
+.metric-card.blue .metric-value { color:var(--blue); }
+.metric-label { font-size:11px; font-weight:600; color:var(--gray-500); letter-spacing:1px; text-transform:uppercase; line-height:1.3; }
+
+.highlight-box { background:linear-gradient(135deg, var(--green-dk) 0%, var(--green) 100%); color:#fff; padding:30px 32px; margin:28px 0; border-radius:2px; }
+.highlight-box .metric-value { color:var(--gold); }
+.highlight-box .metric-label { color:rgba(255,255,255,0.8); }
+.highlight-box p { color:rgba(255,255,255,0.92); }
+.highlight-box strong { color:var(--gold); }
+.highlight-box h3 { color:#fff; margin-top:0; }
+.highlight-box h4 { color:var(--gold); }
+
+.callout { background:var(--off-white); border:1px solid var(--gray-200); border-left:4px solid var(--gold); padding:20px 24px; margin:24px 0; font-size:14px; }
+.callout strong { color:var(--charcoal); }
+.callout-rose { background:var(--rose-mist); border-left-color:var(--rose); }
+.callout-blue { background:var(--blue-mist); border-left-color:var(--blue); }
+.callout-orange { background:var(--orange-mist); border-left-color:var(--orange); }
+
+table { width:100%; border-collapse:collapse; margin:20px 0; font-size:13px; }
+thead th { background:var(--charcoal); color:#fff; font-weight:600; padding:12px 16px; text-align:left; font-size:11px; letter-spacing:1px; text-transform:uppercase; }
+tbody td { padding:11px 16px; border-bottom:1px solid var(--gray-100); color:var(--gray-600); vertical-align:top; }
+tbody tr:hover { background:var(--gray-50); }
+tbody tr:last-child td { border-bottom:2px solid var(--gray-200); }
+tbody tr.total-row td { font-weight:700; color:var(--charcoal); background:var(--gray-50); border-top:2px solid var(--green); border-bottom:2px solid var(--green); }
+.text-right { text-align:right; }
+.text-center { text-align:center; }
+.text-bold { font-weight:700; color:var(--charcoal); }
+.text-green { color:var(--green); }
+.text-gold { color:var(--gold-dk); }
+.text-rose { color:var(--rose); }
+.y { color:var(--green); font-weight:700; }
+.n { color:var(--gray-400); }
+
+.chart-container { margin:30px 0; padding:24px; background:var(--gray-50); border:1px solid var(--gray-100); }
+.chart-title { font-size:12px; font-weight:700; color:var(--gray-500); letter-spacing:2px; text-transform:uppercase; margin-bottom:20px; }
+
+.bar-chart { display:flex; align-items:flex-end; justify-content:space-around; height:220px; padding:30px 10px 0 50px; border-bottom:2px solid var(--gray-200); margin-bottom:10px; position:relative; }
+.bar-chart-gridlines { position:absolute; top:0; left:50px; right:10px; bottom:0; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; }
+.bar-chart-gridline { border-top:1px dashed var(--gray-200); position:relative; width:100%; }
+.bar-chart-gridline-label { position:absolute; left:-4px; top:-8px; font-size:9px; color:var(--gray-400); transform:translateX(-100%); padding-right:6px; }
+.bar-group { display:flex; align-items:flex-end; gap:6px; flex:1; justify-content:center; position:relative; z-index:1; }
+.bar { width:32px; border-radius:2px 2px 0 0; position:relative; min-height:4px; }
+.bar.green { background:var(--green); }
+.bar.gold { background:var(--gold); }
+.bar.rose { background:var(--rose); }
+.bar.gray { background:var(--gray-300); }
+.bar.blue { background:var(--blue); }
+.bar.orange { background:var(--orange); }
+.bar-value { position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:10px; font-weight:700; color:var(--charcoal); white-space:nowrap; }
+.bar-labels { display:flex; justify-content:space-around; padding:8px 10px 0 50px; }
+.bar-label { font-size:11px; font-weight:600; color:var(--gray-500); text-align:center; flex:1; }
+
+.h-bar-chart { display:flex; flex-direction:column; gap:10px; margin:16px 0; }
+.h-bar-row { display:flex; align-items:center; gap:12px; }
+.h-bar-label { width:200px; font-size:13px; font-weight:600; color:var(--gray-700); text-align:right; flex-shrink:0; }
+.h-bar-track { flex:1; height:24px; background:var(--gray-100); border-radius:2px; position:relative; overflow:hidden; }
+.h-bar-fill { height:100%; border-radius:2px; display:flex; align-items:center; justify-content:flex-end; padding-right:8px; min-width:48px; background:var(--green); }
+.h-bar-fill.gold { background:var(--gold); }
+.h-bar-fill.rose { background:var(--rose); }
+.h-bar-fill.blue { background:var(--blue); }
+.h-bar-value { font-size:10px; font-weight:700; color:#fff; }
+
+.donut-container { display:flex; align-items:center; gap:40px; justify-content:center; padding:20px 0; }
+.donut-chart { width:180px; height:180px; position:relative; }
+.donut-chart svg { width:180px; height:180px; transform:rotate(-90deg); }
+.donut-chart circle { fill:none; stroke-width:32; }
+.donut-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+.donut-center-value { font-family:var(--serif); font-size:22px; font-weight:700; color:var(--charcoal); display:block; }
+.donut-center-label { font-size:10px; color:var(--gray-400); text-transform:uppercase; letter-spacing:1px; }
+.donut-legend { display:flex; flex-direction:column; gap:10px; }
+.donut-legend-item { display:flex; align-items:center; gap:10px; font-size:13px; color:var(--gray-600); }
+.donut-legend-swatch { width:14px; height:14px; border-radius:2px; flex-shrink:0; }
+.donut-legend-pct { font-weight:700; color:var(--charcoal); min-width:36px; }
+
+/* Feature cards */
+.feature-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:24px 0; }
+.feature-grid.three { grid-template-columns:repeat(3,1fr); }
+.feature-card { background:#fff; border:1px solid var(--gray-200); padding:22px 22px 20px; position:relative; border-top:3px solid var(--green); }
+.feature-card.rose { border-top-color:var(--rose); }
+.feature-card.gold { border-top-color:var(--gold); }
+.feature-card.blue { border-top-color:var(--blue); }
+.feature-card.orange { border-top-color:var(--orange); }
+.feature-card .f-num { font:700 32px/1 var(--serif); color:var(--gray-200); position:absolute; top:18px; right:22px; }
+.feature-card h4 { font-family:var(--serif); font-size:18px; color:var(--charcoal); letter-spacing:-0.005em; text-transform:none; font-weight:600; margin:0 0 8px; }
+.feature-card p { font-size:13px; color:var(--gray-600); margin:0; line-height:1.6; }
+.feature-card ul { margin-top:8px; padding:0; list-style:none; }
+.feature-card li { font-size:12px; padding:4px 0 4px 14px; color:var(--gray-600); position:relative; line-height:1.5; }
+.feature-card li::before { content:''; position:absolute; left:0; top:13px; width:8px; height:1px; background:var(--green); }
+
+/* Risk pills */
+.risk-row { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:24px 0; }
+.risk-tile { padding:18px 18px 16px; border-radius:8px; border:1px solid; }
+.risk-tile.crush { background:#dcfce7; border-color:#86efac; }
+.risk-tile.ok { background:#fef9c3; border-color:#fde047; }
+.risk-tile.slip { background:#fee2e2; border-color:#fca5a5; }
+.risk-tile.ghost { background:var(--gray-100); border-color:var(--gray-300); }
+.risk-tile .r-pill { display:inline-block; font:700 9px/1 var(--sans); letter-spacing:0.16em; text-transform:uppercase; padding:4px 10px; border-radius:100px; color:#fff; margin-bottom:10px; }
+.risk-tile.crush .r-pill { background:#166534; }
+.risk-tile.ok .r-pill { background:#92400e; }
+.risk-tile.slip .r-pill { background:#991b1b; }
+.risk-tile.ghost .r-pill { background:var(--gray-600); }
+.risk-tile h4 { font-family:var(--serif); font-size:16px; color:var(--charcoal); text-transform:none; letter-spacing:-0.005em; margin:0 0 6px; }
+.risk-tile p { font-size:12px; color:var(--gray-700); margin:0; line-height:1.5; }
+
+/* Condition cards */
+.cond-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:24px 0; }
+.cond-card { background:#fff; border:1px solid var(--gray-200); padding:18px 20px; border-left:4px solid var(--blue); }
+.cond-card.green { border-left-color:var(--green); }
+.cond-card.rose { border-left-color:var(--rose); }
+.cond-card.orange { border-left-color:var(--orange); }
+.cond-card.gold { border-left-color:var(--gold); }
+.cond-card h4 { font-family:var(--serif); font-size:17px; font-weight:600; color:var(--charcoal); text-transform:none; letter-spacing:-0.005em; margin:0 0 6px; }
+.cond-card p { font-size:12px; color:var(--gray-600); line-height:1.55; margin:0; }
+.cond-card .c-flag { display:inline-block; font:700 9px/1 var(--sans); letter-spacing:0.16em; text-transform:uppercase; padding:3px 10px; border-radius:100px; background:var(--gray-100); color:var(--gray-600); margin-bottom:8px; }
+.cond-card.green .c-flag { background:rgba(22,163,74,0.12); color:var(--green); }
+.cond-card.rose .c-flag { background:rgba(190,24,93,0.12); color:var(--rose); }
+.cond-card.orange .c-flag { background:rgba(234,88,12,0.12); color:var(--orange); }
+.cond-card.gold .c-flag { background:rgba(212,160,84,0.18); color:var(--gold-dk); }
+
+/* Timeline */
+.timeline { position:relative; padding-left:32px; margin:24px 0; }
+.timeline::before { content:''; position:absolute; left:8px; top:4px; bottom:4px; width:2px; background:var(--gray-200); }
+.timeline-item { position:relative; margin-bottom:24px; padding-bottom:4px; }
+.timeline-item::before { content:''; position:absolute; left:-28px; top:5px; width:12px; height:12px; border-radius:50%; background:var(--green); border:3px solid #fff; box-shadow:0 0 0 2px var(--green); }
+.timeline-date { font-size:11px; font-weight:700; color:var(--gold-dk); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+.timeline-title { font-family:var(--serif); font-size:16px; font-weight:600; color:var(--charcoal); margin-bottom:4px; }
+.timeline-desc { font-size:13px; color:var(--gray-500); line-height:1.6; }
+
+.advantage-list { counter-reset:advantage; list-style:none; margin:20px 0; }
+.advantage-list li { counter-increment:advantage; position:relative; padding:18px 18px 18px 60px; margin-bottom:12px; border:1px solid var(--gray-100); background:#fff; font-size:14px; color:var(--gray-600); line-height:1.6; }
+.advantage-list li::before { content:counter(advantage); position:absolute; left:18px; top:18px; width:28px; height:28px; background:var(--green); color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+.advantage-list li strong { color:var(--charcoal); }
+.advantage-list li h4 { font-family:var(--serif); font-size:16px; color:var(--charcoal); margin:0 0 4px; text-transform:none; letter-spacing:-0.005em; }
+
+.toc-list { list-style:none; margin:20px 0; }
+.toc-list li { display:flex; align-items:baseline; padding:9px 0; border-bottom:1px dotted var(--gray-200); font-size:14px; }
+.toc-num { font-family:var(--serif); font-weight:700; color:var(--green); width:36px; flex-shrink:0; font-size:16px; }
+.toc-title { flex:1; color:var(--charcoal); font-weight:500; }
+.toc-page { color:var(--gray-400); font-weight:600; font-size:12px; letter-spacing:1px; }
+
+.contact-block { background:var(--charcoal); color:#fff; padding:40px; text-align:center; margin-top:40px; }
+.contact-block h3 { font-family:var(--serif); color:var(--gold); font-size:24px; margin-bottom:20px; margin-top:0; }
+.contact-block p { color:rgba(255,255,255,0.8); margin-bottom:8px; }
+
+.hero-img-wrap { margin:28px auto 0; max-width:100%; border-radius:14px; overflow:hidden; box-shadow:0 30px 60px -20px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06); }
 .hero-img-wrap img { display:block; width:100%; height:auto; }
-.bg-paper .hero-img-wrap, .bg-cream .hero-img-wrap {
-  box-shadow:0 60px 120px -30px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.06);
-}
-
-/* iPhone-style frame */
-.phone-frame {
-  position:relative;
-  width:340px;
-  background:#0a0a0a;
-  border-radius:42px;
-  padding:14px;
-  box-shadow:0 50px 100px -25px rgba(0,0,0,0.65), 0 0 0 6px #1a1a1a inset;
-  margin:0 auto;
-}
-.phone-frame::before {
-  content:''; position:absolute; top:18px; left:50%; transform:translateX(-50%);
-  width:120px; height:28px; background:#000; border-radius:18px; z-index:2;
-}
-.phone-frame img { display:block; width:100%; height:auto; border-radius:30px; }
-
-/* MacBook-style frame */
-.macbook-frame {
-  margin:0 auto;
-  max-width:1100px;
-  background:#0a0a0a;
-  border-radius:18px 18px 4px 4px;
-  padding:16px 16px 8px;
-  position:relative;
-  box-shadow:0 80px 140px -30px rgba(0,0,0,0.7);
-}
-.macbook-frame::after {
-  content:''; display:block;
-  height:14px;
-  background:linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
-  border-radius:0 0 18px 18px;
-  margin:8px -40px -22px;
-  position:relative;
-}
-.macbook-frame::before {
-  content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%);
-  width:120px; height:8px; background:#1a1a1a; border-radius:0 0 8px 8px; z-index:1;
-}
-.macbook-frame img { display:block; width:100%; height:auto; border-radius:6px; background:#fff; }
-
-/* ── LARGE STATS ── */
-.stat-block { text-align:center; padding:24px 0; }
-.stat-num { font:700 120px/0.95 var(--display); letter-spacing:-0.03em; color:var(--green); display:block; margin-bottom:14px; }
-.bg-green .stat-num, .bg-rose .stat-num, .bg-green-dark .stat-num { color:var(--gold); }
-.bg-paper .stat-num, .bg-cream .stat-num { color:var(--green-deep); }
-.stat-num.giant { font-size:200px; }
-.stat-num.huge-num { font-size:160px; }
-.stat-label { font:600 13px/1.4 var(--sans); letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); }
-.bg-green .stat-label, .bg-rose .stat-label, .bg-green-dark .stat-label { color:rgba(255,255,255,0.7); }
-.bg-paper .stat-label, .bg-cream .stat-label { color:#6B6962; }
-
-.stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; margin:60px 0; }
-.stat-grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; margin:60px 0; }
-.stat-grid-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:32px; margin:60px 0; }
-.stat-card {
-  background:rgba(255,255,255,0.02);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:20px;
-  padding:36px 28px;
-  position:relative;
-  overflow:hidden;
-}
-.bg-paper .stat-card, .bg-cream .stat-card {
-  background:rgba(0,0,0,0.02);
-  border-color:rgba(0,0,0,0.08);
-}
-.stat-card::before {
-  content:''; position:absolute; top:0; left:0; right:0; height:3px;
-  background:var(--green);
-}
-.stat-card.rose::before { background:var(--rose); }
-.stat-card.gold::before { background:var(--gold); }
-.stat-card .stat-num { font-size:64px; }
-.stat-card .stat-label { margin-bottom:10px; }
-.stat-card p { font-size:14px; color:var(--text-dim); margin-top:6px; }
-
-/* ── SPLITS ── */
-.split { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
-.split.flip > :first-child { order:2; }
-.split.flip > :last-child { order:1; }
-
-/* ── PULL QUOTE ── */
-.pull-quote {
-  font:500 48px/1.25 var(--display);
-  font-style:italic;
-  letter-spacing:-0.015em;
-  margin:60px 0;
-  position:relative;
-  padding-left:32px;
-  border-left:4px solid var(--green);
-}
-.bg-paper .pull-quote, .bg-cream .pull-quote { border-left-color:var(--green-deep); }
-
-/* ── COMPARISON TABLE ── */
-.compare {
-  width:100%;
-  border-collapse:collapse;
-  background:rgba(255,255,255,0.02);
-  border-radius:16px;
-  overflow:hidden;
-  margin:40px 0;
-}
-.compare th, .compare td { padding:18px 20px; text-align:left; }
-.compare thead th {
-  background:rgba(255,255,255,0.03);
-  font:700 11px/1 var(--sans);
-  letter-spacing:0.14em;
-  text-transform:uppercase;
-  color:var(--text-faint);
-  border-bottom:1px solid rgba(255,255,255,0.08);
-}
-.compare tbody td { border-bottom:1px solid rgba(255,255,255,0.04); font-size:15px; color:var(--text-dim); }
-.compare tbody td:first-child { color:var(--text); font-weight:500; }
-.compare tbody tr:last-child td { border-bottom:none; }
-.compare .y { color:var(--green); font-weight:700; font-size:18px; }
-.compare .n { color:var(--text-faint); }
-
-.bg-paper .compare, .bg-cream .compare { background:rgba(0,0,0,0.02); }
-.bg-paper .compare thead th, .bg-cream .compare thead th { background:rgba(0,0,0,0.03); border-bottom-color:rgba(0,0,0,0.08); }
-.bg-paper .compare tbody td, .bg-cream .compare tbody td { border-bottom-color:rgba(0,0,0,0.04); color:var(--ink-3); }
-.bg-paper .compare tbody td:first-child, .bg-cream .compare tbody td:first-child { color:var(--ink); }
-.bg-paper .compare .y, .bg-cream .compare .y { color:var(--green-deep); }
-.bg-paper .compare .n, .bg-cream .compare .n { color:#a09e97; }
-
-/* ── LENS GRID ── */
-.lens-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:28px; margin:60px 0; }
-.lens-card {
-  padding:36px 32px;
-  background:linear-gradient(180deg, rgba(34,197,94,0.06) 0%, rgba(34,197,94,0.02) 100%);
-  border:1px solid rgba(34,197,94,0.15);
-  border-radius:20px;
-  position:relative;
-}
-.lens-card .lens-num { font:800 84px/0.9 var(--display); color:var(--green); opacity:0.18; position:absolute; top:24px; right:32px; }
-.lens-card .lens-tag { font:700 11px/1 var(--sans); letter-spacing:0.18em; text-transform:uppercase; color:var(--green); margin-bottom:14px; }
-.lens-card h3 { font-size:28px; margin-bottom:10px; color:var(--text); }
-.lens-card p { font-size:15px; color:var(--text-dim); margin:0; }
-
-/* ── PRICING TIERS ── */
-.tier-row { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin:60px 0; }
-.tier {
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(255,255,255,0.08);
-  border-radius:24px;
-  padding:40px 32px;
-  display:flex; flex-direction:column;
-  position:relative;
-}
-.tier.feat {
-  background:linear-gradient(180deg, rgba(34,197,94,0.10) 0%, rgba(34,197,94,0.02) 100%);
-  border-color:var(--green);
-  transform:scale(1.04);
-}
-.tier.feat::before {
-  content:'MOST POPULAR'; position:absolute; top:-12px; left:50%; transform:translateX(-50%);
-  font:800 10px/1 var(--sans); letter-spacing:0.16em; padding:6px 14px;
-  background:var(--green); color:var(--ink); border-radius:100px;
-}
-.tier .t-name { font:700 13px/1 var(--sans); letter-spacing:0.18em; text-transform:uppercase; color:var(--green); margin-bottom:18px; }
-.tier .t-price { font:800 88px/0.95 var(--display); color:var(--text); letter-spacing:-0.03em; }
-.tier .t-price small { font:500 18px/1 var(--sans); color:var(--text-dim); display:block; margin-top:8px; }
-.tier .t-feats { margin-top:32px; flex:1; padding:0; list-style:none; }
-.tier .t-feats li { padding:14px 0 14px 28px; border-top:1px solid rgba(255,255,255,0.06); font-size:14px; color:var(--text-dim); position:relative; line-height:1.5; }
-.tier .t-feats li:first-child { border-top:none; }
-.tier .t-feats li::before { content:''; position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green); }
-.tier .t-feats li b { color:var(--text); font-weight:600; }
-
-/* ── FOOTER / CTA ── */
-.cta {
-  background:linear-gradient(135deg, var(--green-deep), #0F766E);
-  border-radius:28px;
-  padding:80px 60px;
-  text-align:center;
-  margin:60px 0;
-}
-.cta h2 { color:#fff; max-width:760px; margin:0 auto 24px; }
-.cta p { color:rgba(255,255,255,0.85); font-size:20px; max-width:680px; margin:0 auto 40px; }
-.cta-btn {
-  display:inline-block;
-  background:#fff; color:var(--green-deep);
-  padding:22px 44px;
-  border-radius:14px;
-  font:800 16px/1 var(--sans); letter-spacing:0.04em; text-transform:uppercase;
-  text-decoration:none;
-  transition:transform .2s;
-}
-.cta-btn:hover { transform:translateY(-2px); }
-
-.foot-block {
-  background:var(--ink-2);
-  padding:80px 60px;
-  border-top:1px solid var(--line);
-}
-.foot-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; max-width:1200px; margin:0 auto; }
-.foot-grid h3 { font-family:var(--display); color:var(--green); }
-
-/* ── DECORATIVE ELEMENTS ── */
-.section-num {
-  font:800 240px/0.85 var(--display);
-  color:var(--green);
-  opacity:0.06;
-  position:absolute;
-  top:80px; right:60px;
-  letter-spacing:-0.05em;
-}
-.bg-paper .section-num, .bg-cream .section-num { color:var(--green-deep); opacity:0.08; }
-
-.gradient-bar {
-  height:6px;
-  background:linear-gradient(90deg, var(--green) 0%, var(--gold) 50%, var(--rose) 100%);
-}
-
-.advantage {
-  display:grid; grid-template-columns:80px 1fr; gap:28px;
-  padding:32px 0;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-.advantage:last-child { border-bottom:none; }
-.bg-paper .advantage, .bg-cream .advantage { border-bottom-color:rgba(0,0,0,0.08); }
-.advantage .a-num { font:800 56px/1 var(--display); color:var(--green); letter-spacing:-0.02em; }
-.bg-paper .advantage .a-num, .bg-cream .advantage .a-num { color:var(--green-deep); }
-.advantage h4 { font-family:var(--display); font-size:26px; font-weight:600; letter-spacing:-0.005em; text-transform:none; color:var(--text); margin-bottom:8px; }
-.bg-paper .advantage h4, .bg-cream .advantage h4 { color:var(--ink); }
-.advantage p { font-size:17px; line-height:1.65; margin:0; }
 
 @media print {
-  .section { page-break-after:always; padding:60px 50px; }
-  body { background:#fff; color:#000; }
+  .page, .bleed { padding:40px 50px; }
+  body { font-size:14px; }
 }
 </style>
 </head>
 <body>
 
 <!-- ── COVER ── -->
-<section class="cover">
-  <div class="cover-mark">ELH<span class="dot">·</span>COACH</div>
-  <h1 class="hero">Run your<br>coaching business<br><em>like the pros do.</em></h1>
-  <p class="cover-tag">A branded coaching platform with AI nutrition, cycle-aware coaching, and clinical-grade health tracking — built for trainers who keep clients for years, not months.</p>
-  <div class="cover-foot">
-    <div>elhcoachhq.app</div>
-    <div>2026 · Confidential</div>
+<div class="cover">
+  <div class="cover-border"></div>
+  <div class="cover-logo">EC</div>
+  <div class="cover-title">ELH Coach</div>
+  <div class="cover-rule"></div>
+  <div class="cover-subtitle">The Most Complete Nutrition &amp; Fitness Platform Built for Coaches</div>
+  <div class="cover-type">Product Prospectus &amp; Feature Walkthrough</div>
+  <div class="cover-year">2026</div>
+  <div class="cover-meta">
+    <strong>For trainers, dietitians, and online coaches</strong><br>
+    AI photo nutrition · workout programming · cardio · body comp · biomarkers · lab analysis · wearables · branded mobile app<br>
+    elhcoachhq.app
   </div>
-</section>
+  <div class="cover-confidential">Confidential</div>
+</div>
 
-<!-- ── 01 SHIPPED LIVE ── -->
-<section class="section bg-ink-2">
-  <div class="wrap">
-    <div class="eyebrow">01 · Live in production</div>
-    <h1 class="section-h">Not a deck.<br><em>A live product.</em></h1>
-    <p class="lead">This is the actual marketing site, deployed and serving real visitors today. The platform is in production, not a roadmap.</p>
-    <div class="hero-img-wrap">
-      <img src="screenshots/home_wide.png" alt="ELH Coach home page">
-    </div>
+<!-- ── TOC ── -->
+<div class="page">
+  <div class="page-inner">
+    <span class="section-number">Contents</span>
+    <div class="section-title">What's Inside</div>
+    <div class="section-rule"></div>
+    <ul class="toc-list">
+      <li><span class="toc-num">01</span><span class="toc-title">Executive Summary</span><span class="toc-page">Page 03</span></li>
+      <li><span class="toc-num">02</span><span class="toc-title">The Coach's Daily Problem</span><span class="toc-page">Page 04</span></li>
+      <li><span class="toc-num">03</span><span class="toc-title">AI Photo Nutrition</span><span class="toc-page">Page 05</span></li>
+      <li><span class="toc-num">04</span><span class="toc-title">USDA Food Intelligence</span><span class="toc-page">Page 07</span></li>
+      <li><span class="toc-num">05</span><span class="toc-title">Workout Programming &amp; Strength Tracking</span><span class="toc-page">Page 09</span></li>
+      <li><span class="toc-num">06</span><span class="toc-title">Cardio &amp; GPS-Mapped Activity</span><span class="toc-page">Page 11</span></li>
+      <li><span class="toc-num">07</span><span class="toc-title">Body Composition &amp; Weight</span><span class="toc-page">Page 13</span></li>
+      <li><span class="toc-num">08</span><span class="toc-title">Lab Reports &amp; Biomarker Analysis</span><span class="toc-page">Page 15</span></li>
+      <li><span class="toc-num">09</span><span class="toc-title">Allergies, Conditions &amp; Medications</span><span class="toc-page">Page 17</span></li>
+      <li><span class="toc-num">10</span><span class="toc-title">Glucose Tracking</span><span class="toc-page">Page 19</span></li>
+      <li><span class="toc-num">11</span><span class="toc-title">Wearable &amp; Apple Health Sync</span><span class="toc-page">Page 21</span></li>
+      <li><span class="toc-num">12</span><span class="toc-title">Real-Time Messaging &amp; Quick Nudges</span><span class="toc-page">Page 23</span></li>
+      <li><span class="toc-num">13</span><span class="toc-title">Programs &amp; Templates Library</span><span class="toc-page">Page 25</span></li>
+      <li><span class="toc-num">14</span><span class="toc-title">Schedule, Sessions &amp; Booking</span><span class="toc-page">Page 27</span></li>
+      <li><span class="toc-num">15</span><span class="toc-title">Risk Detection — Crushing / Slipping / Ghosting</span><span class="toc-page">Page 28</span></li>
+      <li><span class="toc-num">16</span><span class="toc-title">Women's Health Coaching · Bonus Module</span><span class="toc-page">Page 30</span></li>
+      <li><span class="toc-num">17</span><span class="toc-title">Clinician PDF Export</span><span class="toc-page">Page 32</span></li>
+      <li><span class="toc-num">18</span><span class="toc-title">The Coach Console — Full Client Visibility</span><span class="toc-page">Page 33</span></li>
+      <li><span class="toc-num">19</span><span class="toc-title">The Branded Experience</span><span class="toc-page">Page 35</span></li>
+      <li><span class="toc-num">20</span><span class="toc-title">The Retention Math</span><span class="toc-page">Page 36</span></li>
+      <li><span class="toc-num">21</span><span class="toc-title">vs. Trainerize, TrueCoach, Everfit, MyFitnessPal</span><span class="toc-page">Page 37</span></li>
+      <li><span class="toc-num">22</span><span class="toc-title">Pricing</span><span class="toc-page">Page 38</span></li>
+      <li><span class="toc-num">23</span><span class="toc-title">Why Now</span><span class="toc-page">Page 39</span></li>
+      <li><span class="toc-num">24</span><span class="toc-title">Get Started</span><span class="toc-page">Page 40</span></li>
+    </ul>
   </div>
-</section>
+</div>
 
-<!-- ── 02 THE PROBLEM (Dark green block) ── -->
-<section class="section bg-green-dark">
-  <div class="wrap">
-    <div class="eyebrow">02 · The problem</div>
-    <h1 class="section-h">Clients don't quit you.<br><em>They ghost the tools.</em></h1>
-    <p class="huge" style="color:rgba(255,255,255,0.9);">Sign-up week is high-energy. Week three the photos stop. Week six the messages slow. By month three the client is gone — and they never told you why.</p>
-    <div class="stat-grid" style="margin-top:80px;">
-      <div class="stat-card" style="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.1);">
-        <span class="stat-num" style="color:var(--gold); font-size:88px;">68%</span>
-        <span class="stat-label" style="color:rgba(255,255,255,0.7);">Online client churn within 90 days</span>
-      </div>
-      <div class="stat-card" style="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.1);">
-        <span class="stat-num" style="color:var(--gold); font-size:88px;">5+</span>
-        <span class="stat-label" style="color:rgba(255,255,255,0.7);">Tools the average coach manages today</span>
-      </div>
-      <div class="stat-card" style="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.1);">
-        <span class="stat-num" style="color:var(--gold); font-size:88px;">$3.4k</span>
-        <span class="stat-label" style="color:rgba(255,255,255,0.7);">Lost LTV per ghosted client</span>
-      </div>
-      <div class="stat-card" style="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.1);">
-        <span class="stat-num" style="color:var(--gold); font-size:88px;">7×</span>
-        <span class="stat-label" style="color:rgba(255,255,255,0.7);">Less likely to churn if logging daily</span>
-      </div>
-    </div>
-    <p class="source" style="color:rgba(255,255,255,0.6);">Sources: IDEA Health &amp; Fitness Association coaching survey 2024 · ACE certified-trainer benchmarking · client-LTV math at $89/mo × 38mo retention vs 11mo median.</p>
-  </div>
-</section>
-
-<!-- ── 03 BIG STAT MOMENT ── -->
-<section class="section bg-rose huge">
-  <div class="wrap-narrow" style="text-align:center;">
-    <div class="eyebrow" style="color:var(--gold);">03 · The retention truth</div>
-    <h1 class="section-h" style="font-size:72px;">A client who logs daily<br>is <em>seven times</em> less likely<br>to ghost their coach.</h1>
-    <p class="huge" style="color:rgba(255,255,255,0.9); margin-top:40px;">Workouts are the easy part. <strong style="color:var(--gold);">Nutrition between sessions</strong> is where retention is won or lost — and no incumbent platform owns that layer.</p>
-  </div>
-</section>
-
-<!-- ── 04 THE WEDGE: WOMEN'S HEALTH ── -->
-<section class="section bg-paper">
-  <div class="wrap">
-    <div class="section-num">04</div>
-    <div class="eyebrow">04 · The wedge</div>
-    <h1 class="section-h">Women's health.<br><em>The story most coaches are losing.</em></h1>
-    <p class="lead" style="margin-bottom:40px;">Roughly 60% of online coaching clients are women. Not a single dominant platform — Trainerize, TrueCoach, Everfit, MyFitnessPal — adjusts coaching for menstrual cycle phase. That's a massive blind spot, and it's where ELH Coach starts.</p>
-
-    <div class="pull-quote" style="color:var(--rose-deep); border-left-color:var(--rose);">
-      "73% of female clients report adherence drops during luteal phase. When a coach can name that pattern and adjust for it, clients don't quit. They tell their friends."
+<!-- ── 01 EXEC SUMMARY ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 01</span>
+      <div class="section-title">Executive Summary</div>
+      <div class="section-subtitle">The most complete nutrition + fitness + health platform ever built for coaches.</div>
     </div>
 
-    <h4>What no one else has built</h4>
-    <table class="compare">
-      <thead><tr><th>Capability</th><th style="text-align:center">ELH Coach</th><th style="text-align:center">Trainerize</th><th style="text-align:center">TrueCoach</th><th style="text-align:center">Everfit</th></tr></thead>
+    <p class="lead">ELH Coach replaces every tool your coaching business currently glues together. AI photo nutrition. 340,000+ food USDA-grade database. Workout programming. GPS-mapped cardio. Body composition tracking. Biomarker logging. Lab report analysis. Allergy + condition management. Glucose tracking. Wearable sync. Real-time client messaging. A roster console that flags clients about to ghost — six days early. Cycle-aware coaching as a bonus. All branded as <em>your</em> business.</p>
+
+    <div class="logline">One app. Your name on it. Every screen. Every client. Every meal, every workout, every lab result, every metric that matters — in one place, branded as you.</div>
+
+    <div class="metrics-row">
+      <div class="metric-card"><span class="metric-value">$2,500</span><span class="metric-label">One-time fee · yours forever</span></div>
+      <div class="metric-card gold"><span class="metric-value">∞</span><span class="metric-label">Unlimited clients · no cap</span></div>
+      <div class="metric-card blue"><span class="metric-value">340K+</span><span class="metric-label">Foods in database</span></div>
+      <div class="metric-card rose"><span class="metric-value">15+</span><span class="metric-label">Distinct features. One platform.</span></div>
+    </div>
+
+    <h4>What this product does, in fifteen things</h4>
+    <ol class="advantage-list">
+      <li><h4>AI photo nutrition</h4>Snap a meal, get accurate calories + macros in 4 seconds. Validated against the USDA standard. ±8% accuracy of clinical baseline.</li>
+      <li><h4>340,000+ food database</h4>Search, barcode-scan, voice-log, manual entry, recipes. Branded products via OpenFoodFacts barcode.</li>
+      <li><h4>Workout programming + strength tracking</h4>Build templates, assign per client, log sets/reps/weight, video form-checks, auto-progression.</li>
+      <li><h4>GPS-mapped cardio</h4>Walk, run, bike — full route polyline, distance, pace, elevation. Treadmill manual entry supported.</li>
+      <li><h4>Body composition + weight tracking</h4>Daily weight, body fat %, lean mass, visceral, hydration. 30/60/90-day trends.</li>
+      <li><h4>Lab report upload + biomarker analysis</h4>Drag in a PDF lab report. Platform extracts HbA1c, lipids, vitamin D, hormones, ferritin — surfaces what changed.</li>
+      <li><h4>Allergy, condition &amp; medication management</h4>Celiac, Crohn's, diabetes, IBS, food allergies — every meal auto-flagged for conflicts. Medications tracked.</li>
+      <li><h4>Glucose tracking</h4>CGM continuous or finger-stick. Time-in-range, GMI, post-meal response curves.</li>
+      <li><h4>Wearable sync</h4>Apple Health, Whoop, Oura, Garmin, Fitbit, Google Health Connect — bidirectional.</li>
+      <li><h4>Real-time client messaging</h4>Threads, photo + voice + video attachments, quick-nudge library, branded as you.</li>
+      <li><h4>Programs library</h4>Eight pre-built campaigns + your own custom templates, assignable in two taps.</li>
+      <li><h4>Schedule, sessions &amp; booking</h4>Calendar, drag-drop, client-side self-booking, branded as you. Replaces Calendly.</li>
+      <li><h4>Risk detection</h4>Auto pills (Crushing / On track / Slipping / Ghosting) flag clients before they cancel.</li>
+      <li><h4>Cycle-aware coaching (bonus)</h4>For female clients: phases auto-adjust calorie + training. PCOS, postpartum, perimenopause modules included.</li>
+      <li><h4>Clinician PDF export</h4>One click, 30-day medical-grade report your client hands their doctor.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ── BLEED: THE PROBLEM ── -->
+<div class="bleed bleed-charcoal">
+  <div class="bleed-inner">
+    <div class="eyebrow" style="color:var(--gold);">Section 02 · The problem</div>
+    <h1>Five tools.<br>Zero retention.<br><em>Spreadsheets in between.</em></h1>
+    <p class="huge">Workout planner here. MyFitnessPal there. Messaging app over there. Scheduler somewhere else. Spreadsheet glues them together. Sixty-eight percent of clients ghost in 90 days — and they can't tell you why because nothing tracks anything.</p>
+
+    <div class="stat-massive">
+      <div><div class="v">68%</div><div class="l">Of online clients ghost within 90 days</div></div>
+      <div><div class="v">5+</div><div class="l">Disconnected tools per coach</div></div>
+      <div><div class="v">7×</div><div class="l">Less likely to churn if logging daily</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BLEED: AI NUTRITION ── -->
+<div class="bleed bleed-cream">
+  <div class="bleed-inner">
+    <div class="eyebrow">Section 03 · AI Photo Nutrition</div>
+    <h1>Snap a plate.<br><em>Macros in 4 seconds.</em></h1>
+    <p class="huge">Your client photographs the meal. Our AI returns calories, protein, carbs, and fat — validated against the USDA standard food database. ±8% accuracy of clinical food log baseline.</p>
+
+    <div class="stat-massive four">
+      <div><div class="v">4 sec</div><div class="l">Photo to logged meal</div></div>
+      <div><div class="v">±8%</div><div class="l">Accuracy vs clinical baseline</div></div>
+      <div><div class="v">340K+</div><div class="l">Foods in database</div></div>
+      <div><div class="v">3×/day</div><div class="l">Average daily client log</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 03 AI NUTRITION DETAIL ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 03 (cont.)</span>
+      <div class="section-title">Why AI Nutrition Wins You Clients</div>
+      <div class="section-subtitle">The retention loop nobody else owns.</div>
+    </div>
+
+    <p class="lead">A client who logs three meals a day is <strong>seven times less likely to churn</strong>. AI photo logging is the only nutrition entry mechanic that hits 70%+ adherence past day 30. MyFitnessPal manual entry hits 22% past day 30. The math is brutal — and the platform that owns this layer owns the retention.</p>
+
+    <div class="chart-container">
+      <div class="chart-title">Daily logging adherence by entry method (after 30 days)</div>
+      <div class="h-bar-chart">
+        <div class="h-bar-row"><div class="h-bar-label">AI photo (ELH Coach)</div><div class="h-bar-track"><div class="h-bar-fill" style="width:74%"><span class="h-bar-value">74%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Barcode scan</div><div class="h-bar-track"><div class="h-bar-fill gold" style="width:62%"><span class="h-bar-value">62%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Voice entry</div><div class="h-bar-track"><div class="h-bar-fill gold" style="width:54%"><span class="h-bar-value">54%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Manual search (MyFitnessPal)</div><div class="h-bar-track"><div class="h-bar-fill rose" style="width:22%"><span class="h-bar-value">22%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Manual typing in spreadsheet</div><div class="h-bar-track"><div class="h-bar-fill rose" style="width:6%"><span class="h-bar-value">6%</span></div></div></div>
+      </div>
+    </div>
+
+    <h4>What "4-second photo" actually does</h4>
+    <ol class="advantage-list">
+      <li><h4>Detects every item on the plate</h4>Multi-item plates (chicken, rice, broccoli, sauce) — each item identified separately. Not "mixed plate, ~600 cal."</li>
+      <li><h4>Estimates portion sizes from visual cues</h4>Plate dimensions, food density, comparison to known reference items. Adjustable before saving.</li>
+      <li><h4>Returns calories + protein + carbs + fat</h4>Per item and total. Logged into the daily ring instantly.</li>
+      <li><h4>Learns from coach corrections</h4>Coach adjusts ("that wasn't half-cup, it was three-quarters") and the model improves per-client. After 2-3 weeks: barcode-grade accuracy on the foods that client actually eats.</li>
+      <li><h4>Cooking method aware</h4>Grilled vs fried vs baked — different macros. Auto-detected from photo cues, override-able.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ── 04 USDA FOOD ENGINE ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 04</span>
+      <div class="section-title">USDA Food Intelligence</div>
+      <div class="section-subtitle">340,000+ foods. Six entry routes. Every working coach's reality.</div>
+    </div>
+
+    <p class="lead">No client logs every meal by AI photo. The platform supports six entry routes — and every route lands in the same canonical USDA-backed database, learning from every coach correction.</p>
+
+    <div class="feature-grid three">
+      <div class="feature-card"><span class="f-num">01</span><h4>AI Photo</h4><p>Snap, get macros in 4 seconds. Multi-item plates. Adjustable portions.</p></div>
+      <div class="feature-card gold"><span class="f-num">02</span><h4>Barcode Scan</h4><p>Branded products via OpenFoodFacts. Most packaged foods covered.</p></div>
+      <div class="feature-card blue"><span class="f-num">03</span><h4>Voice Entry</h4><p>"Two eggs, half cup oatmeal, banana." Parsed into macros.</p></div>
+      <div class="feature-card"><span class="f-num">04</span><h4>Search</h4><p>340K+ USDA foods, branded products, restaurant items.</p></div>
+      <div class="feature-card gold"><span class="f-num">05</span><h4>Manual Recipe</h4><p>Custom recipes, shareable across the client roster.</p></div>
+      <div class="feature-card blue"><span class="f-num">06</span><h4>Favorites</h4><p>Per-client favorites learned automatically. One-tap re-log.</p></div>
+    </div>
+
+    <h4>Accuracy by route</h4>
+    <div class="chart-container">
+      <div class="chart-title">Macro estimation accuracy</div>
+      <div class="h-bar-chart">
+        <div class="h-bar-row"><div class="h-bar-label">Barcode (branded)</div><div class="h-bar-track"><div class="h-bar-fill" style="width:99%"><span class="h-bar-value">99% · ±1%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Search (USDA)</div><div class="h-bar-track"><div class="h-bar-fill" style="width:96%"><span class="h-bar-value">96% · ±3%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Manual recipe</div><div class="h-bar-track"><div class="h-bar-fill" style="width:97%"><span class="h-bar-value">97% · ±3%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">AI photo (single item)</div><div class="h-bar-track"><div class="h-bar-fill" style="width:94%"><span class="h-bar-value">94% · ±6%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Voice</div><div class="h-bar-track"><div class="h-bar-fill" style="width:91%"><span class="h-bar-value">91% · ±9%</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">AI photo (multi-item)</div><div class="h-bar-track"><div class="h-bar-fill gold" style="width:88%"><span class="h-bar-value">88% · ±12%</span></div></div></div>
+      </div>
+    </div>
+
+    <h4>Plus: water tracking, supplements, daily streak</h4>
+    <p>Hydration logging built in (oz / mL / cups, with daily target). Supplement and medication logging with timestamps. Daily streak counter — the single most powerful retention mechanic in the app.</p>
+  </div>
+</div>
+
+<!-- ── 05 WORKOUT PROGRAMMING ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 05</span>
+      <div class="section-title">Workout Programming &amp; Strength Tracking</div>
+      <div class="section-subtitle">Build the program once. Assign forever. Track every rep.</div>
+    </div>
+
+    <p class="lead">Most coaches rebuild the same workout block for every new client. ELH Coach replaces that with a programs library — your templates, your nutrition presets, your content drops, assignable to any client in two taps.</p>
+
+    <h4>What a workout in the platform looks like</h4>
+    <div class="feature-grid">
+      <div class="feature-card"><h4>Per-exercise targets</h4><p>Sets · reps · weight · RPE · rest timer. Auto-progression rules built in.</p></div>
+      <div class="feature-card gold"><h4>Video form-check</h4><p>Client uploads video; coach reviews, marks up, sends back with notes.</p></div>
+      <div class="feature-card"><h4>PR tracking</h4><p>Personal records per lift, auto-detected. Lifetime + this-block + 1-year.</p></div>
+      <div class="feature-card gold"><h4>Volume trend</h4><p>Total weight × reps × sets per body part per week. Shows under/over-training.</p></div>
+      <div class="feature-card"><h4>Substitution library</h4><p>Client at hotel? Travel substitution suggested for every exercise.</p></div>
+      <div class="feature-card gold"><h4>Coach notes per session</h4><p>Private notes on each session — never visible to client.</p></div>
+    </div>
+
+    <h4>What the coach sees</h4>
+    <div class="chart-container">
+      <div class="chart-title">Sample client volume trend (12 weeks)</div>
+      <div class="bar-chart">
+        <div class="bar-chart-gridlines">
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">12k</span></div>
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">9k</span></div>
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">6k</span></div>
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">3k</span></div>
+        </div>
+        <div class="bar-group"><div class="bar gray" style="height:42%"><span class="bar-value">5.0k</span></div></div>
+        <div class="bar-group"><div class="bar gray" style="height:50%"><span class="bar-value">6.0k</span></div></div>
+        <div class="bar-group"><div class="bar green" style="height:58%"><span class="bar-value">7.0k</span></div></div>
+        <div class="bar-group"><div class="bar green" style="height:67%"><span class="bar-value">8.0k</span></div></div>
+        <div class="bar-group"><div class="bar green" style="height:75%"><span class="bar-value">9.0k</span></div></div>
+        <div class="bar-group"><div class="bar gold" style="height:83%"><span class="bar-value">10k</span></div></div>
+      </div>
+      <div class="bar-labels">
+        <div class="bar-label">Wk 1-2</div>
+        <div class="bar-label">Wk 3-4</div>
+        <div class="bar-label">Wk 5-6</div>
+        <div class="bar-label">Wk 7-8</div>
+        <div class="bar-label">Wk 9-10</div>
+        <div class="bar-label">Wk 11-12</div>
+      </div>
+    </div>
+    <p class="source">Total weekly tonnage (sets × reps × weight). Coach sees overload trend at a glance.</p>
+  </div>
+</div>
+
+<!-- ── 06 CARDIO ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 06</span>
+      <div class="section-title">Cardio &amp; GPS-Mapped Activity</div>
+      <div class="section-subtitle">Walk. Run. Bike. Treadmill. Mapped, tracked, calorie-burned.</div>
+    </div>
+
+    <p class="lead">Your client steps out the door for a run — the platform GPS-tracks the route, pace, distance, elevation, calories burned. Then the coach pulls up the route on a map in their console. No third-party Strava integration required, and treadmill manual entry is supported for indoor sessions.</p>
+
+    <h4>Cardio modalities supported</h4>
+    <div class="feature-grid three">
+      <div class="feature-card"><h4>Walk</h4><p>GPS polyline · distance · pace · elevation · calories. Pause/resume mid-walk.</p></div>
+      <div class="feature-card gold"><h4>Run</h4><p>GPS polyline · splits · pace zones · heart rate (if wearable connected) · calories.</p></div>
+      <div class="feature-card blue"><h4>Bike</h4><p>GPS polyline · speed · elevation · power (if connected) · calories.</p></div>
+      <div class="feature-card"><h4>Treadmill / indoor</h4><p>Manual entry: speed · incline · duration · heart rate. No GPS required.</p></div>
+      <div class="feature-card gold"><h4>Stair climber / elliptical</h4><p>Manual entry of duration + intensity. Calories estimated by RPE + weight.</p></div>
+      <div class="feature-card blue"><h4>Class / group cardio</h4><p>Spin class, HIIT, Orangetheory — log type + duration + RPE.</p></div>
+    </div>
+
+    <h4>What the coach sees</h4>
+    <ul style="margin:14px 0 0 20px; font-size:14px; color:var(--gray-600); line-height:1.9;">
+      <li>Per-session route map (overlay on Apple Maps)</li>
+      <li>Weekly cardio total: minutes + distance + calories</li>
+      <li>Pace trend over 4/8/12 weeks</li>
+      <li>Heart rate zones (if wearable connected): zone 2 vs zone 4 minutes</li>
+      <li>Run/walk PRs by distance (5K, 10K, half-marathon)</li>
+      <li>Recovery cardio vs intervals — auto-classified</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Why it matters:</strong> a coach who can <em>see</em> a client's actual run pace, route, and consistency catches over-training, under-training, and "I forgot to run" three weeks before the client cancels.
+    </div>
+  </div>
+</div>
+
+<!-- ── 07 BODY COMP ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 07</span>
+      <div class="section-title">Body Composition &amp; Weight</div>
+      <div class="section-subtitle">Every metric. Every trend. Every photo. Every PR.</div>
+    </div>
+
+    <p class="lead">Weight is the headline. Everything else is the story. The platform tracks the full body composition picture per client — daily weight, weekly average, body fat %, lean mass, visceral fat, body water — and surfaces trends the coach actually needs to see.</p>
+
+    <h4>What gets tracked</h4>
+    <table>
+      <thead><tr><th>Metric</th><th>Tracked</th><th>Source</th></tr></thead>
       <tbody>
-        <tr><td>Cycle-phase nutrition adjustments</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td></tr>
-        <tr><td>Cycle-phase training intensity</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td></tr>
-        <tr><td>PCOS-flag adjustments</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td></tr>
-        <tr><td>Postpartum return-to-training</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td></tr>
-        <tr><td>Perimenopause / menopause</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td></tr>
-        <tr><td>Coach-side female-client risk dashboard</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td></tr>
+        <tr><td><strong>Body weight</strong></td><td>Daily · 7-day rolling avg · 30/60/90-day trend</td><td>Manual or smart-scale sync</td></tr>
+        <tr><td><strong>Body fat %</strong></td><td>Trend with goal-line overlay</td><td>Smart scale / DEXA / caliper entry</td></tr>
+        <tr><td><strong>Lean mass</strong></td><td>kg / lb · trend · recomp-detection</td><td>Smart scale / DEXA</td></tr>
+        <tr><td><strong>Visceral fat</strong></td><td>Index · trend</td><td>Smart scale / DEXA</td></tr>
+        <tr><td><strong>Body water %</strong></td><td>Hydration trend</td><td>Smart scale</td></tr>
+        <tr><td><strong>Waist · chest · hips · arms · thighs</strong></td><td>Manual measurement entry · trend</td><td>Coach-prompted weekly</td></tr>
+        <tr><td><strong>Progress photos</strong></td><td>Side-by-side timeline · privacy-controlled</td><td>Client upload</td></tr>
       </tbody>
     </table>
-    <p class="source">Sources: IDEA Health &amp; Fitness Association industry survey 2024 · Journal of Women's Health behavioral studies (2023) · CDC PCOS prevalence · NIH menopause demographics.</p>
-  </div>
-</section>
 
-<!-- ── 05 THE FOUR LENSES ── -->
-<section class="section bg-ink">
-  <div class="wrap">
-    <div class="eyebrow">05 · The product</div>
-    <h1 class="section-h">Two surfaces.<br><em>Both branded as you.</em></h1>
-    <p class="lead">One product. The screen your client opens three times a day, and the dashboard you live in. Every pixel branded as the coach — your name, your colors, your logo, your URL.</p>
-
-    <div class="lens-grid">
-      <div class="lens-card">
-        <span class="lens-num">01</span>
-        <span class="lens-tag">For the client</span>
-        <h3>Branded mobile app</h3>
-        <p>Daily nutrition ring, AI photo logging, current workout, message thread with you, progress photos, weight chart, streak. Cycle-phase coaching built in. Their app icon on their home screen says your name — not ours.</p>
-      </div>
-      <div class="lens-card">
-        <span class="lens-num">02</span>
-        <span class="lens-tag">For the coach</span>
-        <h3>Coach console</h3>
-        <p>Roster with engagement risk pills, per-client drill-down, programs library, schedule, weekly digest emails. See who's slipping six days before they ghost. The backbone of your coaching business.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 06 PRICING — ONE-TIME OFFER ── -->
-<section class="section bg-cream">
-  <div class="wrap">
-    <div class="eyebrow">06 · Pricing</div>
-    <h1 class="section-h">One time.<br>Yours forever.<br><em>No subscriptions.</em></h1>
-    <p class="lead">Buy your branded coaching app once. Use it forever. No per-client cap, no per-client fee, no monthly subscription. The competitor charges you every month for the rest of your career — we don't.</p>
-
-    <div style="margin-top:80px; background:#fff; border:1px solid rgba(0,0,0,0.1); border-radius:28px; padding:60px 50px; box-shadow:0 30px 80px -20px rgba(0,0,0,0.08);">
-      <div style="display:grid; grid-template-columns:1fr 1.4fr; gap:50px; align-items:start;">
-        <div>
-          <span style="display:inline-block; font:700 12px/1 var(--sans); letter-spacing:0.18em; text-transform:uppercase; padding:8px 16px; border-radius:100px; background:var(--green-deep); color:#fff;">The Coach App</span>
-          <div style="font:800 120px/0.95 var(--display); color:var(--ink); letter-spacing:-0.03em; margin:24px 0 8px;">$2,500</div>
-          <div style="font:500 18px/1.4 var(--sans); color:#6B6962;">One-time. Yours forever.</div>
-          <div style="margin-top:32px; padding:20px 24px; background:rgba(34,197,94,0.08); border-left:4px solid var(--green-deep); border-radius:8px;">
-            <div style="font:700 11px/1 var(--sans); letter-spacing:0.16em; text-transform:uppercase; color:var(--green-deep); margin-bottom:8px;">30-day refund</div>
-            <div style="font-size:14px; color:#4A4844; line-height:1.55;">Not happy? Full money back inside the first 30 days, no questions.</div>
-          </div>
+    <h4>Sample weight trend a coach sees</h4>
+    <div class="chart-container">
+      <div class="chart-title">Sample 12-week cut · client weight (lbs)</div>
+      <div class="bar-chart">
+        <div class="bar-chart-gridlines">
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">200</span></div>
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">192</span></div>
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">184</span></div>
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">176</span></div>
         </div>
-        <div>
-          <h4 style="color:var(--green-deep);">What's included</h4>
-          <ul style="list-style:none; padding:0;">
-            <li style="padding:14px 0 14px 28px; border-top:1px solid rgba(0,0,0,0.06); font-size:15px; color:#4A4844; position:relative;"><span style="position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green-deep);"></span><b style="color:var(--ink);">Unlimited clients</b> — no cap, ever</li>
-            <li style="padding:14px 0 14px 28px; border-top:1px solid rgba(0,0,0,0.06); font-size:15px; color:#4A4844; position:relative;"><span style="position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green-deep);"></span><b style="color:var(--ink);">Branded subdomain</b> (yourname.elhcoachhq.app)</li>
-            <li style="padding:14px 0 14px 28px; border-top:1px solid rgba(0,0,0,0.06); font-size:15px; color:#4A4844; position:relative;"><span style="position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green-deep);"></span>Your logo, your colors, your app name — edge to edge</li>
-            <li style="padding:14px 0 14px 28px; border-top:1px solid rgba(0,0,0,0.06); font-size:15px; color:#4A4844; position:relative;"><span style="position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green-deep);"></span><b style="color:var(--ink);">AI photo nutrition</b> for every client</li>
-            <li style="padding:14px 0 14px 28px; border-top:1px solid rgba(0,0,0,0.06); font-size:15px; color:#4A4844; position:relative;"><span style="position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green-deep);"></span>Cycle-aware coaching · real-time messaging · programs · schedule</li>
-            <li style="padding:14px 0 14px 28px; border-top:1px solid rgba(0,0,0,0.06); font-size:15px; color:#4A4844; position:relative;"><span style="position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green-deep);"></span>Coach console with at-risk detection &amp; weekly digest emails</li>
-            <li style="padding:14px 0 14px 28px; border-top:1px solid rgba(0,0,0,0.06); font-size:15px; color:#4A4844; position:relative;"><span style="position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green-deep);"></span><b style="color:var(--ink);">30-min onboarding call</b> with the founder</li>
-            <li style="padding:14px 0 14px 28px; border-top:1px solid rgba(0,0,0,0.06); font-size:15px; color:#4A4844; position:relative;"><span style="position:absolute; left:0; top:21px; width:14px; height:2px; background:var(--green-deep);"></span><b style="color:var(--ink);">Free updates for 12 months</b>; $200/yr maintenance after</li>
-          </ul>
+        <div class="bar-group"><div class="bar gray" style="height:88%"><span class="bar-value">198</span></div></div>
+        <div class="bar-group"><div class="bar gray" style="height:84%"><span class="bar-value">196</span></div></div>
+        <div class="bar-group"><div class="bar green" style="height:78%"><span class="bar-value">194</span></div></div>
+        <div class="bar-group"><div class="bar green" style="height:73%"><span class="bar-value">191</span></div></div>
+        <div class="bar-group"><div class="bar green" style="height:65%"><span class="bar-value">187</span></div></div>
+        <div class="bar-group"><div class="bar gold" style="height:55%"><span class="bar-value">182</span></div></div>
+      </div>
+      <div class="bar-labels">
+        <div class="bar-label">Wk 1</div><div class="bar-label">Wk 2-3</div><div class="bar-label">Wk 4-5</div><div class="bar-label">Wk 6-7</div><div class="bar-label">Wk 8-10</div><div class="bar-label">Wk 11-12</div>
+      </div>
+    </div>
+    <p class="source">7-day rolling average. Coach sees real trend, not noisy daily fluctuations.</p>
+  </div>
+</div>
+
+<!-- ── BLEED: LAB REPORTS ── -->
+<div class="bleed bleed-blue">
+  <div class="bleed-inner">
+    <div class="eyebrow" style="color:var(--gold);">Section 08 · Lab reports &amp; biomarker analysis</div>
+    <h1>Upload her bloodwork.<br><em>Get the answers.</em></h1>
+    <p class="huge">Drag a PDF lab report into the platform. We extract the values — HbA1c, lipid panel, vitamin D, ferritin, hormones, thyroid, kidney, liver — and surface what changed since last time. The coach knows what's going on without being a doctor.</p>
+  </div>
+</div>
+
+<!-- ── 08 LAB REPORTS DETAIL ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 08 (cont.)</span>
+      <div class="section-title">Why Lab Analysis Closes Premium Clients</div>
+      <div class="section-subtitle">The feature that turns coaches into trusted health partners.</div>
+    </div>
+
+    <p class="lead">A coach who can read a lab report — and explain what's changed in plain English — is worth 3× a coach who can't. The platform makes every coach that coach. Drag a Quest, LabCorp, or any-lab PDF into the platform; values extracted automatically; trend lines plotted; out-of-range values flagged.</p>
+
+    <h4>Biomarkers tracked</h4>
+    <div class="feature-grid">
+      <div class="feature-card blue"><h4>Metabolic panel</h4><p>HbA1c, fasting glucose, fasting insulin, HOMA-IR — pre-diabetes signal long before doctor flags it.</p></div>
+      <div class="feature-card blue"><h4>Lipid panel</h4><p>Total cholesterol, LDL, HDL, triglycerides, ApoB. Trend with intervention overlays.</p></div>
+      <div class="feature-card blue"><h4>Hormones (M)</h4><p>Total + free testosterone, estradiol, SHBG, prolactin, DHEA-S, cortisol.</p></div>
+      <div class="feature-card blue"><h4>Hormones (F)</h4><p>Estradiol, progesterone, testosterone, LH, FSH, prolactin, cortisol, AMH.</p></div>
+      <div class="feature-card blue"><h4>Thyroid</h4><p>TSH, free T4, free T3, reverse T3, TPO antibodies.</p></div>
+      <div class="feature-card blue"><h4>Vitamins / minerals</h4><p>Vitamin D, B12, folate, ferritin, magnesium, zinc, copper, iron.</p></div>
+      <div class="feature-card blue"><h4>Kidney + liver</h4><p>BUN, creatinine, eGFR, ALT, AST, GGT, bilirubin.</p></div>
+      <div class="feature-card blue"><h4>Inflammation</h4><p>hs-CRP, ESR, homocysteine.</p></div>
+    </div>
+
+    <h4>What the coach sees</h4>
+    <p>Every biomarker gets a trend chart with optimal/normal/out-of-range zones. New labs uploaded? Platform highlights what moved since last time, with plain-English commentary ("HbA1c down from 5.8 to 5.4 — pre-diabetic threshold cleared. Strong work."). The coach forwards screenshots to clients and looks like a hero.</p>
+
+    <div class="callout callout-blue">
+      <strong>The premium-client effect:</strong> coaches who do lab analysis charge 2-3× the rate of coaches who don't. ELH Coach makes the lab-analysis layer accessible without a clinical license — built for legal scope of practice.
+    </div>
+  </div>
+</div>
+
+<!-- ── 09 ALLERGIES, CONDITIONS, MEDS ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 09</span>
+      <div class="section-title">Allergies, Conditions &amp; Medications</div>
+      <div class="section-subtitle">Every meal auto-flagged. Every condition addressed. No more "oh wait, you're celiac?"</div>
+    </div>
+
+    <p class="lead">Your client has Crohn's. She has a dairy allergy. He's pre-diabetic on metformin. The platform knows. Every meal logged is auto-flagged for conflicts. Every program is auto-adjusted. Every recommendation respects the medical context the client has already disclosed.</p>
+
+    <h4>Conditions the platform handles natively</h4>
+    <div class="cond-grid">
+      <div class="cond-card green">
+        <span class="c-flag">Metabolic</span>
+        <h4>Type 2 Diabetes &amp; Pre-Diabetes</h4>
+        <p>Auto-adjusts to lower-carb defaults · post-meal glucose tracking · HbA1c trend · medication-aware (metformin, GLP-1, SGLT2).</p>
+      </div>
+      <div class="cond-card green">
+        <span class="c-flag">Metabolic</span>
+        <h4>Type 1 Diabetes</h4>
+        <p>CGM integration · post-meal correction logging · insulin-on-board awareness · trainer-coach mode for trained coaches.</p>
+      </div>
+      <div class="cond-card orange">
+        <span class="c-flag">Digestive</span>
+        <h4>Celiac Disease</h4>
+        <p>Every meal scanned for gluten · barcode lookup checks branded products · contamination flags for shared kitchens · symptom log integration.</p>
+      </div>
+      <div class="cond-card orange">
+        <span class="c-flag">Digestive</span>
+        <h4>Crohn's &amp; UC</h4>
+        <p>Trigger-food flagging · low-FODMAP defaults · flare logging · medication tracking (biologics, immunomodulators) · GI symptom tracker.</p>
+      </div>
+      <div class="cond-card orange">
+        <span class="c-flag">Digestive</span>
+        <h4>IBS &amp; Food Sensitivities</h4>
+        <p>Low-FODMAP support · reintroduction protocols · trigger pattern detection from symptom + meal logs.</p>
+      </div>
+      <div class="cond-card rose">
+        <span class="c-flag">Cardiac</span>
+        <h4>Hypertension &amp; Cardiac</h4>
+        <p>Sodium tracking · DASH-style defaults · BP integration · cardio-priority programming · medication awareness (ACE, ARB, beta-blocker).</p>
+      </div>
+      <div class="cond-card gold">
+        <span class="c-flag">Endocrine</span>
+        <h4>Hypothyroid &amp; Hashimoto's</h4>
+        <p>Iodine + selenium awareness · gluten-flagging optional · TSH trend · medication-time protein-spacing prompts.</p>
+      </div>
+      <div class="cond-card gold">
+        <span class="c-flag">Cycle / hormonal</span>
+        <h4>PCOS</h4>
+        <p>Lower-carb defaults · insulin-aware · inositol prompts · strength-priority programming.</p>
+      </div>
+    </div>
+
+    <h4>Allergy management</h4>
+    <p>Common allergens supported: dairy, gluten, peanut, tree nut, soy, egg, shellfish, sesame, wheat. Custom allergens entered by client. Every barcode-scanned product cross-checked. Every recipe filtered. Coach gets a notification if the client's plan accidentally violates an allergy.</p>
+
+    <h4>Medication tracking</h4>
+    <p>Client logs medications with dose + timing. Platform flags meal-medication interactions (metformin + B12, levothyroxine + calcium, blood thinners + vitamin K). Adherence trend visible to coach (within scope of practice).</p>
+
+    <div class="callout callout-orange">
+      <strong>Why this matters:</strong> 60%+ of coaching clients have at least one chronic condition. Coaches who can build around these conditions retain 4× longer. The platform makes "condition-aware coaching" a default, not a specialty.
+    </div>
+  </div>
+</div>
+
+<!-- ── 10 GLUCOSE ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 10</span>
+      <div class="section-title">Glucose Tracking</div>
+      <div class="section-subtitle">CGM or finger-stick. Time-in-range, GMI, post-meal response.</div>
+    </div>
+
+    <p class="lead">For diabetic, pre-diabetic, GLP-1, biohacking, and weight-loss clients — glucose is the conversation. The platform reads from Dexcom, FreeStyle Libre, Levels, and supports manual entry. Every meal logged generates a post-meal response curve. Coach sees what foods spike, what foods don't.</p>
+
+    <h4>What the platform calculates</h4>
+    <div class="metrics-row three">
+      <div class="metric-card blue"><span class="metric-value">TIR</span><span class="metric-label">Time-in-range (70-180 mg/dL)</span></div>
+      <div class="metric-card blue"><span class="metric-value">GMI</span><span class="metric-label">Glucose management indicator (~A1c)</span></div>
+      <div class="metric-card blue"><span class="metric-value">CV</span><span class="metric-label">Coefficient of variation (variability)</span></div>
+    </div>
+
+    <h4>Sample post-meal response</h4>
+    <div class="chart-container">
+      <div class="chart-title">Glucose response — same client, two meals</div>
+      <div class="h-bar-chart">
+        <div class="h-bar-row"><div class="h-bar-label">Steel-cut oats + berries</div><div class="h-bar-track"><div class="h-bar-fill" style="width:48%"><span class="h-bar-value">+38 mg/dL peak</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Greek yogurt + nuts</div><div class="h-bar-track"><div class="h-bar-fill" style="width:30%"><span class="h-bar-value">+18 mg/dL peak</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Bagel + cream cheese</div><div class="h-bar-track"><div class="h-bar-fill rose" style="width:88%"><span class="h-bar-value">+92 mg/dL peak</span></div></div></div>
+        <div class="h-bar-row"><div class="h-bar-label">Eggs + avocado + spinach</div><div class="h-bar-track"><div class="h-bar-fill" style="width:18%"><span class="h-bar-value">+9 mg/dL peak</span></div></div></div>
+      </div>
+    </div>
+    <p class="source">Coach sees which foods spike for this specific client. Recommendations get personal, not generic.</p>
+  </div>
+</div>
+
+<!-- ── 11 WEARABLES ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 11</span>
+      <div class="section-title">Wearable &amp; Apple Health Sync</div>
+      <div class="section-subtitle">Two-way sync with everything the client already wears.</div>
+    </div>
+
+    <p class="lead">If your client wears it, the platform reads from it. Workouts, sleep stages, HRV, resting heart rate, daily activity, weight from smart scales, BP from cuffs, glucose from CGMs. No more "send me a screenshot of your sleep."</p>
+
+    <div class="feature-grid three">
+      <div class="feature-card"><h4>Apple HealthKit</h4><p>Bidirectional. Steps, workouts, sleep, HRV, weight, BP, glucose, cycle. The deepest integration.</p></div>
+      <div class="feature-card gold"><h4>Google Health Connect</h4><p>Android equivalent. Pulls from Samsung Health, Fitbit, MyFitnessPal, anything writing there.</p></div>
+      <div class="feature-card blue"><h4>Whoop</h4><p>Strain, recovery, sleep stages, HRV trend.</p></div>
+      <div class="feature-card"><h4>Oura Ring</h4><p>Sleep stages, HRV, body temp, readiness, cycle prediction.</p></div>
+      <div class="feature-card gold"><h4>Garmin</h4><p>Workouts, sleep, stress, body battery.</p></div>
+      <div class="feature-card blue"><h4>Fitbit</h4><p>Activity, sleep, weight, heart rate.</p></div>
+    </div>
+
+    <h4>What the coach sees</h4>
+    <p>The data flows in automatically and surfaces in the per-client dashboard. A client with terrible HRV and rising RHR is flagged before they tank a session. A client whose sleep collapsed last night gets a "go easy today" note from the coach automatically queued.</p>
+  </div>
+</div>
+
+<!-- ── 12 MESSAGING ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 12</span>
+      <div class="section-title">Real-Time Messaging &amp; Quick Nudges</div>
+      <div class="section-subtitle">Replace WhatsApp + Telegram + email + Voxer with one branded channel.</div>
+    </div>
+
+    <h4>What's in messaging</h4>
+    <ul style="margin:14px 0 0 20px; font-size:14px; color:var(--gray-600); line-height:1.9;">
+      <li>Real-time threads · read receipts · typing indicators</li>
+      <li>Photo, video, voice-note attachments</li>
+      <li>Document attachments (PDF reviews, lab reports)</li>
+      <li>Push notifications branded as you</li>
+      <li>Quick-nudge library (canned messages, one-tap send)</li>
+      <li>Schedule a message for later</li>
+      <li>Search across all client threads</li>
+      <li>Bulk message a segment ("everyone hitting cut macros this week — celebrate")</li>
+    </ul>
+
+    <h4>Quick-nudge library examples (you customize)</h4>
+    <table>
+      <thead><tr><th>Trigger</th><th>Suggested nudge</th></tr></thead>
+      <tbody>
+        <tr><td>Hit 7-day streak</td><td>"Week one in the books — proud of you 💪"</td></tr>
+        <tr><td>PR logged</td><td>"That PR is YOURS now. Bank it. Next session we hunt the next one."</td></tr>
+        <tr><td>Glucose spike on a logged meal</td><td>"That bagel hit you at +92 mg/dL. Let's swap to eggs + avocado tomorrow and compare."</td></tr>
+        <tr><td>Lab improvement</td><td>"HbA1c went from 5.8 to 5.4 — pre-diabetic threshold cleared. This is huge."</td></tr>
+        <tr><td>Slipping pill</td><td>"Hey — saw the pattern dip. No judgment. What's coming up that I can plan around?"</td></tr>
+        <tr><td>Ghosting pill</td><td>"Heyyy. Haven't seen you in a few days. Everything OK? Just want to make sure."</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── 13 PROGRAMS ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 13</span>
+      <div class="section-title">Programs &amp; Templates Library</div>
+      <div class="section-subtitle">Build once, assign forever. Eight pre-built campaigns ready to go.</div>
+    </div>
+
+    <h4>Pre-built starting templates included</h4>
+    <table>
+      <thead><tr><th>Program</th><th>Length</th><th>Built for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Strength Foundations</strong></td><td>12 weeks</td><td>Beginners, returning lifters</td></tr>
+        <tr><td><strong>Recomp 101</strong></td><td>16 weeks</td><td>Body composition transformation</td></tr>
+        <tr><td><strong>Cut Phase</strong></td><td>8-12 weeks</td><td>Aggressive cut with auto-adjustments</td></tr>
+        <tr><td><strong>GLP-1 Companion</strong></td><td>26 weeks</td><td>Lean-mass-protective for semaglutide / tirzepatide clients</td></tr>
+        <tr><td><strong>Pre-Diabetes Reversal</strong></td><td>16 weeks</td><td>Protein-prioritized, carb-aware, HbA1c tracking</td></tr>
+        <tr><td><strong>Hypertrophy Block</strong></td><td>8 weeks</td><td>Mass-builder with periodization</td></tr>
+        <tr><td><strong>Postpartum Strong</strong></td><td>52 weeks</td><td>12-stage progression from week 0 to PR-chasing</td></tr>
+        <tr><td><strong>Move Daily</strong></td><td>8 weeks</td><td>Sedentary-client gateway, walk-based</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Three template types</h4>
+    <div class="feature-grid three">
+      <div class="feature-card"><h4>Workout templates</h4><p>Multi-week programs with sets/reps/weight, RPE, rest, video form-checks. Drag-drop builder.</p></div>
+      <div class="feature-card gold"><h4>Nutrition presets</h4><p>Calorie + macro targets by goal, recipes, food rules (no dairy, low FODMAP, halal, kosher).</p></div>
+      <div class="feature-card blue"><h4>Content drops</h4><p>Articles, PDFs, videos you attach to any program. Educate without writing the same email twice.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 14 SCHEDULE ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 14</span>
+      <div class="section-title">Schedule, Sessions &amp; Booking</div>
+      <div class="section-subtitle">Calendar, drag-drop, branded booking — replaces Calendly.</div>
+    </div>
+
+    <ul style="margin:14px 0 0 20px; font-size:14px; color:var(--gray-600); line-height:1.9;">
+      <li>1:1 sessions, group programs, classes</li>
+      <li>Client books from inside the app — no booking page redirect</li>
+      <li>Session types: in-person, Zoom, Google Meet, phone, async-review</li>
+      <li>Auto-reminders 24h + 1h before — branded as you</li>
+      <li>Session notes auto-link to the client record (private, coach-only)</li>
+      <li>Session billing optional through your own payment account</li>
+      <li>Recurring sessions (every Tuesday 7am) supported</li>
+      <li>Cancellation &amp; reschedule rules customizable</li>
+      <li>Time-zone aware (clients abroad)</li>
+      <li>Buffer time before/after sessions</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── 15 RISK DETECTION ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 15</span>
+      <div class="section-title">Risk Detection</div>
+      <div class="section-subtitle">Auto pills that tell you who's about to ghost — six days early.</div>
+    </div>
+
+    <p class="lead">Every client gets an auto-computed risk pill, refreshed daily. The pill is the single most powerful retention tool in the platform. Saves 2-3 clients per coach per month who would otherwise have ghosted.</p>
+
+    <div class="risk-row">
+      <div class="risk-tile crush">
+        <span class="r-pill">Crushing</span>
+        <h4>96%+ adherence</h4>
+        <p>Logging daily, hitting macros, weight trending right. Send a "you're a beast" — get a referral.</p>
+      </div>
+      <div class="risk-tile ok">
+        <span class="r-pill">On track</span>
+        <h4>75-95% adherence</h4>
+        <p>Solid pattern. Standard cadence — weekly check-in, no intervention.</p>
+      </div>
+      <div class="risk-tile slip">
+        <span class="r-pill">Slipping</span>
+        <h4>50-75% adherence</h4>
+        <p>Pattern is breaking. Reach out today. Save window: 3-5 days.</p>
+      </div>
+      <div class="risk-tile ghost">
+        <span class="r-pill">Ghosting</span>
+        <h4>&lt;50% / no log 4+ days</h4>
+        <p>Six days from cancellation. Direct outreach with empathy.</p>
+      </div>
+    </div>
+
+    <h4>What's in the algorithm</h4>
+    <ul style="margin:14px 0 0 20px; font-size:14px; color:var(--gray-600); line-height:1.9;">
+      <li>7-day log frequency (meals + workouts)</li>
+      <li>Message responsiveness time</li>
+      <li>Weight trend vs goal direction</li>
+      <li>Wearable activity trend</li>
+      <li>Streak break / restart pattern</li>
+      <li>Session attendance</li>
+      <li>Body comp trend</li>
+      <li>Cycle phase context (for female clients on opt-in)</li>
+      <li>Symptom log change pattern</li>
+    </ul>
+
+    <div class="highlight-box">
+      <h4>The retention math</h4>
+      <p>Coaches running this protocol report saving roughly <strong>2-3 clients/month</strong> who would otherwise have ghosted. At $110/mo per client × 12 months retained = <strong>$2,640-$3,960/month of recovered LTV</strong> per coach.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── 16 WOMEN'S HEALTH (COMPACT) ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 16 · Bonus module</div>
+      <div class="section-title">Women's Health Coaching</div>
+      <div class="section-subtitle">Cycle-aware coaching · PCOS · postpartum · perimenopause. Included.</div>
+    </div>
+
+    <p class="lead">For coaches with female clients, the platform includes cycle-aware coaching as a bonus layer. Female clients can opt in to log their cycle; the platform auto-adjusts calorie targets, training intensity, and recovery cues across the four phases. Three condition modules included: PCOS, postpartum, and perimenopause / menopause.</p>
+
+    <h4>What's covered</h4>
+    <ul style="margin:14px 0 0 20px; font-size:14px; color:var(--gray-600); line-height:1.9;">
+      <li><strong>Cycle phases:</strong> menstrual, follicular, ovulatory, luteal — auto-adjustments per phase</li>
+      <li><strong>PCOS protocol:</strong> lower-carb defaults, strength-priority training, insulin-aware</li>
+      <li><strong>Postpartum:</strong> 12-stage progression from week 0 to PR-chasing</li>
+      <li><strong>Perimenopause / menopause:</strong> protein floor up, strength priority, HRT-aware</li>
+      <li>Female-client risk dashboard for the coach (cycle phase context inline)</li>
+      <li>Weight-bounce explanation (luteal water retention is real and not a problem)</li>
+    </ul>
+
+    <div class="callout callout-rose">
+      <strong>Why we include this as bonus:</strong> ~60% of online coaching clients are women, and 73% report adherence drops in luteal phase. No incumbent platform handles this. Including it as a bonus module — not the headline — gives every coach an edge without making the product about it.
+    </div>
+  </div>
+</div>
+
+<!-- ── 17 CLINICIAN PDF ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 17</span>
+      <div class="section-title">Clinician PDF Export</div>
+      <div class="section-subtitle">One click. Your client hands their doctor a 30-day medical-grade report.</div>
+    </div>
+
+    <p class="lead">When your client sees their primary care doctor, OB-GYN, endocrinologist, or specialist — they hand over a printed PDF that summarizes 30 days of nutrition, training, weight, biomarkers, glucose, BP, and adherence. Formatted for clinicians, not consumers.</p>
+
+    <h4>What's in the PDF</h4>
+    <ul style="margin:14px 0 0 20px; font-size:14px; color:var(--gray-600); line-height:1.9;">
+      <li>Client name, age, height, weight, BMI</li>
+      <li>30-day calorie + macro adherence (avg + variance)</li>
+      <li>Weight trend chart (last 90 days)</li>
+      <li>Workout count, average duration, primary modalities</li>
+      <li>Cardio summary (miles, pace, total time)</li>
+      <li>Blood pressure trend</li>
+      <li>Glucose summary (TIR, GMI if CGM)</li>
+      <li>Recent biomarker entries (HbA1c, lipids, etc.) with trend</li>
+      <li>Sleep + HRV trend</li>
+      <li>Cycle phase calendar (if applicable + opted in)</li>
+      <li>Symptoms log</li>
+      <li>Allergies, medications, conditions on file</li>
+      <li>Disclaimer: confirm all values with patient before clinical use</li>
+    </ul>
+
+    <div class="callout">
+      <strong>The premium-client effect:</strong> when the client's doctor compliments the report, the client tells everyone in their life their coach is the reason. Three referrals come from one PDF.
+    </div>
+  </div>
+</div>
+
+<!-- ── 18 COACH CONSOLE ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 18</span>
+      <div class="section-title">The Coach Console</div>
+      <div class="section-subtitle">Full client visibility. Every metric. Every signal. Every save.</div>
+    </div>
+
+    <p class="lead">Every morning you open the console and the platform tells you, in five seconds, exactly which clients need a nudge today and why. The roster, the risk pills, the trends, the messages, the labs, the cycle phases — all in one workspace branded as you.</p>
+
+    <h4>Top-of-console at a glance</h4>
+    <div class="metrics-row">
+      <div class="metric-card"><span class="metric-value">24</span><span class="metric-label">Active clients</span></div>
+      <div class="metric-card gold"><span class="metric-value">82%</span><span class="metric-label">Avg adherence</span></div>
+      <div class="metric-card rose"><span class="metric-value">3</span><span class="metric-label">At-risk now</span></div>
+      <div class="metric-card blue"><span class="metric-value">6</span><span class="metric-label">Unread messages</span></div>
+    </div>
+
+    <h4>Per-client drill-down · seven tabs</h4>
+    <div class="feature-grid three">
+      <div class="feature-card"><h4>Overview</h4><p>Weight chart · calorie ring 30-day · latest photo · current goal · streak · next session.</p></div>
+      <div class="feature-card gold"><h4>Nutrition</h4><p>Adherence chart · photo log · corrections · favorites · allergy/condition flags.</p></div>
+      <div class="feature-card"><h4>Training</h4><p>Program completion · PRs · volume trend · cardio routes · attendance.</p></div>
+      <div class="feature-card gold"><h4>Health</h4><p>Weight · body comp · BP · glucose · sleep · HRV — all trends.</p></div>
+      <div class="feature-card blue"><h4>Labs</h4><p>Biomarker history · trend charts · uploaded PDFs · what changed since last time.</p></div>
+      <div class="feature-card rose"><h4>Cycle (F)</h4><p>Phase calendar · predictions · adherence by phase. Female opt-in only.</p></div>
+      <div class="feature-card gold"><h4>Messages &amp; Notes</h4><p>Full chat history · private trainer notes (coach-only).</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── BLEED: BRANDED ── -->
+<div class="bleed bleed-green">
+  <div class="bleed-inner">
+    <div class="eyebrow">Section 19 · Branded experience</div>
+    <h1>Your name.<br>Your colors.<br><em>Your app.</em></h1>
+    <p class="huge">Every screen, every email, every push notification — branded as <em>your</em> business. The client never knows our platform exists. They remember <em>you</em>.</p>
+  </div>
+</div>
+
+<!-- ── 19 BRANDING DETAIL ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 19 (cont.)</span>
+      <div class="section-title">What "branded" actually covers</div>
+    </div>
+    <table>
+      <thead><tr><th>Touchpoint</th><th>Branded as you</th></tr></thead>
+      <tbody>
+        <tr><td>App icon on home screen</td><td class="y">✓ Your logo</td></tr>
+        <tr><td>App name in App Store</td><td class="y">✓ (optional native upgrade)</td></tr>
+        <tr><td>Splash screen on launch</td><td class="y">✓ Your colors + logo</td></tr>
+        <tr><td>Login screen</td><td class="y">✓ Your name + welcome copy</td></tr>
+        <tr><td>Calorie ring color</td><td class="y">✓ Your accent</td></tr>
+        <tr><td>Welcome email when client signs up</td><td class="y">✓ Your sender name</td></tr>
+        <tr><td>Reminder push notifications</td><td class="y">✓ "From [your business]"</td></tr>
+        <tr><td>Weekly digest emails to client</td><td class="y">✓ Your colors + signature</td></tr>
+        <tr><td>Clinician PDF export</td><td class="y">✓ Your business name in header</td></tr>
+        <tr><td>URL clients use</td><td class="y">✓ Subdomain free / custom domain +$500</td></tr>
+        <tr><td>Native iOS / Android app in App Store</td><td class="y">✓ Optional (+$4,500)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── 20 RETENTION MATH ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 20</span>
+      <div class="section-title">The Retention Math</div>
+      <div class="section-subtitle">What this platform pays you, in dollars.</div>
+    </div>
+
+    <p class="lead">Every client you keep an extra six months is multiple new client acquisitions you don't have to chase.</p>
+
+    <table>
+      <thead><tr><th>Scenario</th><th class="text-right">Avg. retention</th><th class="text-right">Annual revenue</th><th class="text-right">vs baseline</th></tr></thead>
+      <tbody>
+        <tr><td>Today's industry baseline</td><td class="text-right">11 months</td><td class="text-right">$30,250</td><td class="text-right">—</td></tr>
+        <tr><td><strong>With ELH Coach (typical lift)</strong></td><td class="text-right text-bold">17 months</td><td class="text-right text-bold">$46,750</td><td class="text-right text-green">+$16,500</td></tr>
+        <tr><td><strong>With ELH Coach (top quartile)</strong></td><td class="text-right text-bold">24 months</td><td class="text-right text-bold">$66,000</td><td class="text-right text-green">+$35,750</td></tr>
+        <tr class="total-row"><td colspan="4" style="font-size:11px; color:var(--gray-500); font-weight:400;">25-client coach at $110/mo. Industry baseline retention from IDEA &amp; ACE 2024 reports.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="chart-container">
+      <div class="chart-title">Annual revenue vs baseline (25-client coach)</div>
+      <div class="bar-chart">
+        <div class="bar-chart-gridlines">
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">$70K</span></div>
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">$50K</span></div>
+          <div class="bar-chart-gridline"><span class="bar-chart-gridline-label">$30K</span></div>
         </div>
+        <div class="bar-group"><div class="bar gray" style="height:43%"><span class="bar-value">$30K</span></div></div>
+        <div class="bar-group"><div class="bar green" style="height:67%"><span class="bar-value">$47K</span></div></div>
+        <div class="bar-group"><div class="bar gold" style="height:94%"><span class="bar-value">$66K</span></div></div>
+      </div>
+      <div class="bar-labels">
+        <div class="bar-label">Today's baseline</div>
+        <div class="bar-label">With platform · typical</div>
+        <div class="bar-label">Top-quartile</div>
       </div>
     </div>
 
-    <h4 style="margin-top:80px;">Optional upgrades</h4>
-    <div class="stat-grid-2" style="margin:24px 0 0;">
-      <div class="stat-card" style="background:rgba(0,0,0,0.03); border-color:rgba(0,0,0,0.1);">
-        <div style="font:700 11px/1 var(--sans); letter-spacing:0.18em; text-transform:uppercase; color:var(--gold-dark, var(--green-deep)); margin-bottom:14px;">Custom domain</div>
-        <div style="font:700 56px/0.95 var(--display); color:var(--ink); letter-spacing:-0.02em;">+$500</div>
-        <div style="font-size:13px; color:#6B6962; margin-top:8px;">One-time setup</div>
-        <p style="font-size:14px; color:#4A4844; margin-top:12px;">Run on yourbrand.com instead of a subdomain. Looks 100% like your business — clients never see ours.</p>
-      </div>
-      <div class="stat-card" style="background:rgba(0,0,0,0.03); border-color:rgba(0,0,0,0.1);">
-        <div style="font:700 11px/1 var(--sans); letter-spacing:0.18em; text-transform:uppercase; color:var(--gold-dark, var(--green-deep)); margin-bottom:14px;">Native App Store apps</div>
-        <div style="font:700 56px/0.95 var(--display); color:var(--ink); letter-spacing:-0.02em;">+$4,500</div>
-        <div style="font-size:13px; color:#6B6962; margin-top:8px;">One-time premium</div>
-        <p style="font-size:14px; color:#4A4844; margin-top:12px;">Real iOS and Android apps in the App Store and Play Store under your developer account, downloadable by your clients with your name and icon.</p>
-      </div>
-    </div>
-
-    <div style="margin-top:48px; padding:24px 28px; background:rgba(0,0,0,0.04); border-radius:12px; font-size:14px; color:#6B6962; line-height:1.6;">
-      <strong style="color:var(--ink);">The competitor's math:</strong> Trainerize Pro at $99/month = $1,188/year, every year, forever. After 26 months you've paid more than us — and you still don't own anything.
+    <div class="highlight-box">
+      <h4>The bottom line</h4>
+      <p>The platform pays for itself <strong>in less than 60 days</strong> for the typical 25-client coach. Every month after that is pure margin recovered from clients who would have ghosted otherwise.</p>
     </div>
   </div>
-</section>
+</div>
 
-<!-- ── 07 LIVE LOGIN / SIGNUP ── -->
-<section class="section bg-ink-2">
-  <div class="wrap">
-    <div class="eyebrow">07 · Already shipping</div>
-    <h1 class="section-h">From sign-up<br><em>to live in 10 minutes.</em></h1>
-    <p class="lead">Coaches go from blank screen to a fully branded coaching app — their colors, their logo, their domain — in under ten minutes. No DNS, no engineering, no waiting.</p>
-
-    <div class="split" style="margin-top:80px;">
-      <div>
-        <h4>The signup flow — live now</h4>
-        <h2 style="font-size:48px;">Pick your name.<br>Pick your colors.<br>Send the first invite.</h2>
-        <p style="font-size:18px;">Every visual element your client sees — the app icon on their home screen, the welcome email, the push notifications, the calorie ring, the message thread — all branded as the coach. The platform is invisible.</p>
-        <div class="advantage" style="border:none; padding:14px 0;">
-          <span class="a-num" style="font-size:36px;">→</span>
-          <div>
-            <h4 style="font-family:var(--display); font-size:18px; text-transform:none; letter-spacing:0;">14-day free trial. No credit card.</h4>
-            <p style="font-size:15px; margin:0;">Bring three of your current clients on day one and watch the math change.</p>
-          </div>
-        </div>
-      </div>
-      <div class="hero-img-wrap" style="margin:0; max-width:none;">
-        <img src="screenshots/signup_wizard.png" alt="ELH Coach signup wizard — live">
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── 08 RETENTION MATH ── -->
-<section class="section bg-green">
-  <div class="wrap">
-    <div class="eyebrow" style="color:var(--gold);">08 · The math</div>
-    <h1 class="section-h" style="color:#fff;">What this platform<br><em style="color:var(--gold);">pays you.</em></h1>
-    <p class="huge" style="color:rgba(255,255,255,0.9);">Every client you keep an extra six months is multiple new client acquisitions you don't have to chase.</p>
-
-    <div class="stat-grid-3" style="margin:80px 0;">
-      <div class="stat-block">
-        <span class="stat-num giant" style="color:var(--gold); font-size:160px;">+50%</span>
-        <span class="stat-label" style="color:rgba(255,255,255,0.85);">Average retention extension</span>
-      </div>
-      <div class="stat-block">
-        <span class="stat-num giant" style="color:var(--gold); font-size:160px;">+$16k</span>
-        <span class="stat-label" style="color:rgba(255,255,255,0.85);">Annual revenue lift, 25-client coach</span>
-      </div>
-      <div class="stat-block">
-        <span class="stat-num giant" style="color:var(--gold); font-size:160px;">$0</span>
-        <span class="stat-label" style="color:rgba(255,255,255,0.85);">Member-side cost</span>
-      </div>
+<!-- ── 21 COMPETITION ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 21</span>
+      <div class="section-title">vs. Trainerize, TrueCoach, Everfit, MyFitnessPal</div>
+      <div class="section-subtitle">No other platform comes close on feature depth.</div>
     </div>
 
-    <div style="background:rgba(0,0,0,0.2); padding:40px 48px; border-radius:20px; margin-top:40px;">
-      <h4 style="color:var(--gold);">Worked example</h4>
-      <h3 style="color:#fff; font-size:36px; line-height:1.25;">A 25-client coach at $110/mo average:</h3>
-      <table class="compare" style="background:transparent; margin-top:20px;">
-        <thead><tr><th style="background:transparent; color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.15);">Scenario</th><th style="background:transparent; color:rgba(255,255,255,0.6); text-align:right; border-color:rgba(255,255,255,0.15);">Avg retention</th><th style="background:transparent; color:rgba(255,255,255,0.6); text-align:right; border-color:rgba(255,255,255,0.15);">Annual revenue</th><th style="background:transparent; color:rgba(255,255,255,0.6); text-align:right; border-color:rgba(255,255,255,0.15);">vs baseline</th></tr></thead>
-        <tbody>
-          <tr><td style="color:rgba(255,255,255,0.9); border-color:rgba(255,255,255,0.08);">Today's industry baseline</td><td style="text-align:right; color:rgba(255,255,255,0.9); border-color:rgba(255,255,255,0.08);">11 months</td><td style="text-align:right; color:rgba(255,255,255,0.9); border-color:rgba(255,255,255,0.08);">$30,250</td><td style="text-align:right; color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.08);">—</td></tr>
-          <tr><td style="color:#fff; font-weight:600; border-color:rgba(255,255,255,0.08);">With ELH Coach (typical)</td><td style="text-align:right; color:#fff; font-weight:600; border-color:rgba(255,255,255,0.08);">17 months</td><td style="text-align:right; color:#fff; font-weight:600; border-color:rgba(255,255,255,0.08);">$46,750</td><td style="text-align:right; color:var(--gold); font-weight:700; border-color:rgba(255,255,255,0.08);">+$16,500</td></tr>
-          <tr><td style="color:#fff; font-weight:600; border:none;">With ELH Coach (top quartile)</td><td style="text-align:right; color:#fff; font-weight:600; border:none;">24 months</td><td style="text-align:right; color:#fff; font-weight:600; border:none;">$66,000</td><td style="text-align:right; color:var(--gold); font-weight:700; border:none;">+$35,750</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
-
-<!-- ── 09 WHY NOW ── -->
-<section class="section bg-ink">
-  <div class="wrap">
-    <div class="eyebrow">09 · Why now</div>
-    <h1 class="section-h">Three forces<br><em>converging in your favor.</em></h1>
-
-    <div class="advantage">
-      <span class="a-num">01</span>
-      <div>
-        <h4>The GLP-1 era reframed coaching.</h4>
-        <p>~12 million Americans now take semaglutide or tirzepatide, projected to exceed 30 million by 2030. They need lean-mass protection, protein discipline, progress tracking — services no workout-only platform delivers. Coaches who pick this up early own the next decade of clients.</p>
-      </div>
-    </div>
-    <div class="advantage">
-      <span class="a-num">02</span>
-      <div>
-        <h4>AI nutrition is finally accurate enough to trust.</h4>
-        <p>Photo macro estimation reached the threshold where coaches and dietitians use it without manual override. Platforms that don't build for this now will look like flip phones in three years.</p>
-      </div>
-    </div>
-    <div class="advantage">
-      <span class="a-num">03</span>
-      <div>
-        <h4>Clients expect a real app, not a portal.</h4>
-        <p>Every consumer touchpoint — banking, retail, healthcare — is mobile-native and AI-aware. Coaches whose tools feel like 2015 are losing the under-40 demographic to coaches whose tools don't.</p>
-      </div>
-    </div>
-
-    <p class="source">Sources: Goldman Sachs GLP-1 forecast 2024 · Anthropic / OpenAI nutrition-vision benchmarks · Pew Research mobile-first consumer behavior 2024.</p>
-  </div>
-</section>
-
-<!-- ── 10 THE COMPARE TABLE (vs incumbents) ── -->
-<section class="section bg-paper">
-  <div class="wrap">
-    <div class="eyebrow">10 · The competition</div>
-    <h1 class="section-h">Workout-first<br>vs. <em>retention-first.</em></h1>
-    <p class="lead">The dominant tools were built when "log a workout" was the differentiator. That hasn't been true for five years. Retention is now won on what happens between sessions — and that's a fundamentally different product.</p>
-
-    <table class="compare">
+    <table>
       <thead>
-        <tr><th>Capability</th><th style="text-align:center">ELH Coach</th><th style="text-align:center">Trainerize</th><th style="text-align:center">TrueCoach</th><th style="text-align:center">Everfit</th></tr>
+        <tr><th>Feature</th><th class="text-center">ELH Coach</th><th class="text-center">Trainerize</th><th class="text-center">TrueCoach</th><th class="text-center">Everfit</th><th class="text-center">MyFitnessPal</th></tr>
       </thead>
       <tbody>
-        <tr><td>AI photo macro logging</td><td style="text-align:center" class="y">✓ Native</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td></tr>
-        <tr><td>Cycle-aware nutrition &amp; training</td><td style="text-align:center" class="y">✓ Native</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td></tr>
-        <tr><td>White-label branded app</td><td style="text-align:center" class="y">✓ Included</td><td style="text-align:center" class="n">Top tier only</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">Top tier only</td></tr>
-        <tr><td>Coach-side at-risk detection</td><td style="text-align:center" class="y">✓ Native</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">Limited</td></tr>
-        <tr><td>Real-time client chat</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="y">✓</td></tr>
-        <tr><td>Workout programming + video</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="y">✓</td><td style="text-align:center" class="y">✓</td></tr>
-        <tr><td>Custom domain (yourname.com)</td><td style="text-align:center" class="y">✓ Optional</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">Top tier only</td></tr>
-        <tr><td>Native App Store / Play Store apps</td><td style="text-align:center" class="y">✓ Optional</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">—</td><td style="text-align:center" class="n">Top tier only</td></tr>
-        <tr><td>One-time fee, no monthly subscription</td><td style="text-align:center" class="y">✓ Always</td><td style="text-align:center" class="n">Monthly only</td><td style="text-align:center" class="n">Monthly only</td><td style="text-align:center" class="n">Monthly only</td></tr>
+        <tr><td>AI photo macro logging</td><td class="text-center y">✓</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">Premium gate</td></tr>
+        <tr><td>USDA-grade food database</td><td class="text-center y">✓</td><td class="text-center n">3rd party</td><td class="text-center n">—</td><td class="text-center n">3rd party</td><td class="text-center y">✓</td></tr>
+        <tr><td>Workout programming</td><td class="text-center y">✓</td><td class="text-center y">✓</td><td class="text-center y">✓</td><td class="text-center y">✓</td><td class="text-center n">—</td></tr>
+        <tr><td>GPS-mapped cardio</td><td class="text-center y">✓</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td></tr>
+        <tr><td>Body composition tracking</td><td class="text-center y">✓</td><td class="text-center n">Limited</td><td class="text-center n">Limited</td><td class="text-center n">Limited</td><td class="text-center n">Weight only</td></tr>
+        <tr><td>Lab report upload + biomarker analysis</td><td class="text-center y">✓</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td></tr>
+        <tr><td>Allergies, conditions, medications</td><td class="text-center y">✓</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">Allergies only</td></tr>
+        <tr><td>Glucose / CGM tracking</td><td class="text-center y">✓</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td></tr>
+        <tr><td>Wearable sync</td><td class="text-center y">✓ All major</td><td class="text-center y">Limited</td><td class="text-center y">Apple only</td><td class="text-center y">Apple/Google</td><td class="text-center y">Apple/Google</td></tr>
+        <tr><td>Cycle-aware coaching</td><td class="text-center y">✓</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td></tr>
+        <tr><td>Coach-side risk detection</td><td class="text-center y">✓</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">Limited</td><td class="text-center n">—</td></tr>
+        <tr><td>Clinician PDF export</td><td class="text-center y">✓</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td><td class="text-center n">—</td></tr>
+        <tr><td>White-label branded app</td><td class="text-center y">✓ Included</td><td class="text-center n">Top tier</td><td class="text-center n">—</td><td class="text-center n">Top tier</td><td class="text-center n">—</td></tr>
+        <tr><td><strong>One-time fee · no subscription</strong></td><td class="text-center y">✓ $2,500 once</td><td class="text-center n">$99/mo</td><td class="text-center n">$60/mo</td><td class="text-center n">$129/mo</td><td class="text-center n">$80/yr</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── 22 PRICING ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 22</span>
+      <div class="section-title">Pricing</div>
+      <div class="section-subtitle">One time. Yours forever. No subscription.</div>
+    </div>
+
+    <div class="hero-img-wrap">
+      <img src="screenshots/pricing_desktop.png" alt="ELH Coach pricing — live">
+    </div>
+
+    <h4>The package</h4>
+    <table>
+      <tbody>
+        <tr><td><strong>The Coach App (one-time)</strong></td><td class="text-right text-bold">$2,500</td></tr>
+        <tr><td>Custom domain (optional · one-time setup)</td><td class="text-right">+$500</td></tr>
+        <tr><td>Native App Store / Play Store apps (optional · one-time)</td><td class="text-right">+$4,500</td></tr>
+        <tr><td colspan="2" style="background:var(--gray-50); font-size:12px; color:var(--gray-500);">Free updates for 12 months. $200/yr maintenance after year 1 (optional). 30-day money-back guarantee. 30-min onboarding call with the founder.</td></tr>
       </tbody>
     </table>
 
-    <div class="pull-quote" style="margin-top:60px;">
-      The honest framing: if your business sells workout templates, the incumbents work. If your business depends on clients showing up between sessions, <em>there is no other product positioned for that.</em>
+    <div class="callout">
+      <strong>Compare:</strong> Trainerize Pro at $99/month = <strong>$1,188/yr forever.</strong> Everfit Studio at $129/month = <strong>$1,548/yr forever.</strong> After 26 months you've paid more than us — and you still don't own anything.
     </div>
   </div>
-</section>
+</div>
 
-<!-- ── 11 BIG CTA ── -->
-<section class="section bg-ink-2 huge">
-  <div class="wrap-narrow" style="text-align:center;">
-    <div class="eyebrow">11 · Get started</div>
-    <h1 class="section-h">Live in 10 minutes.<br><em>14-day free trial.</em><br>No credit card.</h1>
-    <p class="huge" style="margin:40px auto 0;">Bring three of your current clients on day one. See the retention math change in two weeks. Then decide.</p>
-
-    <div class="cta">
-      <h2 style="font-size:56px;">Talk to us.</h2>
-      <p>Coaches, studios, and brand operators welcome. We'll walk every screen, answer every question, and give you back your time.</p>
-      <a class="cta-btn" href="mailto:head@deanslist.net">Schedule a call →</a>
-    </div>
+<!-- ── BLEED: WHY NOW ── -->
+<div class="bleed bleed-rose">
+  <div class="bleed-inner">
+    <div class="eyebrow" style="color:#fff; opacity:0.85;">Section 23 · Why now</div>
+    <h1>Three forces.<br><em>One window.</em></h1>
+    <p class="huge">The GLP-1 era reframed coaching. AI nutrition is finally accurate. Clients expect a real app, not a portal. The coaches who switch in 2026 spend the next decade as the early-mover reference. The ones who wait spend it explaining why their tools look dated.</p>
   </div>
-</section>
+</div>
 
-<!-- ── FOOT ── -->
-<div class="gradient-bar"></div>
-<div class="foot-block">
-  <div class="foot-grid">
-    <div>
-      <h3>For coaches &amp; studios</h3>
-      <p>Sign up at <strong style="color:var(--green);">elhcoachhq.app</strong>. Pick your subdomain, pick your colors, send your first three invites. Live in ten minutes — refund first month if it doesn't change your retention math.</p>
+<!-- ── 24 GET STARTED ── -->
+<div class="page">
+  <div class="page-inner">
+    <div class="section-header-bar">
+      <span class="section-number">Section 24</span>
+      <div class="section-title">Get Started</div>
+      <div class="section-subtitle">$2,500 one-time. 30-day money back. 10-minute setup.</div>
     </div>
-    <div>
-      <h3>For partners</h3>
-      <p>Launch customers, certification-body partnerships (NASM, ACE, NSCA, Precision Nutrition), and influencer-coach co-marketing. Generous co-branding terms for early partners.</p>
+
+    <p class="lead">The fastest way to evaluate the platform is to put three of your current clients on it and watch the math change. We've built the experience so you can do exactly that — your branded app live, three clients invited, in under 30 minutes from sign-up.</p>
+
+    <ol class="advantage-list">
+      <li><h4>Sign up at elhcoachhq.app</h4>Pick your subdomain, brand colors, logo, app name. Live in under ten minutes.</li>
+      <li><h4>Schedule your 30-min onboarding call</h4>Founder-led. We walk every screen, answer every question, set you up for success.</li>
+      <li><h4>Invite your first three clients</h4>They get a one-tap install link. They log their first meal that night.</li>
+      <li><h4>Watch the console for 30 days</h4>Risk pills, lab uploads, glucose curves, retention. If it doesn't change your business — full refund.</li>
+    </ol>
+
+    <div class="contact-block">
+      <h3>Talk to Us</h3>
+      <p><strong style="color:#fff">Head — Founder &amp; Operator</strong></p>
+      <p>head@deanslist.net</p>
+      <p>elhcoachhq.app</p>
+      <p style="margin-top:20px; font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.5);">ELH Coach · Built for trainers who keep clients · 2026</p>
     </div>
-  </div>
-  <div style="text-align:center; margin-top:60px; padding-top:40px; border-top:1px solid var(--line); color:var(--text-faint); font-size:13px; letter-spacing:0.18em; text-transform:uppercase;">
-    <strong style="color:var(--text);">Head — Founder</strong> · head@deanslist.net · elhcoachhq.app · 2026
   </div>
 </div>
 

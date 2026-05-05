@@ -4,67 +4,74 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pricing — ELH Coach</title>
-<meta name="description" content="Three plans. No setup fees. 14-day trial. Cancel anytime.">
+<meta name="description" content="Three tiers. Subdomain to white-label custom domain. Built for the way coaches actually scale.">
 <style>
 :root {
-  --bg:#0a0e1a; --bg-card:#111827; --border:#1f2937;
-  --text:#f8fafc; --text-dim:#94a3b8; --text-faint:#64748b;
-  --accent:#22c55e;
+  --bg:        #FFFFFF;
+  --bg-soft:   #FAFAF8;
+  --bg-card:   #FFFFFF;
+  --border:    #E8E5DF;
+  --border-soft:#F0EEE9;
+  --text:      #0A0A0C;
+  --text-dim:  #5C5F66;
+  --text-faint:#8A8E94;
+  --primary:   #0A1628;
+  --primary-2: #1B2A40;
+  --accent:    #3C4858;
+  --accent-2:  #5A6776;
+  --serif:'Newsreader','Iowan Old Style','Charter',Georgia,serif;
+  --sans:'Inter',-apple-system,system-ui,'Segoe UI',sans-serif;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font:16px/1.6 'Inter',-apple-system,system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
-.nav { display:flex; align-items:center; justify-content:space-between; padding:18px 32px; border-bottom:1px solid var(--border); }
-.nav a { color:var(--text-dim); text-decoration:none; font-size:14px; margin-left:24px; }
-.nav a.btn { color:#052e16; background:var(--accent); padding:8px 18px; border-radius:8px; font-weight:600; }
-.logo { font:800 22px -apple-system,sans-serif; letter-spacing:-0.02em; }
-.logo span { color:var(--accent); }
-.wrap { max-width:1140px; margin:0 auto; padding:80px 24px; }
-h1 { font:800 48px/1.05 -apple-system,sans-serif; letter-spacing:-0.03em; text-align:center; margin-bottom:14px; }
-.sub { text-align:center; color:var(--text-dim); font-size:18px; max-width:560px; margin:0 auto 16px; }
-.cycle-toggle { display:flex; justify-content:center; margin:24px auto 56px; gap:0; background:var(--bg-card); padding:5px; border-radius:12px; border:1px solid var(--border); width:fit-content; }
-.cycle-toggle button {
-  padding:10px 22px; background:transparent; color:var(--text-dim);
-  border:none; border-radius:8px; cursor:pointer; font:inherit; font-size:14px; font-weight:600;
-  transition:all .15s;
-}
-.cycle-toggle button.on { background:var(--accent); color:#052e16; }
-.savings { font-size:11px; color:var(--accent); font-weight:700; margin-left:8px; padding:3px 8px; background:rgba(34,197,94,0.15); border-radius:100px; }
-.tiers { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-@media (max-width:920px) { .tiers { grid-template-columns:1fr; } }
-.tier { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; padding:32px; display:flex; flex-direction:column; }
-.tier.featured { border-color:var(--accent); position:relative; }
-.tier.featured::before { content:'MOST POPULAR'; position:absolute; top:-11px; left:50%; transform:translateX(-50%); background:var(--accent); color:#052e16; font-size:10px; font-weight:800; letter-spacing:0.15em; padding:5px 12px; border-radius:100px; }
-.tier h3 { font-size:14px; font-weight:700; color:var(--text-dim); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:10px; }
-.tier .price { font:800 44px/1 -apple-system,sans-serif; letter-spacing:-0.02em; }
-.tier .price span { font-size:16px; color:var(--text-dim); font-weight:500; }
-.tier .annual-note { font-size:13px; color:var(--text-faint); margin-top:6px; min-height:18px; }
-.tier .desc { color:var(--text-dim); font-size:14px; margin:14px 0 24px; min-height:60px; }
-.tier ul { list-style:none; margin:0 0 28px; padding:0; }
-.tier ul li { padding:9px 0 9px 26px; position:relative; font-size:14px; color:var(--text); }
-.tier ul li::before { content:'✓'; position:absolute; left:0; color:var(--accent); font-weight:700; }
-.tier .cta { margin-top:auto; }
-.tier .cta a {
-  display:block; text-align:center; padding:13px;
-  background:var(--bg); color:var(--text); text-decoration:none;
-  border:1px solid var(--border); border-radius:10px; font-weight:600; font-size:14px;
-  transition:all .15s;
-}
-.tier.featured .cta a { background:var(--accent); color:#052e16; border-color:var(--accent); }
-.tier .cta a:hover { border-color:var(--accent); }
-.faq { margin-top:96px; max-width:760px; margin-left:auto; margin-right:auto; }
-.faq h2 { font-size:32px; text-align:center; margin-bottom:32px; font-weight:800; letter-spacing:-0.02em; }
-.faq details { border-bottom:1px solid var(--border); padding:18px 0; }
-.faq summary { cursor:pointer; font-weight:600; font-size:16px; list-style:none; }
-.faq summary::after { content:'+'; float:right; color:var(--text-dim); }
-.faq details[open] summary::after { content:'−'; }
-.faq p { color:var(--text-dim); margin-top:10px; line-height:1.65; font-size:14px; }
-footer { border-top:1px solid var(--border); padding:32px 24px; color:var(--text-faint); text-align:center; font-size:13px; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+a{color:var(--primary);text-decoration:none}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:22px 32px;border-bottom:1px solid var(--border-soft)}
+.logo{font:600 22px var(--serif);letter-spacing:-0.01em}
+.nav a{color:var(--text-dim);font-size:14px;margin-left:24px;font-weight:500}
+.nav a.btn{color:#fff;background:var(--primary);padding:9px 18px;border-radius:6px;font-weight:600}
+.nav a.btn:hover{background:var(--primary-2)}
+.wrap{max-width:1180px;margin:0 auto;padding:80px 24px}
+h1{font:500 56px/1.05 var(--serif);letter-spacing:-0.025em;text-align:center;margin-bottom:18px;color:var(--primary)}
+.sub{text-align:center;color:var(--text-dim);font-size:19px;max-width:680px;margin:0 auto 56px;line-height:1.5}
+.cycle-toggle{display:flex;justify-content:center;margin:0 auto 56px;gap:0;background:var(--bg-soft);padding:5px;border-radius:100px;border:1px solid var(--border-soft);width:fit-content}
+.cycle-toggle button{padding:10px 22px;background:transparent;color:var(--text-dim);border:none;border-radius:100px;cursor:pointer;font:inherit;font-size:14px;font-weight:600;transition:all .15s}
+.cycle-toggle button.on{background:var(--primary);color:#fff}
+.savings{font-size:11px;font-weight:700;margin-left:8px;padding:3px 8px;background:rgba(10,22,40,0.06);color:var(--primary);border-radius:100px}
+.cycle-toggle button.on .savings{background:rgba(255,255,255,0.18);color:#fff}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+@media(max-width:920px){.tiers{grid-template-columns:1fr}}
+.tier{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:36px 32px;display:flex;flex-direction:column}
+.tier.featured{border-color:var(--primary);box-shadow:0 24px 60px -24px rgba(10,22,40,0.18)}
+.tier h3{font:500 26px var(--serif);margin-bottom:6px;color:var(--primary)}
+.tier .tag{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-faint);font-weight:700;margin-bottom:18px}
+.tier .price{font:600 44px/1 var(--serif);letter-spacing:-0.02em;color:var(--primary)}
+.tier .price small{font-size:16px;color:var(--text-dim);font-weight:500;letter-spacing:0;margin-left:4px}
+.tier .annual-note{font-size:13px;color:var(--text-dim);margin-top:8px;min-height:18px}
+.tier .desc{color:var(--text-dim);font-size:14px;margin:18px 0 24px;min-height:64px;line-height:1.55}
+.tier ul{list-style:none;margin:0 0 32px;padding:0}
+.tier ul li{padding:11px 0 11px 22px;position:relative;font-size:14px;color:var(--text);border-bottom:1px solid var(--border-soft)}
+.tier ul li:last-child{border-bottom:none}
+.tier ul li::before{content:'';position:absolute;left:0;top:18px;width:12px;height:1px;background:var(--accent)}
+.tier .cta{margin-top:auto}
+.tier .cta a{display:block;text-align:center;padding:13px;background:#fff;color:var(--primary);text-decoration:none;border:1px solid var(--primary);border-radius:8px;font-weight:600;font-size:14px;transition:all .15s}
+.tier.featured .cta a{background:var(--primary);color:#fff}
+.tier .cta a:hover{background:var(--primary);color:#fff}
+.tier.featured .cta a:hover{background:var(--primary-2);border-color:var(--primary-2)}
+.faq{margin-top:96px;max-width:760px;margin-left:auto;margin-right:auto}
+.faq h2{font:500 36px var(--serif);text-align:center;margin-bottom:32px;letter-spacing:-0.02em;color:var(--primary)}
+.faq details{border-bottom:1px solid var(--border-soft);padding:20px 0}
+.faq summary{cursor:pointer;font-weight:600;font-size:16px;list-style:none;color:var(--primary)}
+.faq summary::after{content:'+';float:right;color:var(--text-dim);font-weight:300}
+.faq details[open] summary::after{content:'−'}
+.faq p{color:var(--text-dim);margin-top:12px;line-height:1.65;font-size:15px}
+footer{padding:40px 24px;color:var(--text-faint);text-align:center;font-size:13px;border-top:1px solid var(--border-soft);margin-top:96px}
+footer a{color:var(--text-dim);text-decoration:none}
 </style>
 </head>
 <body>
 
 <div class="nav">
-  <div class="logo">ELH<span>·Coach</span></div>
+  <div class="logo">ELH Coach</div>
   <div>
     <a href="/">Home</a>
     <a href="/pricing">Pricing</a>
@@ -74,8 +81,8 @@ footer { border-top:1px solid var(--border); padding:32px 24px; color:var(--text
 </div>
 
 <div class="wrap">
-  <h1>Pricing that pays for itself.</h1>
-  <p class="sub">One coach paying $89/mo replaces a $1,200/mo MyFitnessPal Premium plan, a $300/mo Trainerize plan, and a $200/mo messaging tool. Pick the tier that fits today; upgrade or cancel anytime.</p>
+  <h1>Three ways to run a coaching business.</h1>
+  <p class="sub">Start on a subdomain. Grow into a studio. Graduate to your own domain. Same platform, different stage of the game.</p>
 
   <div class="cycle-toggle">
     <button class="on" id="bMo">Monthly</button>
@@ -83,73 +90,79 @@ footer { border-top:1px solid var(--border); padding:32px 24px; color:var(--text
   </div>
 
   <div class="tiers">
+
     <div class="tier">
       <h3>Coach</h3>
-      <div class="price"><span>$</span><span class="amt" data-mo="89" data-an="74">89</span><span>/mo</span></div>
+      <div class="tag">Subdomain</div>
+      <div class="price">$<span class="amt" data-mo="89" data-an="74">89</span><small>/mo</small></div>
       <div class="annual-note" data-mo="" data-an="Billed $890/yr — save $178">&nbsp;</div>
-      <p class="desc">For solo trainers and dietitians starting their first online roster.</p>
+      <p class="desc">For solo trainers and dietitians running a real book of business on a polished branded subdomain.</p>
       <ul>
-        <li>Up to 25 active clients</li>
         <li>Branded subdomain (yourname.elhcoach.app)</li>
-        <li>Built-in nutrition + barcode scanner</li>
-        <li>Cycle-aware coaching</li>
-        <li>Cardiometabolic alerts</li>
-        <li>Email support, 24h response</li>
+        <li>Up to 25 active clients</li>
+        <li>Native iOS app + PWA, your accent color</li>
+        <li>AI photo + barcode food logging</li>
+        <li>Workouts, programs, templates</li>
+        <li>In-app messaging w/ read receipts</li>
+        <li>Cycle-aware coaching, biomarker alerts</li>
+        <li>Email support · 24h response</li>
       </ul>
       <div class="cta"><a href="/signup?plan=coach">Start 14-day trial</a></div>
     </div>
 
     <div class="tier featured">
       <h3>Studio</h3>
-      <div class="price"><span>$</span><span class="amt" data-mo="399" data-an="333">399</span><span>/mo</span></div>
+      <div class="tag">Subdomain · multi-trainer</div>
+      <div class="price">$<span class="amt" data-mo="399" data-an="333">399</span><small>/mo</small></div>
       <div class="annual-note" data-mo="" data-an="Billed $3,990/yr — save $798">&nbsp;</div>
-      <p class="desc">For multi-trainer gyms and clinics with growing client rosters.</p>
+      <p class="desc">For studios and small gyms with a roster of trainers and a growing client base.</p>
       <ul>
-        <li>Up to 5 trainers + 200 clients</li>
-        <li>Custom domain (app.yourgym.com)</li>
-        <li>Full custom branding (logo, colors)</li>
-        <li>Trainer-by-trainer roster ownership</li>
+        <li>Branded subdomain (yourstudio.elhcoach.app)</li>
+        <li>Up to 5 trainers, 200 active clients</li>
+        <li>Per-trainer roster ownership</li>
         <li>Group nutrition challenges</li>
-        <li>Priority support, 4h response</li>
+        <li>Stripe Connect for sub-trainer payouts</li>
+        <li>Advanced analytics &amp; reports</li>
+        <li>Priority support · 4h response</li>
         <li>Quarterly business review</li>
       </ul>
       <div class="cta"><a href="/signup?plan=studio">Start 14-day trial</a></div>
     </div>
 
     <div class="tier">
-      <h3>Brand</h3>
-      <div class="price"><span>$</span><span class="amt" data-mo="2500" data-an="2083">2,500</span><span>/mo</span></div>
+      <h3>Custom Domain</h3>
+      <div class="tag">Your own domain · white-label</div>
+      <div class="price">$<span class="amt" data-mo="2500" data-an="2083">2,500</span><small>/mo</small></div>
       <div class="annual-note" data-mo="" data-an="Billed $25,000/yr — save $5,000">&nbsp;</div>
-      <p class="desc">For coaching brands ready to white-label and own their data.</p>
+      <p class="desc">Your domain. Your name on every screen, every push, every email. For coaching brands ready to own the room.</p>
       <ul>
+        <li>Custom domain (e.g. app.yourbrand.com)</li>
+        <li>Full white-label — no ELH Coach branding</li>
         <li>Unlimited trainers + clients</li>
-        <li>Full white-label (no ELH Coach branding)</li>
-        <li>Per-tenant API access</li>
-        <li>BAA available (HIPAA)</li>
-        <li>SSO (Google Workspace, Okta)</li>
-        <li>Dedicated success manager</li>
-        <li>1h SLA, phone support</li>
+        <li>Custom email sender domain</li>
+        <li>SSO (Google, Okta, Azure AD)</li>
+        <li>Per-tenant REST API + webhooks</li>
+        <li>BAA available (HIPAA-ready)</li>
+        <li>Dedicated success manager · 1h SLA · phone</li>
       </ul>
-      <div class="cta"><a href="/signup?plan=brand">Talk to sales</a></div>
+      <div class="cta"><a href="/signup?plan=brand">Talk to us</a></div>
     </div>
+
   </div>
 
   <div class="faq">
     <h2>Frequently asked</h2>
-    <details><summary>Can I switch plans?</summary><p>Yes — anytime, from the billing portal. Upgrades take effect immediately and prorate; downgrades apply at the next renewal.</p></details>
-    <details><summary>What happens after my trial ends?</summary><p>You'll get a reminder 3 days before billing starts. If you don't cancel, you'll be charged for whichever plan you selected at signup. Cancel anytime — no questions asked.</p></details>
-    <details><summary>Do you offer HIPAA / BAA?</summary><p>Yes, on the Brand tier. Contact us to set up the Business Associate Agreement before sending any PHI through the platform.</p></details>
-    <details><summary>What if I exceed my client limit?</summary><p>You'll get a soft warning. We never auto-charge or auto-upgrade. We'll reach out to discuss the right plan for your scale.</p></details>
-    <details><summary>Can I export my data if I leave?</summary><p>Always. JSON + CSV export of every client, meal log, and message at any time, no questions asked. Your data is yours.</p></details>
-    <details><summary>Do you have a referral or partner program?</summary><p>Yes — contact partnerships@elhcoach.app. We pay 20% recurring for the first year of every account you refer.</p></details>
+    <details><summary>Can I move up a tier later?</summary><p>Yes — upgrade in the billing portal at any time. Subdomain → custom domain takes us about 24h to migrate; existing client logins keep working through automatic redirects.</p></details>
+    <details><summary>What happens after my trial ends?</summary><p>You'll get a reminder three days before billing starts. If you don't cancel, you'll be charged for whichever plan you signed up under. Cancel anytime, no friction.</p></details>
+    <details><summary>HIPAA / BAA?</summary><p>Custom Domain tier only. We execute the Business Associate Agreement before any PHI flows through the platform.</p></details>
+    <details><summary>What if I exceed my client limit?</summary><p>Soft warning, never an auto-charge. We'll reach out and have a real conversation about whether the next tier fits.</p></details>
+    <details><summary>Can I export my data if I leave?</summary><p>Always. JSON + CSV export of every client, meal log, message, program, biometric. Your data is yours.</p></details>
+    <details><summary>Referral / partner program?</summary><p>Yes — partnerships@elhcoach.app. 20% recurring for the first year of every account you refer.</p></details>
   </div>
 </div>
 
 <footer>
-  <a href="/" style="color:var(--text-dim);text-decoration:none">ELH Coach</a> ·
-  <a href="/terms" style="color:var(--text-dim);text-decoration:none">Terms</a> ·
-  <a href="/privacy" style="color:var(--text-dim);text-decoration:none">Privacy</a> ·
-  <a href="mailto:hello@elhcoach.app" style="color:var(--text-dim);text-decoration:none">hello@elhcoach.app</a>
+  <a href="/">ELH Coach</a> · <a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="mailto:hello@elhcoach.app">hello@elhcoach.app</a>
 </footer>
 
 <script>
