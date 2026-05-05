@@ -1201,6 +1201,22 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             "upgrade_url": "/account",
         }, 402)
 
+    def _enrich_labs(self, rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Backfill biomarker `direction` on read for rows saved before
+        fitapp-core 0.1.1 added the field. New writes already include it."""
+        try:
+            from fitapp_core import biomarker_direction
+        except ImportError:
+            return rows
+        for r in rows:
+            rj = r.get("results_json")
+            if not isinstance(rj, dict):
+                continue
+            for k, v in rj.items():
+                if isinstance(v, dict) and "direction" not in v:
+                    v["direction"] = biomarker_direction(k)
+        return rows
+
     def _api_member_lab_photo(self, tenant: dict[str, Any]) -> None:
         """Photo of a lab report → parsed biomarker values for client review.
         Does NOT auto-save; client confirms in /api/me/lab/save."""
@@ -1281,7 +1297,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                limit 50""",
             tenant["id"], sess["user_id"],
         )
-        return self._j({"labs": rows}, 200)
+        return self._j({"labs": self._enrich_labs(rows)}, 200)
 
     def _api_client_labs(self, tenant: dict[str, Any], client_id: str) -> None:
         """Coach-only view of a specific client's lab history."""
@@ -1304,7 +1320,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                limit 50""",
             tenant["id"], client_id,
         )
-        return self._j({"labs": rows}, 200)
+        return self._j({"labs": self._enrich_labs(rows)}, 200)
 
     def _api_member_glucose_tir(self, tenant: dict[str, Any]) -> None:
         """Time-in-range summary for the last 14 days."""

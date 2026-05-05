@@ -517,12 +517,17 @@ function priorityDeltas(curr, prev) {
     if (c == null || p == null) continue;
     const d = c - p;
     if (Math.abs(d) < 0.01) continue;
-    out.push({ k, c, p, d });
+    const dir = curr[k]?.direction || 'up_bad';
+    out.push({ k, c, p, d, dir });
   }
   out.sort((a, b) => Math.abs(b.d) - Math.abs(a.d));
   return out.slice(0, 2).map(x => {
     const sign = x.d > 0 ? '↑' : '↓';
-    const color = x.d > 0 ? 'var(--bad)' : 'var(--good)';  // direction-only; clinical context belongs to coach
+    const rising = x.d > 0;
+    let color;
+    if (x.dir === 'neutral')      color = 'var(--text-dim)';
+    else if (x.dir === 'up_good') color = rising ? 'var(--good)' : 'var(--bad)';
+    else                          color = rising ? 'var(--bad)'  : 'var(--good)';
     return `<span style="color:${color}">${sign} ${escapeHtml(x.k.replace(/_/g,' '))} ${Number(x.c).toLocaleString()}</span>`;
   });
 }
