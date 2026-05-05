@@ -669,15 +669,25 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     # ────────────────────────────────────────────────────────────────
     #  Trainer console v2
     # ────────────────────────────────────────────────────────────────
-    def _api_trainer_kpis(self, tenant: dict[str, Any]) -> None:
+    _TRAINER_ROLES = ("owner", "admin", "coach")
+
+    def _require_trainer(self, tenant: dict[str, Any]):
         sess = self._auth_user(tenant["id"])
-        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if not sess:
+            self._j({"error": "unauthorized"}, 401); return None
+        if sess["role"] not in self._TRAINER_ROLES:
+            self._j({"error": "forbidden"}, 403); return None
+        return sess
+
+    def _api_trainer_kpis(self, tenant: dict[str, Any]) -> None:
+        sess = self._require_trainer(tenant)
+        if not sess: return
         coach_id = sess["user_id"] if sess["role"] == "coach" else None
         return self._j(trainer_analytics.trainer_kpis(tenant["id"], coach_id=coach_id))
 
     def _api_trainer_roster(self, tenant: dict[str, Any]) -> None:
-        sess = self._auth_user(tenant["id"])
-        if not sess: return self._j({"error": "unauthorized"}, 401)
+        sess = self._require_trainer(tenant)
+        if not sess: return
         from urllib.parse import urlparse, parse_qs
         qs = parse_qs(urlparse(self.path).query)
         coach_id = sess["user_id"] if sess["role"] == "coach" else (qs.get("coach_id") or [None])[0]
@@ -690,11 +700,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return self._j({"clients": rows})
 
     def _api_client_overview(self, tenant: dict[str, Any], client_id: str) -> None:
-        sess = self._auth_user(tenant["id"])
-        if not sess: return self._j({"error": "unauthorized"}, 401)
+        sess = self._require_trainer(tenant)
+        if not sess: return
         data = trainer_analytics.client_overview(tenant["id"], client_id)
         if not data.get("user"):
             return self._j({"error": "not found"}, 404)
+        # If trainer is role=coach, ensure the client is on their roster
+        if sess["role"] == "coach":
+            on_roster = db.fetch_one(
+                """select 1 as ok from coach_clients
+                   where tenant_id = $1 and coach_id = $2 and client_id = $3""",
+                tenant["id"], sess["user_id"], client_id,
+            )
+            if not on_roster:
+                return self._j({"error": "forbidden"}, 403)
         return self._j(data)
 
     def _api_list_programs(self, tenant: dict[str, Any]) -> None:
@@ -728,8 +747,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         return self._j({"id": row["id"]}, 201)
 
     def _api_add_note(self, tenant: dict[str, Any], client_id: str) -> None:
-        sess = self._auth_user(tenant["id"])
-        if not sess: return self._j({"error": "unauthorized"}, 401)
+        sess = self._require_trainer(tenant)
+        if not sess: return
         body = self._body()
         text = (body.get("body") or "").strip()[:5000]
         if not text:
