@@ -3,296 +3,950 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ELH Coach — Run your coaching business like the pros do</title>
-<meta name="description" content="Branded apps, full client roster, real-time messaging, food + workout tracking. Built for coaches who don't want to glue together five tools.">
-<meta property="og:title" content="ELH Coach">
-<meta property="og:description" content="The platform serious coaches run their business on.">
+<title>ELH Coach — The platform serious coaches run their business on</title>
+<meta name="description" content="Branded client app, AI nutrition, cycle-aware coaching, real-time chat, programs, roster KPIs, Stripe Connect. Run your whole coaching business under your name — and own the domain when you're ready.">
+<meta property="og:title" content="ELH Coach — Run your coaching business like the pros do">
+<meta property="og:description" content="One branded app. Your domain when you're ready. Stripe Connect to your account. The platform serious coaches run their business on.">
 <meta property="og:type" content="website">
 <link rel="icon" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:        #FFFFFF;
-  --bg-soft:   #FAFAF8;
-  --bg-card:   #FFFFFF;
-  --border:    #E8E5DF;
-  --border-soft:#F0EEE9;
-  --text:      #0A0A0C;
-  --text-dim:  #5C5F66;
-  --text-faint:#8A8E94;
-  --primary:   #0A1628;
-  --primary-2: #1B2A40;
-  --accent:    #3C4858;
-  --accent-2:  #5A6776;
-  --serif:'Newsreader','Iowan Old Style','Charter','Hoefler Text',Georgia,serif;
-  --sans:'Inter',-apple-system,system-ui,'Segoe UI',sans-serif;
-  --container:1180px;
+  --cream:        #FAF6EE;
+  --cream-soft:   #F4EDD9;
+  --cream-warm:   #EFE5C9;
+  --ink:          #0A1628;
+  --ink-soft:     #1B2A40;
+  --ink-dim:      #4A5568;
+  --ink-faint:    #8B96A5;
+  --oxblood:      #6B1620;
+  --oxblood-rich: #8B2030;
+  --oxblood-soft: rgba(107,22,32,0.06);
+  --gold:         #B08D57;
+  --gold-soft:    #D4B587;
+  --border:       #E2D6BA;
+  --border-soft:  #EAE0C8;
+  --shadow:       0 24px 60px -24px rgba(10,22,40,0.16);
+  --shadow-rich:  0 40px 80px -32px rgba(107,22,32,0.22);
+  --shadow-deep:  0 60px 120px -40px rgba(10,22,40,0.32);
+  --serif: 'Newsreader','Iowan Old Style','Charter','Hoefler Text',Georgia,serif;
+  --sans:  'Inter',-apple-system,system-ui,'Segoe UI',sans-serif;
+  --container: 1240px;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font:17px/1.65 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
-a{color:var(--primary);text-decoration:none;transition:color .15s}
-a:hover{color:var(--primary-2)}
-.container{max-width:var(--container);margin:0 auto;padding:0 24px}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--cream); color:var(--ink); font:17px/1.6 var(--sans); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; overflow-x:hidden; }
+a { color:var(--ink); text-decoration:none; transition:color .15s; }
+a:hover { color:var(--oxblood); }
+.container { max-width:var(--container); margin:0 auto; padding:0 28px; }
+img { max-width:100%; height:auto; display:block; }
 
-nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.85);backdrop-filter:blur(18px);border-bottom:1px solid var(--border-soft)}
-nav .container{display:flex;align-items:center;justify-content:space-between;height:68px}
-nav .logo{font:600 22px var(--serif);letter-spacing:-0.01em;color:var(--primary)}
-nav .links{display:flex;gap:32px;align-items:center}
-nav .links a{color:var(--text-dim);font-weight:500;font-size:14px}
-nav .links a:hover{color:var(--primary)}
-nav .cta{background:var(--primary);color:#fff;padding:9px 20px;border-radius:6px;font-weight:600;font-size:14px}
-nav .cta:hover{background:var(--primary-2);color:#fff}
+/* ─── NAV ─────────────────────────────────────────────────────── */
+nav.top {
+  position:sticky; top:0; z-index:50;
+  background:rgba(250,246,238,0.82); backdrop-filter:blur(20px) saturate(140%);
+  border-bottom:1px solid transparent;
+  transition:border .2s, background .2s;
+}
+nav.top.scrolled { border-bottom-color:var(--border-soft); background:rgba(250,246,238,0.95); }
+nav.top .container { display:flex; align-items:center; justify-content:space-between; height:72px; }
+nav.top .logo { font:600 24px/1 var(--serif); letter-spacing:-0.015em; color:var(--ink); display:flex; align-items:center; gap:10px; }
+nav.top .logo .mark { width:32px; height:32px; background:var(--oxblood); border-radius:7px; display:inline-flex; align-items:center; justify-content:center; color:var(--cream); font:700 14px/1 var(--sans); letter-spacing:-0.02em; }
+nav.top .links { display:flex; gap:32px; align-items:center; }
+nav.top .links a { color:var(--ink-dim); font-weight:500; font-size:14px; }
+nav.top .links a:hover { color:var(--ink); }
+nav.top a.cta { background:var(--ink); color:var(--cream); padding:10px 22px; border-radius:6px; font-weight:600; font-size:14px; transition:all .2s; }
+nav.top a.cta:hover { background:var(--oxblood); color:var(--cream); transform:translateY(-1px); }
 
-.hero{padding:128px 0 96px;text-align:center}
-.hero .eyebrow{display:inline-block;padding:6px 14px;border:1px solid var(--border);border-radius:100px;color:var(--text-dim);font-size:12px;font-weight:600;letter-spacing:0.04em;margin-bottom:28px;text-transform:uppercase}
-.hero h1{font:500 clamp(44px,7vw,82px)/1.04 var(--serif);letter-spacing:-0.025em;max-width:920px;margin:0 auto 28px;color:var(--primary)}
-.hero h1 em{font-style:italic;color:var(--accent)}
-.hero .lead{font-size:21px;line-height:1.5;color:var(--text-dim);max-width:680px;margin:0 auto 44px}
-.hero .actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:15px 28px;border-radius:8px;font-weight:600;font-size:15px;border:none;cursor:pointer;transition:all .15s}
-.btn-primary{background:var(--primary);color:#fff}
-.btn-primary:hover{background:var(--primary-2);transform:translateY(-1px)}
-.btn-ghost{background:#fff;color:var(--primary);border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--primary)}
+/* ─── COMMON ──────────────────────────────────────────────────── */
+section { padding:120px 0; position:relative; }
+section.tight { padding:80px 0; }
+.eyebrow { display:inline-block; font:700 11px/1 var(--sans); letter-spacing:0.18em; text-transform:uppercase; color:var(--oxblood); margin-bottom:20px; padding:6px 12px; background:var(--oxblood-soft); border-radius:4px; }
+.eyebrow.dark { color:var(--gold-soft); background:rgba(176,141,87,0.14); }
+h1, h2, h3 { font-family:var(--serif); letter-spacing:-0.02em; color:var(--ink); }
+h1 { font:500 clamp(48px,7.5vw,90px)/1.02 var(--serif); letter-spacing:-0.03em; }
+h1 em { font-style:italic; color:var(--oxblood); font-weight:500; }
+h2 { font:500 clamp(36px,5vw,56px)/1.08 var(--serif); margin-bottom:20px; }
+h2 em { font-style:italic; color:var(--oxblood); }
+h3 { font:500 24px/1.25 var(--serif); }
+.lead { font-size:21px; line-height:1.55; color:var(--ink-dim); }
+.lead-sm { font-size:18px; line-height:1.55; color:var(--ink-dim); max-width:680px; }
+.btn { display:inline-flex; align-items:center; gap:10px; padding:16px 30px; border-radius:8px; font-weight:600; font-size:15px; border:none; cursor:pointer; transition:all .2s; font-family:var(--sans); }
+.btn svg { width:16px; height:16px; }
+.btn-primary { background:var(--oxblood); color:var(--cream); box-shadow:0 8px 22px -8px rgba(107,22,32,0.4); }
+.btn-primary:hover { background:var(--oxblood-rich); transform:translateY(-2px); box-shadow:0 14px 34px -10px rgba(107,22,32,0.5); color:var(--cream); }
+.btn-ghost { background:transparent; color:var(--ink); border:1px solid var(--ink); }
+.btn-ghost:hover { background:var(--ink); color:var(--cream); }
+.btn-dark { background:var(--ink); color:var(--cream); }
+.btn-dark:hover { background:var(--oxblood); color:var(--cream); transform:translateY(-2px); }
 
-section{padding:96px 0}
-section h2{font:500 clamp(36px,5vw,52px)/1.1 var(--serif);letter-spacing:-0.02em;max-width:760px;margin-bottom:18px;color:var(--primary)}
-section .lead-2{font-size:18px;color:var(--text-dim);max-width:640px;line-height:1.55}
-.section-eyebrow{font-size:12px;font-weight:700;color:var(--accent);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px}
+/* ─── HERO ────────────────────────────────────────────────────── */
+.hero { padding:80px 0 100px; position:relative; overflow:hidden; }
+.hero::before {
+  content:''; position:absolute; top:-200px; right:-300px; width:700px; height:700px;
+  background:radial-gradient(circle, rgba(176,141,87,0.18) 0%, transparent 65%);
+  pointer-events:none;
+}
+.hero .grid { display:grid; grid-template-columns:1.05fr 1fr; gap:80px; align-items:center; }
+@media(max-width:980px){ .hero .grid { grid-template-columns:1fr; gap:64px; } }
+.hero h1 { margin-bottom:32px; }
+.hero .lead { margin-bottom:40px; max-width:560px; }
+.hero .actions { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:36px; }
+.hero .trust { display:flex; gap:24px; flex-wrap:wrap; align-items:center; color:var(--ink-faint); font-size:13px; font-weight:500; }
+.hero .trust span { display:inline-flex; align-items:center; gap:7px; }
+.hero .trust svg { width:14px; height:14px; color:var(--oxblood); }
 
-.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-top:56px}
-.feature{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:32px}
-.feature h3{font:500 22px var(--serif);margin-bottom:10px;color:var(--primary)}
-.feature p{color:var(--text-dim);font-size:15px;line-height:1.6}
-.feature .num{font:500 13px var(--serif);color:var(--accent);letter-spacing:0.06em;margin-bottom:14px;display:block}
+/* iPhone frame holding a real screenshot */
+.phone-frame {
+  position:relative; width:300px; margin:0 auto;
+  background:var(--ink); padding:9px; border-radius:42px;
+  box-shadow:0 50px 100px -30px rgba(10,22,40,0.4), 0 0 0 1px rgba(0,0,0,0.06);
+}
+.phone-frame::before {
+  content:''; position:absolute; top:18px; left:50%; transform:translateX(-50%);
+  width:96px; height:24px; background:var(--ink); border-radius:14px; z-index:5;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+.phone-frame img { border-radius:34px; display:block; width:100%; }
+.phone-frame.tilt-l { transform:rotate(-3deg); }
+.phone-frame.tilt-r { transform:rotate(3deg); }
 
-.story{background:var(--bg-soft);padding:96px 0}
-.story .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:48px;align-items:center}
-@media(max-width:780px){.story .grid{grid-template-columns:1fr}}
-.story .copy h2{margin-bottom:20px}
-.story .copy p{color:var(--text-dim);font-size:17px;line-height:1.65;max-width:520px}
-.story .visual{background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px;font-family:'SF Mono',ui-monospace,monospace;font-size:14px;line-height:2}
-.story .visual .domain{color:var(--primary);font-weight:600}
-.story .visual .arrow{color:var(--text-faint);margin:0 8px}
+.hero-visual { position:relative; }
+.hero-visual .phone-frame { transform:rotate(-2deg); }
+.hero-visual::after {
+  content:''; position:absolute; top:-40px; right:-40px; width:160px; height:160px;
+  background:radial-gradient(circle, var(--oxblood-soft) 0%, transparent 70%);
+  z-index:-1; pointer-events:none;
+}
 
-.pricing-section{padding:96px 0}
-.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:56px}
-@media(max-width:920px){.pricing{grid-template-columns:1fr}}
-.tier{background:#fff;border:1px solid var(--border);border-radius:14px;padding:36px 32px;display:flex;flex-direction:column}
-.tier.featured{border-color:var(--primary);box-shadow:0 24px 60px -24px rgba(10,22,40,0.18)}
-.tier h3{font:500 26px var(--serif);color:var(--primary);margin-bottom:6px}
-.tier .tag{font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-faint);font-weight:700;margin-bottom:18px}
-.tier .price{font:600 44px/1 var(--serif);letter-spacing:-0.02em;color:var(--primary)}
-.tier .price small{font-size:16px;color:var(--text-dim);font-weight:500;margin-left:4px}
-.tier .annual{font-size:13px;color:var(--accent);margin-top:6px}
-.tier ul{list-style:none;margin:24px 0 32px;padding:0}
-.tier li{padding:11px 0 11px 22px;border-bottom:1px solid var(--border-soft);font-size:14px;color:var(--text);position:relative}
-.tier li:last-child{border-bottom:none}
-.tier li::before{content:'';position:absolute;left:0;top:18px;width:12px;height:1px;background:var(--accent)}
-.tier .cta{margin-top:auto}
-.tier .cta a{display:block;text-align:center;padding:13px;background:#fff;color:var(--primary);border:1px solid var(--primary);border-radius:8px;font-weight:600;font-size:14px;transition:all .15s}
-.tier.featured .cta a{background:var(--primary);color:#fff}
-.tier .cta a:hover{background:var(--primary);color:#fff}
+/* ─── PROBLEM SECTION ───────────────────────────────────────── */
+.problem { background:var(--ink); color:var(--cream); padding:120px 0; position:relative; overflow:hidden; }
+.problem::before {
+  content:''; position:absolute; bottom:-200px; left:-200px; width:600px; height:600px;
+  background:radial-gradient(circle, rgba(107,22,32,0.5) 0%, transparent 65%); pointer-events:none;
+}
+.problem h2 { color:var(--cream); }
+.problem h2 em { color:var(--gold-soft); }
+.problem .grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+@media(max-width:880px){ .problem .grid { grid-template-columns:1fr; } }
+.problem .lead { color:rgba(250,246,238,0.7); margin-bottom:24px; font-size:19px; }
+.problem .stat { font:500 64px/1 var(--serif); color:var(--gold-soft); margin:32px 0 8px; }
+.problem .stat-l { font-size:14px; color:rgba(250,246,238,0.5); }
 
-footer{background:var(--bg-soft);border-top:1px solid var(--border-soft);padding:64px 0 40px;margin-top:96px}
-footer .grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:40px}
-@media(max-width:720px){footer .grid{grid-template-columns:1fr 1fr}}
-footer h4{font-size:12px;color:var(--text-dim);font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:18px}
-footer ul{list-style:none}
-footer li{margin-bottom:12px}
-footer a{color:var(--text-dim);font-size:14px}
-footer a:hover{color:var(--primary)}
-footer .copyright{color:var(--text-faint);font-size:13px;padding-top:24px;border-top:1px solid var(--border-soft);display:flex;justify-content:space-between}
+.tool-chaos { position:relative; height:380px; }
+.tool { position:absolute; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); padding:16px 20px; border-radius:12px; font-size:13px; font-weight:600; color:rgba(250,246,238,0.8); display:flex; align-items:center; gap:10px; backdrop-filter:blur(8px); transition:all .3s; }
+.tool:hover { transform:scale(1.05); border-color:var(--oxblood-rich); }
+.tool .icn { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }
+.tool-1 { top:20px; left:0; transform:rotate(-3deg); }
+.tool-1 .icn { background:#FF6B6B; color:#fff; }
+.tool-2 { top:0; right:20px; transform:rotate(4deg); }
+.tool-2 .icn { background:#3CDFFF; color:#000; }
+.tool-3 { top:130px; left:60px; transform:rotate(2deg); }
+.tool-3 .icn { background:#4A154B; color:#fff; }
+.tool-4 { top:160px; right:0; transform:rotate(-5deg); }
+.tool-4 .icn { background:#0F9D58; color:#fff; }
+.tool-5 { bottom:60px; left:20px; transform:rotate(3deg); }
+.tool-5 .icn { background:#635BFF; color:#fff; }
+.tool-6 { bottom:0; right:50px; transform:rotate(-2deg); }
+.tool-6 .icn { background:#FF7A59; color:#fff; }
+
+/* ─── COACH PORTAL ─────────────────────────────────────────── */
+.coach-portal { padding:140px 0; background:var(--cream-soft); position:relative; overflow:hidden; }
+.coach-portal .head { max-width:840px; margin-bottom:64px; }
+.dash-shot {
+  position:relative; border-radius:18px; overflow:hidden;
+  box-shadow:var(--shadow-deep); border:1px solid var(--border);
+  transform:perspective(2000px) rotateX(2deg);
+  transform-origin:50% 100%; transition:transform .5s;
+}
+.dash-shot:hover { transform:perspective(2000px) rotateX(0); }
+.dash-shot::before {
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(180deg, transparent 70%, rgba(10,22,40,0.06) 100%);
+  z-index:2;
+}
+.dash-shot .browser-bar { background:#E8E1CE; padding:10px 16px; display:flex; gap:8px; align-items:center; border-bottom:1px solid var(--border); }
+.dash-shot .browser-bar .dots { display:flex; gap:5px; }
+.dash-shot .browser-bar .dots span { width:11px; height:11px; border-radius:50%; }
+.dash-shot .browser-bar .dots span:nth-child(1){background:#FF5F57;}
+.dash-shot .browser-bar .dots span:nth-child(2){background:#FEBC2E;}
+.dash-shot .browser-bar .dots span:nth-child(3){background:#28C840;}
+.dash-shot .browser-bar .url { flex:1; background:rgba(255,255,255,0.7); padding:5px 12px; border-radius:6px; font:500 12px var(--sans); color:var(--ink-dim); margin-left:12px; }
+
+.coach-views { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:80px; }
+@media(max-width:880px){ .coach-views { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:480px){ .coach-views { grid-template-columns:1fr; } }
+.view-card { background:#fff; border:1px solid var(--border); border-radius:14px; padding:24px; transition:all .3s; position:relative; overflow:hidden; }
+.view-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+.view-card .ic { font-size:28px; margin-bottom:12px; }
+.view-card h4 { font:500 17px var(--serif); color:var(--ink); margin-bottom:6px; }
+.view-card p { font-size:13px; color:var(--ink-dim); line-height:1.5; }
+
+/* ─── CLIENT APP ───────────────────────────────────────────── */
+.client-app-section { padding:140px 0; }
+.client-app-section .grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+@media(max-width:880px){ .client-app-section .grid { grid-template-columns:1fr; } }
+.client-features { list-style:none; margin-top:24px; }
+.client-features li { display:flex; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-soft); }
+.client-features li:last-child { border-bottom:none; }
+.client-features .ic { flex-shrink:0; width:36px; height:36px; border-radius:8px; background:var(--oxblood-soft); color:var(--oxblood); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; font-family:var(--serif); }
+.client-features .body strong { display:block; font-weight:600; color:var(--ink); margin-bottom:2px; font-size:15px; }
+.client-features .body span { font-size:14px; color:var(--ink-dim); line-height:1.5; }
+
+/* ─── WALKTHROUGH ─────────────────────────────────────────── */
+.walkthrough { background:var(--cream-warm); padding:140px 0; }
+.walkthrough .head { text-align:center; max-width:780px; margin:0 auto 80px; }
+.walkthrough .head .lead-sm { margin:0 auto; }
+.walk-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
+@media(max-width:980px){ .walk-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:560px){ .walk-grid { grid-template-columns:1fr; } }
+.walk-card { background:#fff; border-radius:16px; padding:36px 32px; box-shadow:var(--shadow); border:1px solid var(--border); transition:transform .3s, box-shadow .3s; position:relative; overflow:hidden; }
+.walk-card::before { content:''; position:absolute; top:0; left:0; width:100%; height:3px; background:var(--oxblood); transform:scaleX(0); transform-origin:left; transition:transform .3s; }
+.walk-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-rich); }
+.walk-card:hover::before { transform:scaleX(1); }
+.walk-card .num { font:500 13px var(--serif); color:var(--oxblood); letter-spacing:0.06em; }
+.walk-card h3 { font:500 22px/1.2 var(--serif); margin:8px 0 12px; }
+.walk-card p { color:var(--ink-dim); font-size:14px; line-height:1.6; }
+
+/* ─── COACH ARCHETYPES ─────────────────────────────────────── */
+.archetypes { padding:140px 0; background:var(--cream); }
+.archetypes .head { text-align:center; max-width:780px; margin:0 auto 60px; }
+.archetypes .head .lead-sm { margin:0 auto; }
+.arch-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+@media(max-width:880px){ .arch-grid { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:560px){ .arch-grid { grid-template-columns:1fr; } }
+.arch-card { background:#fff; border:1px solid var(--border-soft); border-radius:16px; padding:32px; transition:all .3s; cursor:default; position:relative; overflow:hidden; }
+.arch-card::before { content:''; position:absolute; left:0; top:0; width:4px; height:100%; background:var(--oxblood); transform:scaleY(0); transform-origin:top; transition:transform .3s; }
+.arch-card:hover { transform:translateY(-4px); box-shadow:var(--shadow); border-color:transparent; }
+.arch-card:hover::before { transform:scaleY(1); }
+.arch-card .ic { font-size:28px; margin-bottom:14px; }
+.arch-card h3 { font:500 20px var(--serif); margin-bottom:8px; }
+.arch-card p { font-size:14px; color:var(--ink-dim); line-height:1.55; }
+
+/* ─── BREAKEVEN MATH ───────────────────────────────────────── */
+.math { background:var(--ink); color:var(--cream); padding:140px 0; position:relative; overflow:hidden; }
+.math::before {
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%); width:100%; max-width:1400px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+}
+.math::after {
+  content:''; position:absolute; top:-150px; right:-150px; width:500px; height:500px;
+  background:radial-gradient(circle, rgba(176,141,87,0.18) 0%, transparent 65%);
+  pointer-events:none;
+}
+.math h2 { color:var(--cream); }
+.math h2 em { color:var(--gold-soft); font-style:italic; }
+.math .lead { color:rgba(250,246,238,0.7); }
+.math .head { max-width:780px; margin-bottom:80px; }
+.timeline { display:grid; grid-template-columns:repeat(3,1fr); gap:32px; max-width:1100px; margin:0 auto; position:relative; }
+@media(max-width:880px){ .timeline { grid-template-columns:1fr; gap:48px; } }
+.tl-card {
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:36px;
+  position:relative; transition:all .3s;
+}
+.tl-card.featured { border-color:var(--oxblood-rich); background:linear-gradient(180deg, rgba(107,22,32,0.18) 0%, rgba(255,255,255,0.02) 100%); }
+.tl-card .yr { font:500 13px var(--serif); color:var(--gold-soft); letter-spacing:0.08em; }
+.tl-card h3 { color:var(--cream); font:500 22px var(--serif); margin:8px 0 18px; }
+.tl-card .num { font:500 56px/1 var(--serif); color:var(--cream); letter-spacing:-0.02em; }
+.tl-card.featured .num { color:var(--gold-soft); }
+.tl-card .num small { font-size:18px; color:rgba(250,246,238,0.5); margin-left:6px; font-weight:500; }
+.tl-card .desc { font-size:13px; color:rgba(250,246,238,0.6); margin-top:12px; line-height:1.5; }
+.tl-card .badge { position:absolute; top:-10px; right:24px; background:var(--oxblood); color:var(--cream); padding:4px 12px; border-radius:100px; font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; }
+.math .punch { text-align:center; margin-top:64px; max-width:680px; margin-left:auto; margin-right:auto; }
+.math .punch-q { font:italic 500 28px/1.4 var(--serif); color:var(--gold-soft); margin-bottom:16px; }
+.math .punch-a { color:rgba(250,246,238,0.7); font-size:16px; }
+
+/* ─── COMPARE TABLE ───────────────────────────────────────── */
+.compare { padding:140px 0; }
+.compare .head { text-align:center; max-width:760px; margin:0 auto 64px; }
+.compare h2 { margin:0 auto 16px; }
+.compare .lead-sm { margin:0 auto 0; }
+.compare-table {
+  width:100%; max-width:1080px; margin:0 auto; border-collapse:collapse;
+  background:#fff; border-radius:16px; overflow:hidden; box-shadow:var(--shadow);
+}
+.compare-table th, .compare-table td { padding:18px 24px; text-align:left; vertical-align:middle; border-bottom:1px solid var(--border-soft); }
+.compare-table thead th { background:var(--cream-soft); font:600 13px/1.3 var(--sans); color:var(--ink); text-transform:uppercase; letter-spacing:0.08em; padding-top:24px; padding-bottom:24px; }
+.compare-table thead th.us { background:var(--oxblood); color:var(--cream); position:relative; }
+.compare-table thead th.us::after { content:'BEST'; position:absolute; top:6px; right:12px; background:var(--gold); color:var(--ink); font-size:9px; padding:2px 7px; border-radius:3px; font-weight:700; letter-spacing:0.08em; }
+.compare-table tbody td { font-size:14px; color:var(--ink-dim); }
+.compare-table tbody td:first-child { font-weight:600; color:var(--ink); }
+.compare-table tbody td.us { background:rgba(107,22,32,0.04); border-left:3px solid var(--oxblood); color:var(--ink); font-weight:500; }
+.compare-table tbody tr:last-child td { border-bottom:none; }
+.compare-table .yes { color:#2D7D32; font-weight:700; }
+.compare-table .no { color:var(--ink-faint); }
+.compare-table .star { color:var(--oxblood); font-weight:700; }
+
+/* ─── STRIPE CONNECT FLOW ─────────────────────────────────── */
+.stripe-flow { background:var(--cream-warm); padding:140px 0; }
+.stripe-flow .head { max-width:760px; margin:0 auto 64px; text-align:center; }
+.stripe-flow .lead-sm { margin:0 auto 0; }
+.flow-vis { display:grid; grid-template-columns:1fr auto 1fr auto 1fr; align-items:center; gap:24px; max-width:1080px; margin:0 auto; }
+@media(max-width:880px){ .flow-vis { grid-template-columns:1fr; } .flow-vis .arrow-h { display:none; } }
+.flow-card { background:#fff; border:1px solid var(--border); border-radius:16px; padding:32px; text-align:center; box-shadow:var(--shadow); }
+.flow-card .ic { font-size:36px; margin-bottom:14px; }
+.flow-card h3 { font:500 18px var(--serif); margin-bottom:8px; }
+.flow-card p { font-size:13px; color:var(--ink-dim); line-height:1.55; }
+.flow-card.you { border-color:var(--oxblood); background:linear-gradient(180deg, rgba(107,22,32,0.04), #fff); }
+.arrow-h { font-size:32px; color:var(--oxblood); }
+
+/* ─── NATIVE APPS ─────────────────────────────────────────── */
+.native { padding:140px 0; }
+.native .grid { display:grid; grid-template-columns:1fr 1.1fr; gap:80px; align-items:center; }
+@media(max-width:880px){ .native .grid { grid-template-columns:1fr; } }
+.native .visual { display:flex; justify-content:center; gap:24px; flex-wrap:wrap; }
+.app-badge { background:var(--ink); color:var(--cream); padding:14px 24px; border-radius:12px; display:inline-flex; align-items:center; gap:14px; font-family:var(--sans); transition:all .2s; }
+.app-badge:hover { transform:translateY(-2px); color:var(--cream); }
+.app-badge .icn { width:32px; height:32px; }
+.app-badge .top-line { font-size:10px; opacity:0.7; }
+.app-badge .bot-line { font:600 16px var(--serif); }
+
+/* ─── TESTIMONIAL ─────────────────────────────────────────── */
+.quote-section { padding:140px 0; background:var(--cream-soft); }
+.quote-card { max-width:880px; margin:0 auto; text-align:center; padding:0 24px; }
+.quote-mark { font:500 100px/0.5 var(--serif); color:var(--oxblood); display:block; margin-bottom:16px; }
+.quote-card blockquote { font:italic 500 32px/1.4 var(--serif); color:var(--ink); margin-bottom:32px; letter-spacing:-0.01em; }
+.quote-card blockquote em { font-style:italic; color:var(--oxblood); }
+.quote-card .att { display:flex; align-items:center; justify-content:center; gap:14px; }
+.quote-card .av { width:56px; height:56px; border-radius:50%; background:linear-gradient(135deg, var(--gold), var(--oxblood)); display:flex; align-items:center; justify-content:center; color:var(--cream); font:700 20px var(--sans); }
+.quote-card .att .name { font-weight:600; color:var(--ink); font-size:16px; }
+.quote-card .att .role { font-size:14px; color:var(--ink-dim); }
+
+/* ─── FAQ ─────────────────────────────────────────────────── */
+.faq { padding:140px 0; }
+.faq h2 { text-align:center; margin:0 auto 48px; max-width:680px; }
+.faq-list { max-width:780px; margin:0 auto; }
+.faq details { border-bottom:1px solid var(--border); padding:24px 0; }
+.faq details:first-child { border-top:1px solid var(--border); }
+.faq summary { cursor:pointer; font:500 19px var(--serif); color:var(--ink); display:flex; justify-content:space-between; align-items:center; list-style:none; }
+.faq summary::-webkit-details-marker { display:none; }
+.faq summary::after { content:'+'; font:500 28px var(--serif); color:var(--oxblood); transition:transform .2s; }
+.faq details[open] summary::after { content:'−'; }
+.faq details[open] summary { color:var(--oxblood); }
+.faq p { margin-top:14px; color:var(--ink-dim); font-size:16px; line-height:1.6; }
+
+/* ─── FINAL CTA ───────────────────────────────────────────── */
+.final-cta { padding:140px 0; background:var(--ink); color:var(--cream); position:relative; overflow:hidden; text-align:center; }
+.final-cta::before {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse at center, rgba(107,22,32,0.3) 0%, transparent 65%);
+  pointer-events:none;
+}
+.final-cta .container { position:relative; }
+.final-cta h2 { color:var(--cream); margin:0 auto 24px; max-width:780px; }
+.final-cta h2 em { color:var(--gold-soft); }
+.final-cta .lead { color:rgba(250,246,238,0.7); max-width:580px; margin:0 auto 48px; }
+.final-cta .actions { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
+.final-cta .btn-primary { background:var(--oxblood); }
+.final-cta .btn-ghost { color:var(--cream); border-color:rgba(250,246,238,0.3); }
+.final-cta .btn-ghost:hover { background:var(--cream); color:var(--ink); }
+.final-cta .trust { margin-top:36px; color:rgba(250,246,238,0.5); font-size:13px; }
+
+/* ─── FOOTER ──────────────────────────────────────────────── */
+footer { background:var(--cream); padding:80px 0 40px; border-top:1px solid var(--border); }
+footer .grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:64px; margin-bottom:48px; }
+@media(max-width:720px){ footer .grid { grid-template-columns:1fr 1fr; } }
+footer .brand .logo { font:600 24px/1 var(--serif); color:var(--ink); display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+footer .brand .logo .mark { width:32px; height:32px; background:var(--oxblood); border-radius:7px; display:inline-flex; align-items:center; justify-content:center; color:var(--cream); font:700 14px/1 var(--sans); }
+footer .brand p { color:var(--ink-dim); font-size:14px; line-height:1.55; max-width:300px; }
+footer h4 { font-size:12px; color:var(--ink-dim); font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:18px; }
+footer ul { list-style:none; }
+footer li { margin-bottom:12px; }
+footer a { color:var(--ink-dim); font-size:14px; }
+footer a:hover { color:var(--oxblood); }
+footer .legal { padding-top:28px; border-top:1px solid var(--border-soft); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; color:var(--ink-faint); font-size:13px; }
+
+/* ─── REVEAL ANIMATION ────────────────────────────────────── */
+.reveal { opacity:0; transform:translateY(24px); transition:opacity .8s ease, transform .8s ease; }
+.reveal.in { opacity:1; transform:translateY(0); }
 
 @media(max-width:720px){
-  .hero{padding:80px 0 64px}
-  nav .links a:not(.cta){display:none}
+  section { padding:80px 0; }
+  nav.top .links a:not(.cta) { display:none; }
 }
 </style>
 </head>
 <body>
 
-<nav>
+<!-- ─── NAV ─────────────────────────────────────────────────── -->
+<nav class="top" id="topnav">
   <div class="container">
-    <a class="logo" href="/">ELH Coach</a>
+    <a class="logo" href="/"><span class="mark">EC</span>ELH Coach</a>
     <div class="links">
-      <a href="#features">Features</a>
-      <a href="#how">How it works</a>
-      <a href="#pricing">Pricing</a>
-      <a class="cta" href="/signup">Start free trial</a>
+      <a href="#coach-portal">Coach Portal</a>
+      <a href="#client-app">Client App</a>
+      <a href="#math">Pricing</a>
+      <a href="#compare">vs Trainerize</a>
+      <a href="/login">Log in</a>
+      <a class="cta" href="/signup">Start 14-day trial</a>
     </div>
   </div>
 </nav>
 
-<header class="hero container">
-  <div class="eyebrow">Now in early access</div>
-  <h1>Run your coaching business <em>like the pros do.</em></h1>
-  <p class="lead">A branded client app, full roster management, real-time messaging, food + workout tracking — built for coaches who don't want to glue together five tools.</p>
-  <div class="actions">
-    <a class="btn btn-primary" href="/signup">Start 14-day trial →</a>
-    <a class="btn btn-ghost" href="#pricing">See pricing</a>
-  </div>
-</header>
-
-<section id="features">
-  <div class="container">
-    <div class="section-eyebrow">Built for coaches</div>
-    <h2>Everything your clients need. None of the everything-else.</h2>
-    <p class="lead-2">Branded check-ins, food logging, allergy alerts, workout programming, weekly check-ins, real-time chat — in one place. With your colors and logo on every screen from day one.</p>
-
-    <div class="features">
-      <div class="feature">
-        <span class="num">— 01</span>
-        <h3>Your brand, day one</h3>
-        <p>Pick your color, drop your logo, set your subdomain. Every screen, every email, every push reads as yours.</p>
-      </div>
-      <div class="feature">
-        <span class="num">— 02</span>
-        <h3>AI-grade food logging</h3>
-        <p>Photo scans, barcodes, USDA + Open Food Facts, voice. Allergy alerts the moment a client logs a food they shouldn't.</p>
-      </div>
-      <div class="feature">
-        <span class="num">— 03</span>
-        <h3>In-app messaging</h3>
-        <p>Real-time chat with read receipts. Nudges fire automatically when a client misses a meal log or skips a workout.</p>
-      </div>
-      <div class="feature">
-        <span class="num">— 04</span>
-        <h3>Roster at a glance</h3>
-        <p>Open the app and see every client's last week of meals, workouts, water, sleep — sorted by who needs you most.</p>
-      </div>
-      <div class="feature">
-        <span class="num">— 05</span>
-        <h3>iOS, Android, web</h3>
-        <p>Native iOS app, full PWA on Android and desktop. Your clients install once and never think about it again.</p>
-      </div>
-      <div class="feature">
-        <span class="num">— 06</span>
-        <h3>Their data is yours</h3>
-        <p>Export anytime, cancel anytime. No long contracts, no penalty fees, no held-hostage data.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="how" class="story">
-  <div class="container">
-    <div class="grid">
-      <div class="copy">
-        <div class="section-eyebrow">How it works</div>
-        <h2>Subdomain to start. Your domain when you're ready.</h2>
-        <p>Most coaches launch on <b>yourname.elhcoach.app</b> — instant trust, no DNS headaches, all the polish of a custom-built app. When the brand earns it, graduate to <b>app.yourbrand.com</b> with full white-label and own the room outright.</p>
-      </div>
-      <div class="visual">
-        <div><span class="domain">bodybychosen.elhcoach.app</span> <span class="arrow">→</span> $89/mo subscription</div>
-        <div><span class="domain">irontide.elhcoach.app</span> <span class="arrow">→</span> $89/mo subscription</div>
-        <div><span class="domain">app.zenith.com</span> <span class="arrow">→</span> Real domain upgrade</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section id="pricing" class="pricing-section">
-  <div class="container">
-    <div class="section-eyebrow">Pricing</div>
-    <h2>Three tiers. Same platform. Different stage of the game.</h2>
-    <p class="lead-2">No setup fees. Annual prepay = 2 months free. Cancel anytime.</p>
-
-    <div class="pricing">
-
-      <div class="tier featured">
-        <h3>Coach</h3>
-        <div class="tag">Subdomain · subscription</div>
-        <div class="price">$89<small>/mo</small></div>
-        <div class="annual">or $890/yr — save $178</div>
-        <ul>
-          <li>Branded subdomain (yourname.elhcoach.app)</li>
-          <li>25 active clients</li>
-          <li>Full feature set: AI nutrition, cycle, labs, conditions, glucose, wearables</li>
-          <li>Native iOS + PWA, your accent color</li>
-          <li>Stripe Connect — take payments through your account</li>
-          <li>14-day free trial · email support 24h</li>
-        </ul>
-        <div class="cta"><a href="/signup?plan=coach">Start free trial</a></div>
-      </div>
-
-      <div class="tier">
-        <h3>Real Domain</h3>
-        <div class="tag">Ownership upgrade</div>
-        <div class="price">$2,500<small>one-time</small></div>
-        <div class="annual">+ $200/yr maintenance · monthly subscription stops</div>
-        <ul>
-          <li>Your real domain (yourbrand.com)</li>
-          <li><strong>Unlimited clients</strong></li>
-          <li>Full white-label, no platform branding</li>
-          <li>SSO (Google / Okta / Azure AD)</li>
-          <li>Per-tenant REST API + webhooks</li>
-          <li>BAA-ready · dedicated CSM · 1h SLA · phone support</li>
-        </ul>
-        <div class="cta"><a href="/signup?plan=upgrade">Talk to us</a></div>
-      </div>
-
-      <div class="tier">
-        <h3>Native Apps</h3>
-        <div class="tag">Optional add-on · any tier</div>
-        <div class="price">$4,500<small>one-time</small></div>
-        <div class="annual">+ $300/yr maintenance</div>
-        <ul>
-          <li>Real native iOS &amp; Android apps</li>
-          <li>In your developer account · listed under your name</li>
-          <li>App Store + Play Store submission included</li>
-          <li>Signing, screenshots, store copy handled</li>
-          <li>Annual maintenance covers OS-update rebuild + resubmission</li>
-        </ul>
-        <div class="cta"><a href="/signup?plan=native">Add at signup</a></div>
-      </div>
-
-    </div>
-
-    <p style="text-align:center;margin-top:40px;color:var(--text-dim);font-size:14px;max-width:760px;margin-left:auto;margin-right:auto">
-      <strong style="color:var(--primary)">The breakeven math:</strong>
-      Year 1 on subscription = $1,068. Year 1 with upgrade = $2,700 ($2,500 + $200). Year 2 onward = just $200/yr. By year 3 you're saving money <em>and</em> you own your real brand domain forever.
-    </p>
-  </div>
-</section>
-
-<footer>
+<!-- ─── HERO ────────────────────────────────────────────────── -->
+<header class="hero">
   <div class="container">
     <div class="grid">
       <div>
-        <div style="font:600 22px var(--serif);color:var(--primary);margin-bottom:14px">ELH Coach</div>
-        <p style="color:var(--text-faint);font-size:14px;line-height:1.6;max-width:340px">The platform serious coaches run their business on.</p>
+        <span class="eyebrow">For coaches who run real businesses</span>
+        <h1>Run your coaching business <em>like the pros do.</em></h1>
+        <p class="lead">A branded mobile app for your clients, a real coach portal for you, AI nutrition, cycle-aware coaching, glucose tracking, real-time chat, and Stripe Connect — all under <em>your</em> name. One platform. One bill. One brand.</p>
+        <div class="actions">
+          <a href="/signup" class="btn btn-primary">
+            Start 14-day trial
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#coach-portal" class="btn btn-ghost">See it in action</a>
+        </div>
+        <div class="trust">
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg> No credit card</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg> Full feature access</span>
+          <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg> Cancel anytime</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="phone-frame">
+          <img src="/screenshots/client_today.png" alt="Client app — today's macros, readiness, and quick logging" loading="eager">
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ─── PROBLEM ─────────────────────────────────────────────── -->
+<section class="problem">
+  <div class="container">
+    <div class="grid">
+      <div class="reveal">
+        <span class="eyebrow dark">The mess you're in</span>
+        <h2>You're running a coaching business out of <em>six tabs.</em></h2>
+        <p class="lead">Trainerize for programs. MyFitnessPal for nutrition. Slack for chat. Drive for forms. Stripe for billing. Calendly for scheduling. None of it has your name on it. None of it talks to each other. Every churned client tells the same story.</p>
+        <div class="stat">$0</div>
+        <div class="stat-l">— how much equity you build in someone else's brand.</div>
+      </div>
+      <div class="tool-chaos reveal">
+        <div class="tool tool-1"><div class="icn">T</div>Trainerize</div>
+        <div class="tool tool-2"><div class="icn">M</div>MyFitnessPal</div>
+        <div class="tool tool-3"><div class="icn">#</div>Slack</div>
+        <div class="tool tool-4"><div class="icn">D</div>Google Drive</div>
+        <div class="tool tool-5"><div class="icn">S</div>Stripe</div>
+        <div class="tool tool-6"><div class="icn">C</div>Calendly</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COACH PORTAL ────────────────────────────────────────── -->
+<section class="coach-portal" id="coach-portal">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow">Inside the Coach Portal</span>
+      <h2>The console you wish your last platform had.</h2>
+      <p class="lead-sm">A real desktop workspace for the way coaches actually work — not a mobile dashboard pretending to be one. Five workspaces. One sidebar. Every client, every program, every payment, one click away.</p>
+    </div>
+
+    <div class="dash-shot reveal">
+      <div class="browser-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="url">bodybychosen.elhcoach.app/app</div>
+      </div>
+      <img src="/screenshots/coach_dashboard.png" alt="ELH Coach trainer dashboard — branded as Body by Chosen, showing 28 active clients, 4 new this week, 3 at risk, 94% engagement" loading="lazy">
+    </div>
+
+    <div class="coach-views">
+      <div class="view-card reveal">
+        <div class="ic">📊</div>
+        <h4>Dashboard</h4>
+        <p>Active clients, new-this-week, at-risk count, engagement %, sessions completed, messages sent — at a glance, every morning.</p>
+      </div>
+      <div class="view-card reveal">
+        <div class="ic">👥</div>
+        <h4>Roster</h4>
+        <p>Every client ranked by risk: <em>crushing</em>, <em>on track</em>, <em>slipping</em>, <em>ghosting</em>. Search, filter, drill into any client's full history.</p>
+      </div>
+      <div class="view-card reveal">
+        <div class="ic">📋</div>
+        <h4>Programs</h4>
+        <p>Workout and nutrition programs as templates. Track active vs completed. Push updates to every client on a program at once.</p>
+      </div>
+      <div class="view-card reveal">
+        <div class="ic">⚙️</div>
+        <h4>Account &amp; billing</h4>
+        <p>Workspace branding (colors, logo, app name), Stripe billing portal, plan management, upgrade to real domain when you're ready.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ROSTER SHOWCASE ─────────────────────────────────────── -->
+<section class="coach-portal" style="background:var(--cream);padding:0 0 140px">
+  <div class="container">
+    <div class="head reveal" style="max-width:840px;margin:0 0 56px">
+      <span class="eyebrow">Roster · the killer view</span>
+      <h2>Every client. <em>One screen.</em> Ranked by who needs you most.</h2>
+      <p class="lead-sm">Crushing, on track, slipping, ghosting. Score-based risk tiers powered by adherence + check-ins + last-login. The end of "I think Sarah's drifting but I'm not sure."</p>
+    </div>
+    <div class="dash-shot reveal" style="transform:none">
+      <div class="browser-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="url">bodybychosen.elhcoach.app/app#roster</div>
+      </div>
+      <img src="/screenshots/coach_roster.png" alt="ELH Coach roster view — 10 clients with risk tier pills, score, meals tracked, last login" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROGRAMS SHOWCASE ───────────────────────────────────── -->
+<section class="coach-portal" style="background:var(--cream-soft);padding:0;padding-top:0">
+  <div class="container" style="padding-top:140px;padding-bottom:140px">
+    <div class="grid" style="display:grid;grid-template-columns:1fr 1.4fr;gap:64px;align-items:center;">
+      <div class="reveal">
+        <span class="eyebrow">Programs library</span>
+        <h2>Build once. <em>Assign forever.</em></h2>
+        <p class="lead-sm" style="margin-bottom:24px">Workout templates, nutrition templates, hybrid campaigns. Push a program update and every client on it sees it on their next session — without you copy-pasting between PDFs ever again.</p>
+        <p class="lead-sm">Built-in templates for the way real coaches work: PPL, peak-week prep, postnatal return-to-lift, GLP-1 protein floors, glucose resets, cycle-aware hypertrophy.</p>
+      </div>
+      <div class="dash-shot reveal" style="transform:none">
+        <div class="browser-bar">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <div class="url">bodybychosen.elhcoach.app/app#programs</div>
+        </div>
+        <img src="/screenshots/coach_programs.png" alt="ELH Coach programs library — 6 program templates with active and completed counts" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CLIENT APP ──────────────────────────────────────────── -->
+<section class="client-app-section" id="client-app">
+  <div class="container">
+    <div class="grid">
+      <div class="reveal">
+        <span class="eyebrow">The client experience</span>
+        <h2>What <em>your</em> clients actually open every day.</h2>
+        <p class="lead-sm" style="margin-bottom:8px">Four tabs. No clutter. Everything they need to log a meal, see today's workout, message you, and check on their progress — under your brand, on their phone.</p>
+        <ul class="client-features">
+          <li>
+            <div class="ic">🏠</div>
+            <div class="body">
+              <strong>Today</strong>
+              <span>Calorie + macro ring, today's readiness score, today's workout, week ahead, quick-log buttons.</span>
+            </div>
+          </li>
+          <li>
+            <div class="ic">💬</div>
+            <div class="body">
+              <strong>Messages</strong>
+              <span>Direct chat with you, with read receipts. No more "I missed your IG DM."</span>
+            </div>
+          </li>
+          <li>
+            <div class="ic">📈</div>
+            <div class="body">
+              <strong>Progress</strong>
+              <span>Weight trend, biometric history, glucose Time-in-Range, recovery streak, lift PRs.</span>
+            </div>
+          </li>
+          <li>
+            <div class="ic">⚙️</div>
+            <div class="body">
+              <strong>Account</strong>
+              <span>Privacy controls, data export, sign-out. Their data, always exportable.</span>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <div class="phone-frame tilt-r">
+          <img src="/screenshots/client_today.png" alt="Client app today screen — branded as Body by Chosen with macro ring and readiness score" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── WALKTHROUGH (real features) ─────────────────────────── -->
+<section class="walkthrough">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow">Every feature shipped</span>
+      <h2>The tools your clients <em>actually use.</em></h2>
+      <p class="lead-sm">Not feature-creep. Not a kitchen sink. The things every serious coach asks for, built right and shipping today.</p>
+    </div>
+
+    <div class="walk-grid">
+      <div class="walk-card reveal">
+        <div class="num">— 01 / Nutrition</div>
+        <h3>AI photo meal recognition</h3>
+        <p>Snap a plate, get every macro. Multi-item plates, sauces, sides — parsed and cross-referenced against the USDA food database. Powered by Gemini Flash with OpenAI Vision fallback.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 02 / Nutrition</div>
+        <h3>Barcode scan w/ USDA fallback</h3>
+        <p>Open Food Facts as primary, USDA SR + FoodData Central as fallback. GTIN checksum validation. The barcode scanner that actually finds the food at every grocery store, not just Whole Foods.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 03 / Female-specific</div>
+        <h3>Cycle-aware coaching</h3>
+        <p>Phase-aware tips (menstrual / follicular / ovulation / luteal), calorie targets that move with hormones, training adjustments by phase. Built into the app, not bolted on as an afterthought.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 04 / Daily readiness</div>
+        <h3>Recovery / readiness score</h3>
+        <p>Sleep + HRV + load → today's readiness score (0–100). Gives you the right context to write programming for tomorrow without asking "how do you feel?" twenty times.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 05 / Glucose</div>
+        <h3>Time-in-Range + GMI</h3>
+        <p>Continuous glucose tracking with Time-in-Range %, estimated A1C (GMI), low/high event counts, 14-day trend. For coaches working metabolic health, GLP-1, or pre-diabetic populations.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 06 / Real-time</div>
+        <h3>In-app messaging</h3>
+        <p>One thread per client, with read receipts. The last place your clients should be messaging you is Instagram DMs. Built in, indexed by client, retrievable forever.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 07 / Workouts</div>
+        <h3>Workout programming</h3>
+        <p>Programs, days, exercises with sets/reps/RPE. Drag-to-reorder, template library, assign-to-roster. Push a program update once and everyone on it sees it.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 08 / Safety</div>
+        <h3>Allergen + condition alerts</h3>
+        <p>Cross-checks every meal log against client allergies, medical conditions, medications, and dietary restrictions. Flags before they hit submit.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 09 / Money</div>
+        <h3>Stripe Connect billing</h3>
+        <p>Your Stripe account, your money, your control. Set the prices, run the charges, get paid directly. We don't take a cut of your transactions — ever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COACH ARCHETYPES ───────────────────────────────────── -->
+<section class="archetypes">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow">Built for the way you actually coach</span>
+      <h2>Whatever your <em>specialty</em> — there's a lane for it.</h2>
+      <p class="lead-sm">ELH Coach isn't a one-size-fits-all template. It bends around what you do.</p>
+    </div>
+    <div class="arch-grid">
+      <div class="arch-card reveal">
+        <div class="ic">🏋️‍♂️</div>
+        <h3>Powerlifting / Strength</h3>
+        <p>RPE-based programming, 1RM auto-calc, peak-week templates, deload triggers. Built for coaches who care if it's a 7 or an 8.</p>
+      </div>
+      <div class="arch-card reveal">
+        <div class="ic">🤰</div>
+        <h3>Pre &amp; Postnatal</h3>
+        <p>Cycle-aware coaching, return-to-lift programs, contra-indication flags via the allergen/condition engine.</p>
+      </div>
+      <div class="arch-card reveal">
+        <div class="ic">💉</div>
+        <h3>GLP-1 / Weight management</h3>
+        <p>Protein-floor enforcement via meal-log targets, recovery-aware programming, dose-week intake adjustments. Keeping muscle is the hardest part of GLP-1 coaching — we make it tractable.</p>
+      </div>
+      <div class="arch-card reveal">
+        <div class="ic">🥗</div>
+        <h3>Clinical / RD</h3>
+        <p>Glucose Time-in-Range, allergy + condition flags, meds tracking, exportable client data. For dietitians who actually need the data.</p>
+      </div>
+      <div class="arch-card reveal">
+        <div class="ic">🎯</div>
+        <h3>Executive / High-performer</h3>
+        <p>Quiet check-ins, recovery + glucose-aware programming. For clients who don't have time for a chatty app.</p>
+      </div>
+      <div class="arch-card reveal">
+        <div class="ic">🔥</div>
+        <h3>Bodybuilding / Physique</h3>
+        <p>Peak-week templates, prep-phase macro automation, daily-readiness for water/sodium scheduling.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BREAKEVEN MATH ─────────────────────────────────────── -->
+<section class="math" id="math">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow dark">The pricing nobody else offers</span>
+      <h2>Pay $89 a month. Then <em>own</em> your platform.</h2>
+      <p class="lead">Trainerize is $99/mo forever. Everfit Studio is $129/mo forever. We start cheaper — and we let you graduate to a real domain you own outright. Look at year three.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-card reveal">
+        <div class="yr">YEAR 1 · OPTION A</div>
+        <h3>Stay on the subscription</h3>
+        <div class="num">$1,068<small>/yr</small></div>
+        <div class="desc">$89/mo on a branded subdomain. 25 clients. Everything the app does. No commitment. No setup fees.</div>
+      </div>
+      <div class="tl-card featured reveal">
+        <div class="badge">Recommended</div>
+        <div class="yr">YEAR 1 · OPTION B</div>
+        <h3>Upgrade to your real domain</h3>
+        <div class="num">$2,700<small>/once</small></div>
+        <div class="desc">$2,500 one-time setup + $200/yr maintenance. Subscription <strong>stops</strong>. Unlimited clients. Full white-label. BAA-ready. Dedicated CSM.</div>
+      </div>
+      <div class="tl-card reveal">
+        <div class="yr">YEAR 2+</div>
+        <h3>You own it</h3>
+        <div class="num">$200<small>/yr</small></div>
+        <div class="desc">From year two on, all you pay is the maintenance fee. Forever. By year three you've spent <em>less</em> than three years of subscription — and you own a real brand.</div>
+      </div>
+    </div>
+
+    <div class="punch reveal">
+      <div class="punch-q">"What other platform sells you out of itself like that?"</div>
+      <div class="punch-a">None. They make money keeping you on the subscription forever. We make money helping you build something acquirable.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COMPARE ────────────────────────────────────────────── -->
+<section class="compare" id="compare">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow" style="display:inline-block;margin:0 auto 16px">Side by side</span>
+      <h2>vs Trainerize. vs Everfit. <em>vs everyone.</em></h2>
+      <p class="lead-sm">The only feature that matters is the one nobody else offers.</p>
+    </div>
+
+    <table class="compare-table reveal">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Trainerize Pro</th>
+          <th>Everfit Studio</th>
+          <th class="us">ELH Coach</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Starting price</td><td>$99/mo</td><td>$129/mo</td><td class="us">$89/mo</td></tr>
+        <tr><td>Branded client app</td><td><span class="yes">✓</span></td><td><span class="yes">✓</span></td><td class="us"><span class="yes">✓</span></td></tr>
+        <tr><td>AI photo nutrition</td><td><span class="no">add-on $39/mo</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">included</span></td></tr>
+        <tr><td>Barcode scan + USDA</td><td><span class="no">—</span></td><td><span class="no">basic only</span></td><td class="us"><span class="yes">included</span></td></tr>
+        <tr><td>Cycle-aware coaching</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">included</span></td></tr>
+        <tr><td>Glucose / Time-in-Range</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">included</span></td></tr>
+        <tr><td>Recovery / readiness score</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">included</span></td></tr>
+        <tr><td>Stripe Connect (your account)</td><td><span class="no">platform takes %</span></td><td><span class="no">platform takes %</span></td><td class="us"><span class="yes">100% to you</span></td></tr>
+        <tr><td>BAA / HIPAA-ready</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">on upgrade</span></td></tr>
+        <tr><td><strong>Real domain ownership path</strong></td><td><span class="no">never</span></td><td><span class="no">never</span></td><td class="us"><span class="star">$2,500 once · own forever</span></td></tr>
+        <tr><td>Year-3 cost (with upgrade)</td><td>$3,564</td><td>$4,644</td><td class="us"><strong>$3,100 + your domain</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─── STRIPE CONNECT ─────────────────────────────────────── -->
+<section class="stripe-flow">
+  <div class="container">
+    <div class="head reveal">
+      <span class="eyebrow">Your money, your account</span>
+      <h2>Every dollar lands in <em>your</em> Stripe — not ours.</h2>
+      <p class="lead-sm">Most platforms route payments through their account and pay you on a delay. We use Stripe Connect, so your client's card charges hit your account directly. We never touch the money.</p>
+    </div>
+    <div class="flow-vis">
+      <div class="flow-card reveal">
+        <div class="ic">💳</div>
+        <h3>Client pays $250</h3>
+        <p>Card hits Stripe Connect, routed by tenant ID</p>
+      </div>
+      <div class="arrow-h">→</div>
+      <div class="flow-card you reveal">
+        <div class="ic">🏦</div>
+        <h3>Your Stripe</h3>
+        <p>$250 lands in your account · we never touch it · Stripe takes its standard fee (2.9%+30¢)</p>
+      </div>
+      <div class="arrow-h">→</div>
+      <div class="flow-card reveal">
+        <div class="ic">🚫</div>
+        <h3>Us: $0 cut</h3>
+        <p>We charge you for the platform. Your transactions are yours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── NATIVE APPS ────────────────────────────────────────── -->
+<section class="native">
+  <div class="container">
+    <div class="grid">
+      <div class="reveal">
+        <span class="eyebrow">Native apps · optional add-on</span>
+        <h2>Real apps. <em>Your</em> developer account.</h2>
+        <p class="lead-sm" style="margin-bottom:24px">For coaches who want their app on the App Store and Play Store under their own developer name — not buried in a subdomain. We handle signing, screenshots, store copy, and resubmission on every iOS / Android major version.</p>
+        <p class="lead-sm" style="margin-bottom:24px">$4,500 one-time. $300/yr for OS-update rebuilds. Available at any tier.</p>
+        <a href="/pricing" class="btn btn-dark">See native add-on details
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="visual reveal">
+        <div class="app-badge">
+          <svg class="icn" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+          <div><div class="top-line">Download on the</div><div class="bot-line">App Store</div></div>
+        </div>
+        <div class="app-badge">
+          <svg class="icn" viewBox="0 0 512 512" fill="currentColor"><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg>
+          <div><div class="top-line">Get it on</div><div class="bot-line">Google Play</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TESTIMONIAL ────────────────────────────────────────── -->
+<section class="quote-section">
+  <div class="container">
+    <div class="quote-card reveal">
+      <span class="quote-mark">"</span>
+      <blockquote>I stopped paying Trainerize, MyFitnessPal Premium, Calendly, <em>and</em> Slack the same week I switched. Clients open the app and see <em>my</em> name on it. That's worth the upgrade fee on its own.</blockquote>
+      <div class="att">
+        <div class="av">C</div>
+        <div style="text-align:left">
+          <div class="name">Chosen, Body by Chosen</div>
+          <div class="role">Strength &amp; conditioning · Houston, TX</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FAQ ────────────────────────────────────────────────── -->
+<section class="faq">
+  <div class="container">
+    <span class="eyebrow" style="display:block;text-align:center;margin:0 auto 12px">Common questions</span>
+    <h2>Things coaches ask before they sign up.</h2>
+    <div class="faq-list">
+      <details>
+        <summary>What happens to the $89/mo when I upgrade to my real domain?</summary>
+        <p>It stops. The Real Domain Upgrade replaces the subscription — you pay $200/yr maintenance instead. We migrate your tenant to your domain in about 24 hours; existing client logins keep working through automatic redirects.</p>
+      </details>
+      <details>
+        <summary>What happens after my 14-day trial ends?</summary>
+        <p>You'll get a reminder three days before billing starts. If you don't add a card, your account locks until you do — your data is preserved. Cancel anytime, no friction, no clawback.</p>
+      </details>
+      <details>
+        <summary>Do I have to install anything? What about my clients?</summary>
+        <p>Zero install for you — the Coach Portal is a web app at <em>yourname</em>.elhcoach.app. Your clients can use the PWA (which installs to their home screen on iOS and Android in two taps), or you can add the optional Native Apps Add-On to publish real App Store / Play Store apps under your developer account.</p>
+      </details>
+      <details>
+        <summary>What's the AI nutrition powered by?</summary>
+        <p>Photo recognition uses Gemini Flash (primary) and OpenAI Vision (fallback) with a USDA cross-reference for canonical macros. Barcode scanning hits Open Food Facts first, falls back to USDA SR / FoodData Central. We validate GTIN checksums to reject typos.</p>
+      </details>
+      <details>
+        <summary>Is the cycle / glucose / recovery stuff actually shipping?</summary>
+        <p>Yes — every feature on this page is in production. Cycle phase tracking, today's readiness scoring, glucose Time-in-Range with estimated A1C — all live and used by coaches today. The screenshots above are the actual app rendering live data.</p>
+      </details>
+      <details>
+        <summary>HIPAA / BAA?</summary>
+        <p>BAA-ready on the Real Domain tier. We execute the Business Associate Agreement before any PHI flows through the platform. The base subscription tier isn't intended for clinical workflows.</p>
+      </details>
+      <details>
+        <summary>Can I migrate from Trainerize / Everfit / something else?</summary>
+        <p>Yes — we'll import your client roster, programs, and meal templates. The 30-min onboarding call covers the migration. Most coaches are fully switched in under a week.</p>
+      </details>
+      <details>
+        <summary>Can I export my data if I leave?</summary>
+        <p>Always. Full JSON + CSV export of every client, meal log, message, program, biometric. Your data is yours, on every tier.</p>
+      </details>
+      <details>
+        <summary>Why is your starting price lower than the competition?</summary>
+        <p>Because we want you to upgrade to the Real Domain tier. The $89/mo is the on-ramp; the $2,500 ownership upgrade is the actual business model. Trainerize and Everfit make money keeping you on a subscription forever — we make money helping you graduate off ours.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FINAL CTA ──────────────────────────────────────────── -->
+<section class="final-cta">
+  <div class="container">
+    <span class="eyebrow dark" style="display:inline-block;margin:0 auto 24px">Ready when you are</span>
+    <h2>Stop renting your business. <em>Start owning it.</em></h2>
+    <p class="lead">Set up your branded subdomain in under ten minutes. Zero credit card. Full feature access for fourteen days.</p>
+    <div class="actions">
+      <a href="/signup" class="btn btn-primary">
+        Start your 14-day trial
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+      <a href="/pricing" class="btn btn-ghost">See full pricing</a>
+    </div>
+    <div class="trust">No credit card · cancel anytime · 30-day money-back guarantee on upgrades</div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <div class="grid">
+      <div class="brand">
+        <div class="logo"><span class="mark">EC</span>ELH Coach</div>
+        <p>The platform serious coaches run their business on. Built for the way you actually work.</p>
       </div>
       <div>
         <h4>Product</h4>
         <ul>
-          <li><a href="#features">Features</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="/signup">Start trial</a></li>
+          <li><a href="#coach-portal">Coach Portal</a></li>
+          <li><a href="#client-app">Client App</a></li>
+          <li><a href="/pricing">Pricing</a></li>
+          <li><a href="#math">Pricing math</a></li>
+          <li><a href="#compare">vs Trainerize</a></li>
         </ul>
       </div>
       <div>
         <h4>Company</h4>
         <ul>
           <li><a href="mailto:hello@elhcoach.app">Contact</a></li>
-          <li><a href="/privacy">Privacy</a></li>
           <li><a href="/terms">Terms</a></li>
+          <li><a href="/privacy">Privacy</a></li>
         </ul>
       </div>
       <div>
         <h4>For coaches</h4>
         <ul>
-          <li><a href="/signup">Sign up</a></li>
+          <li><a href="/signup">Start trial</a></li>
           <li><a href="/login">Log in</a></li>
+          <li><a href="mailto:partnerships@elhcoach.app">Partner program</a></li>
         </ul>
       </div>
     </div>
-    <div class="copyright">
-      <span>© ELH Coach. An ELH Empire product.</span>
-      <span>v2</span>
+    <div class="legal">
+      <div>© 2026 ELH Coach · part of the ELH empire</div>
+      <div>Built for coaches who run real businesses.</div>
     </div>
   </div>
 </footer>
+
+<script>
+const nav = document.getElementById('topnav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 12);
+}, { passive: true });
+
+const reveals = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => io.observe(el));
+</script>
 
 </body>
 </html>
