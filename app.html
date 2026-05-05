@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0F172A">
-<title>CoachHQ</title>
+<title>ELH Coach</title>
 <!--BRAND_INJECT-->
 <style>
 :root {
@@ -116,7 +116,7 @@ canvas{display:block;width:100%}
 <!-- LOGIN -->
 <div id="login" class="login hidden">
   <div class="login-card">
-    <h1 id="brand-login">CoachHQ</h1>
+    <h1 id="brand-login">ELH Coach</h1>
     <p class="sub" id="login-lead">Welcome back. Sign in.</p>
     <label class="field"><span class="lab">Email</span><input id="email" type="email" autocomplete="email"></label>
     <label class="field"><span class="lab">Password</span><input id="password" type="password" autocomplete="current-password"></label>
@@ -128,7 +128,7 @@ canvas{display:block;width:100%}
 <!-- APP -->
 <div id="app" class="app hidden">
   <aside>
-    <div class="brand"><span id="brand-name">CoachHQ</span></div>
+    <div class="brand"><span id="brand-name">ELH Coach</span></div>
     <nav>
       <button data-view="dashboard" class="on">📊 Dashboard</button>
       <button data-view="roster">👥 Roster</button>
@@ -150,7 +150,7 @@ canvas{display:block;width:100%}
 </div>
 
 <script>
-const BRAND = window.__BRAND__ || {name:'CoachHQ',primary:'#0F172A',accent:'#22C55E'};
+const BRAND = window.__BRAND__ || {name:'ELH Coach',primary:'#0F172A',accent:'#22C55E'};
 document.documentElement.style.setProperty('--primary', BRAND.primary);
 document.documentElement.style.setProperty('--accent',  BRAND.accent);
 document.title = BRAND.app_name || BRAND.name;
@@ -358,7 +358,7 @@ VIEWS.account = { title:'Account', async render() {
         <h3 style="margin-bottom:14px">Branding</h3>
         <p class="muted" style="font-size:13px">Tenant name, accent color, custom domain (Brand tier).</p>
         <div style="margin-top:14px;font-size:14px"><b>Workspace:</b> ${me.tenant?.name||''}</div>
-        <div><b>Subdomain:</b> ${me.tenant?.slug||''}.elhcoachhq.app</div>
+        <div><b>Subdomain:</b> ${me.tenant?.slug||''}.elhcoach.app</div>
       </div>
     </div>
   `;

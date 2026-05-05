@@ -1,4 +1,4 @@
--- CoachHQ v2 — full trainer + client experience.
+-- ELH Coach v2 — full trainer + client experience.
 --
 -- Adds programs/templates, schedule, content, wearables, lab uploads,
 -- progress photos, trainer notes, weight/biomarker logs, engagement

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CoachHQ demo seed.
+"""ELH Coach demo seed.
 
 Creates a believable trainer workspace — 'Iron Tide Coaching' — for live
 demos. Idempotent. 25 active clients, varied risk tiers, plausible meals,
@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault("SUPABASE_URL", "https://ytdheyjfqcqrvswullyb.supabase.co")
 os.environ.setdefault(
     "SUPABASE_SERVICE_KEY",
-    open("/tmp/coachhq_keys.env").read().split("SUPABASE_SERVICE_KEY=", 1)[1].strip(),
+    open("/tmp/elhcoach_keys.env").read().split("SUPABASE_SERVICE_KEY=", 1)[1].strip(),
 )
 
 from auth import hash_password

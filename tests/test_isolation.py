@@ -1,7 +1,7 @@
 """Cross-tenant isolation tests.
 
-These run against a CoachHQ Postgres instance with the migrations applied.
-If SUPABASE_URL + SUPABASE_SERVICE_KEY (or COACHHQ_TEST_DATABASE_URL) is
+These run against a ELH Coach Postgres instance with the migrations applied.
+If SUPABASE_URL + SUPABASE_SERVICE_KEY (or ELHCOACH_TEST_DATABASE_URL) is
 not set, they skip — but on CI against the staging DB they MUST pass.
 
 The contract: under no circumstances may a session for tenant A see any

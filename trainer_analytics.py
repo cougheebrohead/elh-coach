@@ -1,4 +1,4 @@
-"""CoachHQ trainer-console analytics. Tenant-scoped."""
+"""ELH Coach trainer-console analytics. Tenant-scoped."""
 from __future__ import annotations
 
 from typing import Any, Optional

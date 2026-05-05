@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: coachhq
+    name: elhcoach
     runtime: python
     region: oregon
     plan: starter
@@ -10,7 +10,7 @@ services:
     autoDeploy: true
     envVars:
       - key: APEX_HOST
-        value: elhcoachhq.app
+        value: elhcoach.app
       - key: ENV
         value: production
       - key: PYTHON_VERSION

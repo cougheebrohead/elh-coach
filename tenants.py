@@ -13,7 +13,7 @@ from typing import Any
 
 from db import db
 
-APEX_HOST = os.environ.get("APEX_HOST", "elhcoachhq.app")
+APEX_HOST = os.environ.get("APEX_HOST", "elhcoach.app")
 
 _CACHE: dict[str, tuple[float, dict | None]] = {}
 _TTL_SEC = 60

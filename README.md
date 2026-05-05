@@ -1,4 +1,4 @@
-# CoachHQ
+# ELH Coach
 
 Multi-tenant coaching SaaS for trainers, dietitians, and online coaches.
 
@@ -12,8 +12,8 @@ line of defense behind app-layer tenant gating.
 
 ## Architecture
 
-- **Apex** (`elhcoachhq.app`) → marketing, signup, login, billing webhook.
-- **Tenant subdomain** (`{slug}.elhcoachhq.app` or custom domain) → branded SPA.
+- **Apex** (`elhcoach.app`) → marketing, signup, login, billing webhook.
+- **Tenant subdomain** (`{slug}.elhcoach.app` or custom domain) → branded SPA.
 - Host header → tenant resolver → injected `__BRAND__` into HTML.
 - All queries go through `app_query` / `app_exec` SECURITY DEFINER RPCs
   that `SET LOCAL app.tenant_id` before executing user SQL — even a
@@ -28,7 +28,7 @@ python server.py
 ```
 
 Then `http://localhost:10000` for the apex (marketing), or set
-`Host: yourtenant.elhcoachhq.app` (use a `Host`-header proxy or `/etc/hosts`)
+`Host: yourtenant.elhcoach.app` (use a `Host`-header proxy or `/etc/hosts`)
 for tenant routing.
 
 ## Migrations

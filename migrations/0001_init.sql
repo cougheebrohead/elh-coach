@@ -1,4 +1,4 @@
--- CoachHQ schema. Multi-tenant from day one — every business table
+-- ELH Coach schema. Multi-tenant from day one — every business table
 -- carries tenant_id and is gated by RLS so a coach at one org physically
 -- cannot read another org's data through the API.
 
@@ -13,8 +13,8 @@ create table tenants (
     brand_accent    text not null default '#22C55E',  -- one tenant accent
     logo_url        text,
     favicon_url     text,
-    custom_domain   text unique,         -- tenant.elhcoachhq.app | their-own.com
-    app_name        text not null default 'CoachHQ',
+    custom_domain   text unique,         -- tenant.elhcoach.app | their-own.com
+    app_name        text not null default 'ELH Coach',
     -- Billing
     stripe_customer_id      text unique,
     stripe_subscription_id  text unique,

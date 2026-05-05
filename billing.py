@@ -86,7 +86,7 @@ def create_checkout(*, tenant_id: str, owner_email: str, plan: str,
     if not customer_id:
         cust = _stripe("POST", "customers", {
             "email": owner_email,
-            "metadata[coachhq_tenant_id]": tenant_id,
+            "metadata[elhcoach_tenant_id]": tenant_id,
         })
         customer_id = cust["id"]
         db.execute(
@@ -101,7 +101,7 @@ def create_checkout(*, tenant_id: str, owner_email: str, plan: str,
         "line_items[0][quantity]": "1",
         "success_url": success_url,
         "cancel_url": cancel_url,
-        "metadata[coachhq_tenant_id]": tenant_id,
+        "metadata[elhcoach_tenant_id]": tenant_id,
         "metadata[plan]": plan,
         "metadata[billing_cycle]": billing_cycle,
         "subscription_data[trial_period_days]": "14",  # 14-day trial on every new sub
@@ -114,7 +114,7 @@ def create_billing_portal(tenant: dict[str, Any]) -> str:
         raise RuntimeError("No Stripe customer on this tenant")
     portal = _stripe("POST", "billing_portal/sessions", {
         "customer": tenant["stripe_customer_id"],
-        "return_url": f"https://{tenant['slug']}.{os.environ.get('APEX_HOST','elhcoachhq.app')}/account",
+        "return_url": f"https://{tenant['slug']}.{os.environ.get('APEX_HOST','elhcoach.app')}/account",
     })
     return portal["url"]
 
@@ -154,7 +154,7 @@ def handle_stripe_webhook(body: bytes, sig_header: str) -> None:
     obj = (event.get("data") or {}).get("object") or {}
 
     if etype == "checkout.session.completed":
-        tenant_id = (obj.get("metadata") or {}).get("coachhq_tenant_id")
+        tenant_id = (obj.get("metadata") or {}).get("elhcoach_tenant_id")
         sub_id = obj.get("subscription")
         plan = (obj.get("metadata") or {}).get("plan", "coach")
         if tenant_id and sub_id:

@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /app
 
-Sitemap: https://elhcoachhq.app/sitemap.xml
+Sitemap: https://elhcoach.app/sitemap.xml

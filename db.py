@@ -24,7 +24,7 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "") or os.environ.get("SUPABASE_KEY", "")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
-    print("[CoachHQ] WARNING: SUPABASE_URL and SUPABASE_SERVICE_KEY env vars required", flush=True)
+    print("[ELHCoach] WARNING: SUPABASE_URL and SUPABASE_SERVICE_KEY env vars required", flush=True)
 
 
 def _request(method: str, path: str, params: dict | None = None,
@@ -46,7 +46,7 @@ def _request(method: str, path: str, params: dict | None = None,
             return json.loads(r.read())
     except urllib.error.HTTPError as e:
         msg = e.read().decode("utf-8", errors="replace")[:500]
-        print(f"[CoachHQ] PostgREST {e.code}: {msg}", flush=True)
+        print(f"[ELHCoach] PostgREST {e.code}: {msg}", flush=True)
         raise
 
 

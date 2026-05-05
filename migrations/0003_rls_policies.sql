@@ -1,4 +1,4 @@
--- RLS policies for CoachHQ.
+-- RLS policies for ELH Coach.
 --
 -- The app server connects via the SECURITY DEFINER RPCs in 0002 using the
 -- service_role key — those RPCs bypass RLS by design. The policies below

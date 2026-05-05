@@ -1,10 +1,10 @@
-# CoachHQ — production setup
+# ELH Coach — production setup
 
 The repo is ready. The two real-money / external steps below need credentials.
 
 ## 1. Apply migrations to Supabase
 
-Supabase project: `ytdheyjfqcqrvswullyb` (CoachHQ — separate from FitApp).
+Supabase project: `ytdheyjfqcqrvswullyb` (ELH Coach — separate from FitApp).
 
 ```bash
 export DATABASE_URL='postgres://postgres:<DB_PASSWORD>@db.ytdheyjfqcqrvswullyb.supabase.co:5432/postgres'
@@ -19,7 +19,7 @@ The repo includes `render.yaml`, `Procfile`, and `requirements.txt`. To deploy:
 
 **Option A — via dashboard (easiest):**
 1. https://dashboard.render.com/blueprint/new
-2. Connect `cougheebrohead/coachhq`
+2. Connect `cougheebrohead/elhcoach`
 3. Render reads `render.yaml`, creates the web service automatically
 4. Add the env vars in `.env.example` (keys not committed)
 
@@ -44,16 +44,16 @@ SK="sk_live_..."  # the live secret
 Then update Render env vars:
 - `STRIPE_SECRET_KEY` → live secret
 - `STRIPE_WEBHOOK_SECRET` → live webhook signing secret (after pointing
-  the live webhook at `https://elhcoachhq.app/api/stripe/webhook`)
+  the live webhook at `https://elhcoach.app/api/stripe/webhook`)
 - `STRIPE_PRICE_*` → the six live price IDs
 
 ## 4. DNS
 
-Apex `elhcoachhq.app` and wildcard `*.elhcoachhq.app` both point to the Render
+Apex `elhcoach.app` and wildcard `*.elhcoach.app` both point to the Render
 service. Custom domains for Studio/Brand tenants are added via the
 billing/settings flow (and need a corresponding `render domain add`).
 
 ## 5. Sentry
 
-Create a CoachHQ project in Sentry, paste the server DSN as
+Create a ELH Coach project in Sentry, paste the server DSN as
 `SENTRY_DSN_SERVER` and the client DSN as `SENTRY_DSN_CLIENT` on Render.

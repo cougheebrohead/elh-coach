@@ -1,4 +1,4 @@
-"""CoachHQ HTTP server — Python stdlib, multi-tenant from request 1.
+"""ELH Coach HTTP server — Python stdlib, multi-tenant from request 1.
 
 Architecture:
     1. Host header → tenant resolver (subdomain or custom domain)
@@ -33,8 +33,8 @@ from typing import Any
 
 # ── App version (Render injects RENDER_GIT_COMMIT) ─────────────────
 APP_VERSION = (os.environ.get("RENDER_GIT_COMMIT") or "dev")[:12]
-APP_URL = os.environ.get("APP_URL", "https://coachhq.onrender.com")
-APEX_HOST = os.environ.get("APEX_HOST", "elhcoachhq.app")
+APP_URL = os.environ.get("APP_URL", "https://elh-coach.onrender.com")
+APEX_HOST = os.environ.get("APEX_HOST", "elhcoach.app")
 
 # ── Sentry (no-op when DSN unset) ───────────────────────────────────
 SENTRY_ENABLED = False
@@ -50,9 +50,9 @@ if _SENTRY_DSN:
             environment=os.environ.get("SENTRY_ENV", "production"),
         )
         SENTRY_ENABLED = True
-        print("[CoachHQ] Sentry initialized", flush=True)
+        print("[ELHCoach] Sentry initialized", flush=True)
     except Exception as e:
-        print(f"[CoachHQ] Sentry init failed: {e}", flush=True)
+        print(f"[ELHCoach] Sentry init failed: {e}", flush=True)
 
 
 def _capture(exc: BaseException) -> None:
@@ -102,7 +102,7 @@ MIME = {
 # ════════════════════════════════════════════════════════════════════
 
 class Handler(http.server.SimpleHTTPRequestHandler):
-    server_version = f"CoachHQ/{APP_VERSION}"
+    server_version = f"ELH Coach/{APP_VERSION}"
 
     # ─── helpers ─────────────────────────────────────────────────────
     def log_message(self, fmt: str, *args: Any) -> None:
@@ -837,12 +837,12 @@ class ThreadedServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 
 def main() -> None:
-    print(f"[CoachHQ] starting on :{PORT}", flush=True)
+    print(f"[ELHCoach] starting on :{PORT}", flush=True)
     with ThreadedServer(("0.0.0.0", PORT), Handler) as s:
         try:
             s.serve_forever()
         except KeyboardInterrupt:
-            print("[CoachHQ] shutting down", flush=True)
+            print("[ELHCoach] shutting down", flush=True)
 
 
 if __name__ == "__main__":
