@@ -10,7 +10,7 @@ services:
     autoDeploy: true
     envVars:
       - key: APEX_HOST
-        value: coachhq.app
+        value: elhcoachhq.app
       - key: ENV
         value: production
       - key: PYTHON_VERSION

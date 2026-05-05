@@ -13,7 +13,7 @@ create table tenants (
     brand_accent    text not null default '#22C55E',  -- one tenant accent
     logo_url        text,
     favicon_url     text,
-    custom_domain   text unique,         -- tenant.coachhq.app | their-own.com
+    custom_domain   text unique,         -- tenant.elhcoachhq.app | their-own.com
     app_name        text not null default 'CoachHQ',
     -- Billing
     stripe_customer_id      text unique,

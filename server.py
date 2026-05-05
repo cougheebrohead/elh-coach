@@ -34,7 +34,7 @@ from typing import Any
 # ── App version (Render injects RENDER_GIT_COMMIT) ─────────────────
 APP_VERSION = (os.environ.get("RENDER_GIT_COMMIT") or "dev")[:12]
 APP_URL = os.environ.get("APP_URL", "https://coachhq.onrender.com")
-APEX_HOST = os.environ.get("APEX_HOST", "coachhq.app")
+APEX_HOST = os.environ.get("APEX_HOST", "elhcoachhq.app")
 
 # ── Sentry (no-op when DSN unset) ───────────────────────────────────
 SENTRY_ENABLED = False

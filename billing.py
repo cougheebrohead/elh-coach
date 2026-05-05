@@ -114,7 +114,7 @@ def create_billing_portal(tenant: dict[str, Any]) -> str:
         raise RuntimeError("No Stripe customer on this tenant")
     portal = _stripe("POST", "billing_portal/sessions", {
         "customer": tenant["stripe_customer_id"],
-        "return_url": f"https://{tenant['slug']}.{os.environ.get('APEX_HOST','coachhq.app')}/account",
+        "return_url": f"https://{tenant['slug']}.{os.environ.get('APEX_HOST','elhcoachhq.app')}/account",
     })
     return portal["url"]
 

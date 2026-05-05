@@ -44,12 +44,12 @@ SK="sk_live_..."  # the live secret
 Then update Render env vars:
 - `STRIPE_SECRET_KEY` → live secret
 - `STRIPE_WEBHOOK_SECRET` → live webhook signing secret (after pointing
-  the live webhook at `https://coachhq.app/api/stripe/webhook`)
+  the live webhook at `https://elhcoachhq.app/api/stripe/webhook`)
 - `STRIPE_PRICE_*` → the six live price IDs
 
 ## 4. DNS
 
-Apex `coachhq.app` and wildcard `*.coachhq.app` both point to the Render
+Apex `elhcoachhq.app` and wildcard `*.elhcoachhq.app` both point to the Render
 service. Custom domains for Studio/Brand tenants are added via the
 billing/settings flow (and need a corresponding `render domain add`).
 
