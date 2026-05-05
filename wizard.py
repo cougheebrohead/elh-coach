@@ -62,33 +62,6 @@ def handle(handler, method: str, path: str) -> bool:
             handler._j({"error": f"scrape failed: {e}"}, 500); return True
         handler._j(kit, 200); return True
 
-    if method == "POST" and path == "/api/wizard/customer":
-        body = handler._body()
-        required = ("brand_name", "owner_email", "owner_name")
-        missing = [k for k in required if not (body.get(k) or "").strip()]
-        if missing:
-            handler._j({"error": f"missing: {', '.join(missing)}"}, 400); return True
-        try:
-            res = provisioner.provision_customer(
-                brand_name=body["brand_name"],
-                primary_color=body.get("primary_color"),
-                accent_color=body.get("accent_color"),
-                logo_url=body.get("logo_url"),
-                source_url=body.get("source_url"),
-                scraped_brand=body.get("scraped_brand"),
-                owner_email=body["owner_email"],
-                owner_name=body["owner_name"],
-                plan=(body.get("plan") or "coach"),
-                custom_slug=body.get("custom_slug"),
-                sales_owner=body.get("sales_owner") or "wizard",
-            )
-        except Exception as e:
-            import traceback; traceback.print_exc()
-            handler._j({"error": f"provision failed: {e}"}, 500); return True
-        if not res.get("ok"):
-            handler._j({"error": res.get("error") or "provision failed"}, 400); return True
-        handler._j(res, 200); return True
-
     if method == "POST" and path == "/api/wizard/provision":
         body = handler._body()
         if not (body.get("brand_name") or "").strip():
