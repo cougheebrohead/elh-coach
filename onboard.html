@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Branded Demo Wizard — ELH Coach</title>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#FAFAF8; --paper:#fff; --border:#E8E5DF; --ink:#0A0A0C;
+    --dim:#5C5F66; --faint:#8A8E94;
+    --primary:#0F172A; --accent:#22C55E; --rose:#A8456B; --green:#0E7C66;
+  }
+  html,body{background:var(--bg);color:var(--ink);font:400 15px/1.5 Inter,system-ui,sans-serif;min-height:100%;}
+  header{background:var(--primary);color:#fff;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;}
+  header h1{font:600 18px Newsreader,Georgia,serif;}
+  main{max-width:1240px;margin:0 auto;padding:32px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media (max-width:900px){.grid{grid-template-columns:1fr;}}
+  .card{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:28px;}
+  .card h2{font:600 17px Newsreader,Georgia,serif;margin-bottom:6px;}
+  .card .lede{color:var(--dim);font-size:13.5px;margin-bottom:20px;}
+  label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--dim);margin:14px 0 6px;}
+  input[type=text],input[type=url],input[type=password],input[type=number],textarea,select{
+    width:100%;padding:11px 13px;border:1px solid var(--border);border-radius:8px;font-size:14.5px;background:#fff;font-family:inherit;
+  }
+  input:focus,select:focus{outline:none;border-color:var(--primary);}
+  .row{display:flex;gap:10px;align-items:flex-end;}
+  .row .grow{flex:1;}
+  button{padding:11px 18px;border:0;border-radius:8px;background:var(--primary);color:#fff;font-weight:600;font-size:14px;cursor:pointer;}
+  button.ghost{background:transparent;color:var(--primary);border:1px solid var(--border);}
+  button:disabled{opacity:.5;cursor:not-allowed;}
+  .swatches{display:flex;gap:6px;flex-wrap:wrap;}
+  .sw{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);cursor:pointer;}
+  .sw.active{outline:2px solid var(--primary);outline-offset:2px;}
+  .preview{padding:24px;border-radius:12px;border:1px solid var(--border);background:#fff;text-align:center;}
+  .preview .name{font:600 26px Newsreader,Georgia,serif;margin:14px 0 6px;}
+  .preview .tag{color:var(--dim);font-size:13px;}
+  .preview img{max-width:160px;max-height:64px;display:block;margin:0 auto 6px;}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
+  .logo-grid{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+  .logo-grid figure{border:1px solid var(--border);border-radius:8px;padding:6px;cursor:pointer;width:64px;height:64px;display:flex;align-items:center;justify-content:center;background:#fff;}
+  .logo-grid figure.active{border-color:var(--primary);outline:2px solid var(--primary);outline-offset:1px;}
+  .logo-grid img{max-width:52px;max-height:52px;object-fit:contain;}
+  pre.creds{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;font:13px ui-monospace,monospace;overflow:auto;white-space:pre-wrap;word-break:break-all;}
+  .err-banner{background:#FCE8EC;color:var(--rose);padding:11px 14px;border-radius:8px;font-size:13.5px;margin-bottom:16px;}
+  .empty{color:var(--faint);font-size:13.5px;font-style:italic;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{padding:10px 8px;text-align:left;border-bottom:1px solid var(--border);}
+  th{font-size:11.5px;text-transform:uppercase;color:var(--dim);font-weight:600;}
+  .demo-link{font-family:ui-monospace,monospace;font-size:13px;}
+  .row-actions{display:flex;gap:8px;}
+  .row-actions button{padding:6px 10px;font-size:12px;}
+  .login-card{max-width:420px;margin:8vh auto;}
+  .helper{font-size:12px;color:var(--faint);margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div id="login" class="card login-card" style="display:none;">
+  <h2>Wizard access</h2>
+  <p class="lede">Paste the wizard token (from <code>ELH_COACH_WIZARD_TOKEN</code> in Render env). It's stored in this browser only.</p>
+  <label>Wizard token</label>
+  <input id="li-token" type="password" autocomplete="off">
+  <div style="margin-top:16px;"><button id="li-go">Continue</button></div>
+  <div id="li-err" class="err-banner" style="display:none;margin-top:14px;"></div>
+</div>
+
+<div id="app" style="display:none;">
+<header>
+  <h1>Branded Demo Wizard — ELH Coach</h1>
+  <span style="font-size:13px;color:#cbd0d9;"><a href="#" id="logout" style="color:#fff;text-decoration:underline;">forget token</a></span>
+</header>
+<main>
+
+<div class="card" style="margin-bottom:24px;">
+  <h2>Stand up a branded coach demo</h2>
+  <p class="lede">Type a coach's website (or Linktree). We pull their logo + brand color, you confirm, and 30 seconds later you have a private link that opens a fully-branded copy of ELH Coach with a seeded client roster.</p>
+  <div class="row">
+    <div class="grow">
+      <label>Coach website URL</label>
+      <input id="scan-url" type="url" placeholder="bodybychosen.com">
+    </div>
+    <button id="scan-go">Scan site</button>
+  </div>
+  <div id="scan-err" class="err-banner" style="display:none;margin-top:14px;"></div>
+</div>
+
+<div id="form-card" class="grid" style="display:none;">
+  <div class="card">
+    <h2>Confirm the brand</h2>
+
+    <label>Display name</label>
+    <input id="brand_name" type="text" placeholder="Body by Chosen">
+
+    <label>Tagline</label>
+    <input id="tagline" type="text">
+
+    <label>Logo</label>
+    <div id="logo-grid" class="logo-grid"></div>
+    <input id="logo_url" type="url" placeholder="https://…/logo.svg" style="margin-top:8px;">
+
+    <label>Primary brand color</label>
+    <div class="row">
+      <div id="color-grid" class="swatches" style="flex:1;"></div>
+      <input id="primary_color" type="text" placeholder="#0F172A" style="width:130px;">
+    </div>
+
+    <label>Accent</label>
+    <input id="accent_color" type="text" placeholder="#22C55E">
+
+    <label>Coach contact (optional)</label>
+    <input id="prospect_contact" type="text" placeholder="Chosen, Owner">
+
+    <label>Demo expires in</label>
+    <select id="expiry_days">
+      <option value="14">14 days</option>
+      <option value="30" selected>30 days</option>
+      <option value="60">60 days</option>
+      <option value="90">90 days</option>
+    </select>
+
+    <div style="margin-top:22px;display:flex;gap:10px;">
+      <button id="provision-go">Provision demo</button>
+      <button class="ghost" id="form-reset">Cancel</button>
+    </div>
+    <div id="prov-err" class="err-banner" style="display:none;margin-top:14px;"></div>
+  </div>
+
+  <div class="card">
+    <h2>Live preview</h2>
+    <p class="lede">What the prospect will see on the cover.</p>
+    <div class="preview" id="preview">
+      <div id="prev-logo"></div>
+      <div class="name" id="prev-name">Coach name</div>
+      <div class="tag" id="prev-tag">Their tagline appears here.</div>
+      <div style="margin-top:16px;display:flex;gap:6px;justify-content:center;">
+        <span class="pill" id="prev-primary-pill" style="background:#0F172A;color:#fff;">Primary</span>
+        <span class="pill" id="prev-accent-pill" style="background:#22C55E;color:#fff;">Accent</span>
+      </div>
+    </div>
+    <p class="helper">The trainer console (roster, chat, programs, meal log) gets these colors and logo. Watermarked on every page.</p>
+  </div>
+</div>
+
+<div id="success-card" class="card" style="display:none;margin-top:24px;">
+  <h2>Demo is live</h2>
+  <pre class="creds" id="success-out"></pre>
+  <div style="margin-top:16px;display:flex;gap:10px;">
+    <button id="copy-share">Copy shareable link</button>
+    <button class="ghost" id="copy-creds">Copy login credentials</button>
+    <button class="ghost" id="open-demo">Open in new tab</button>
+  </div>
+</div>
+
+<div class="card" style="margin-top:24px;">
+  <h2>Active demos</h2>
+  <div id="demos"></div>
+</div>
+
+</main>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const TOKEN_KEY = "elh_coach_wizard_token";
+let scraped = null, selectedColor=null, selectedLogo=null;
+
+function getToken(){ return localStorage.getItem(TOKEN_KEY) || ""; }
+function setToken(t){ if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
+
+async function api(path, opts={}){
+  const r = await fetch(path, {
+    ...opts,
+    headers: {
+      "Content-Type":"application/json",
+      "Authorization":"Bearer "+getToken(),
+      ...(opts.headers||{}),
+    },
+  });
+  if (r.status === 401) {
+    setToken(""); showLogin(); throw new Error("auth required");
+  }
+  if (!r.ok) {
+    const t = await r.text(); throw new Error(t || ("HTTP "+r.status));
+  }
+  const ct = r.headers.get("Content-Type") || "";
+  return ct.includes("json") ? r.json() : r.text();
+}
+
+function showLogin(){ $("login").style.display="block"; $("app").style.display="none"; }
+function showApp(){ $("login").style.display="none"; $("app").style.display="block"; loadDemos(); }
+
+$("li-go").addEventListener("click", async ()=>{
+  const t = $("li-token").value.trim();
+  if (!t) return;
+  setToken(t);
+  try {
+    await api("/api/wizard/demos");
+    showApp();
+  } catch(e) {
+    $("li-err").textContent = "Token rejected. Check ELH_COACH_WIZARD_TOKEN in Render env.";
+    $("li-err").style.display = "block";
+  }
+});
+
+$("logout").addEventListener("click",(e)=>{ e.preventDefault(); setToken(""); showLogin(); });
+
+$("scan-go").addEventListener("click", async ()=>{
+  const url = $("scan-url").value.trim();
+  if (!url) return;
+  $("scan-err").style.display="none";
+  $("scan-go").disabled = true; $("scan-go").textContent = "Scanning…";
+  try {
+    scraped = await api("/api/wizard/scan", {method:"POST", body: JSON.stringify({url})});
+    if (!scraped.ok) {
+      $("scan-err").textContent = (scraped.error || "Couldn't scan that URL.") + " You can still fill the form manually below.";
+      $("scan-err").style.display = "block";
+      scraped = {name: hostFromUrl(url), source_url:url, ok:false, logo_candidates:[], color_candidates:[]};
+    }
+    populateForm(scraped);
+    $("form-card").style.display = "grid";
+    $("success-card").style.display = "none";
+  } catch (e) {
+    $("scan-err").textContent = e.message;
+    $("scan-err").style.display = "block";
+  } finally {
+    $("scan-go").disabled = false; $("scan-go").textContent = "Scan site";
+  }
+});
+
+function hostFromUrl(u){
+  try { const x=new URL(u.startsWith("http")?u:"https://"+u);
+    return x.hostname.replace(/^www\./,"").split(".")[0].replace(/^./,c=>c.toUpperCase());
+  } catch(_){ return "Coach"; }
+}
+
+function populateForm(s){
+  $("brand_name").value = s.name || "";
+  $("tagline").value = s.tagline || "";
+  const lg = $("logo-grid"); lg.innerHTML = "";
+  selectedLogo = s.logo_url || null;
+  $("logo_url").value = selectedLogo || "";
+  (s.logo_candidates || []).forEach(href=>{
+    const fig = document.createElement("figure");
+    if (href === selectedLogo) fig.classList.add("active");
+    const img = document.createElement("img"); img.src=href; img.alt="";
+    img.onerror = () => fig.remove();
+    fig.appendChild(img);
+    fig.addEventListener("click",()=>{
+      selectedLogo = href; $("logo_url").value = href;
+      lg.querySelectorAll("figure").forEach(n=>n.classList.remove("active"));
+      fig.classList.add("active"); drawPreview();
+    });
+    lg.appendChild(fig);
+  });
+  const cg = $("color-grid"); cg.innerHTML = "";
+  selectedColor = s.primary_color || null;
+  $("primary_color").value = selectedColor || "";
+  $("accent_color").value = (s.color_candidates||[])[1] || "#22C55E";
+  (s.color_candidates || []).forEach(hex=>{
+    const sw = document.createElement("div");
+    sw.className = "sw"; sw.style.background = hex; sw.title = hex;
+    if (hex === selectedColor) sw.classList.add("active");
+    sw.addEventListener("click",()=>{
+      selectedColor = hex; $("primary_color").value = hex;
+      cg.querySelectorAll(".sw").forEach(n=>n.classList.remove("active"));
+      sw.classList.add("active"); drawPreview();
+    });
+    cg.appendChild(sw);
+  });
+  drawPreview();
+}
+
+function drawPreview(){
+  $("prev-name").textContent = $("brand_name").value || "Coach";
+  $("prev-tag").textContent  = $("tagline").value || "";
+  const logo = $("logo_url").value;
+  $("prev-logo").innerHTML = logo ? `<img src="${logo}" alt="" onerror="this.remove()">` : "";
+  const p = $("primary_color").value || "#0F172A";
+  const a = $("accent_color").value  || "#22C55E";
+  $("prev-primary-pill").style.background = p;
+  $("prev-accent-pill").style.background  = a;
+}
+["brand_name","tagline","logo_url","primary_color","accent_color"].forEach(id=>{
+  $(id).addEventListener("input", drawPreview);
+});
+
+$("provision-go").addEventListener("click", async ()=>{
+  $("prov-err").style.display="none";
+  const body = {
+    brand_name:        $("brand_name").value.trim(),
+    primary_color:     $("primary_color").value.trim() || null,
+    accent_color:      $("accent_color").value.trim() || null,
+    logo_url:          $("logo_url").value.trim() || null,
+    source_url:        scraped?.source_url || null,
+    scraped_brand:     scraped || null,
+    prospect_contact:  $("prospect_contact").value.trim() || null,
+    expiry_days:       parseInt($("expiry_days").value || "30", 10),
+  };
+  if (!body.brand_name) {
+    $("prov-err").textContent = "Display name required."; $("prov-err").style.display="block"; return;
+  }
+  $("provision-go").disabled = true; $("provision-go").textContent = "Provisioning…";
+  try {
+    const r = await api("/api/wizard/provision", {method:"POST", body: JSON.stringify(body)});
+    showSuccess(r);
+    loadDemos();
+  } catch(e){
+    $("prov-err").textContent = e.message; $("prov-err").style.display="block";
+  } finally {
+    $("provision-go").disabled = false; $("provision-go").textContent = "Provision demo";
+  }
+});
+
+$("form-reset").addEventListener("click",()=>{
+  $("form-card").style.display="none"; $("scan-url").value=""; scraped=null;
+});
+
+function showSuccess(r){
+  const shareUrl = location.origin + r.demo_url + "?key=" + encodeURIComponent(r.demo_password);
+  const out = [
+    "BRAND      " + r.brand_name,
+    "DEMO URL   " + location.origin + r.demo_url,
+    "PASSWORD   " + r.demo_password,
+    "ONE-CLICK  " + shareUrl,
+    "EXPIRES    " + r.expires_at,
+    "",
+    "OWNER LOGIN",
+    "  email    " + r.owner_email,
+    "  password " + r.owner_password,
+    "",
+    "SEEDED     " + r.summary.client_count + " clients · 1 owner-coach",
+  ].join("\n");
+  $("success-out").textContent = out;
+  $("success-card").dataset.shareUrl = shareUrl;
+  $("success-card").dataset.creds = "Email: " + r.owner_email + "\nPassword: " + r.owner_password;
+  $("success-card").style.display = "block";
+  $("success-card").scrollIntoView({behavior:"smooth"});
+}
+
+$("copy-share").addEventListener("click",()=>{
+  navigator.clipboard.writeText($("success-card").dataset.shareUrl);
+  $("copy-share").textContent = "Copied!";
+  setTimeout(()=>{$("copy-share").textContent="Copy shareable link";},1500);
+});
+$("copy-creds").addEventListener("click",()=>{
+  navigator.clipboard.writeText($("success-card").dataset.creds);
+  $("copy-creds").textContent = "Copied!";
+  setTimeout(()=>{$("copy-creds").textContent="Copy login credentials";},1500);
+});
+$("open-demo").addEventListener("click",()=>{
+  window.open($("success-card").dataset.shareUrl, "_blank");
+});
+
+async function loadDemos(){
+  try { const r = await api("/api/wizard/demos"); renderDemos(r.demos || []); } catch(_){}
+}
+
+function renderDemos(rows){
+  if (!rows.length){ $("demos").innerHTML='<p class="empty">No demos yet.</p>'; return; }
+  const html = ['<table><thead><tr>',
+    '<th>Brand</th><th>Demo URL</th><th>Contact</th><th>Expires</th><th></th>',
+    '</tr></thead><tbody>'];
+  for (const r of rows) {
+    const exp = r.demo_expires_at ? r.demo_expires_at.slice(0,10) : "—";
+    const expired = r.demo_expires_at && new Date(r.demo_expires_at) < new Date();
+    html.push(`<tr>
+      <td><strong>${escapeHtml(r.display_name)}</strong>
+        ${expired?'<span class="pill" style="margin-left:6px;background:#FCE8EC;color:#A8456B;">expired</span>':''}</td>
+      <td class="demo-link"><a href="/demo/${escapeHtml(r.slug)}" target="_blank">/demo/${escapeHtml(r.slug)}</a></td>
+      <td>${escapeHtml(r.prospect_contact || "—")}</td>
+      <td>${exp}</td>
+      <td><div class="row-actions">
+        <button class="ghost" data-act="extend" data-id="${r.id}">+30d</button>
+        <button class="ghost" data-act="delete" data-id="${r.id}">Delete</button>
+      </div></td>
+    </tr>`);
+  }
+  html.push('</tbody></table>');
+  $("demos").innerHTML = html.join("");
+  $("demos").querySelectorAll("button[data-act]").forEach(b=>{
+    b.addEventListener("click", async ()=>{
+      const id = b.dataset.id;
+      if (b.dataset.act === "extend") {
+        await api(`/api/wizard/demos/${id}/extend`, {method:"POST", body:JSON.stringify({days:30})});
+      } else {
+        if (!confirm("Delete this demo?")) return;
+        await api(`/api/wizard/demos/${id}`, {method:"DELETE"});
+      }
+      loadDemos();
+    });
+  });
+}
+
+function escapeHtml(s){
+  return String(s||"").replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+if (getToken()) {
+  api("/api/wizard/demos").then(()=>showApp()).catch(()=>showLogin());
+} else {
+  showLogin();
+}
+</script>
+</body>
+</html>

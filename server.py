@@ -68,6 +68,8 @@ def _capture(exc: BaseException) -> None:
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from db import db                # noqa: E402
 from tenants import tenant_resolver, plan_limits, brand_default  # noqa: E402
+import wizard                     # noqa: E402
+import provisioner                # noqa: E402
 from auth import (               # noqa: E402
     hash_password, verify_password,
     issue_session, validate_session, revoke_session,
@@ -167,7 +169,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def _resolve_tenant(self) -> dict[str, Any] | None:
         host = (self.headers.get("Host") or "").split(":")[0].lower()
-        return tenant_resolver(host)
+        t = tenant_resolver(host)
+        if t:
+            return t
+        # Apex-fallback override: ?tenant=<slug> (used by /demo/<slug> path
+        # routing while wildcard SSL is still pending). Lets the same
+        # subdomain-bound code work on plain apex elhcoach.app.
+        qs = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        slug = (qs.get("tenant") or [None])[0]
+        if slug:
+            return db.fetch_one(
+                "select * from tenants where slug = $1 and billing_status != 'canceled'",
+                slug,
+            )
+        return None
 
     def _serve_static(self, name: str, mime: str, cache: bool = False) -> None:
         fpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
@@ -190,6 +205,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_response(404); self.end_headers(); return
         with open(fpath, "rb") as f:
             html = f.read().decode("utf-8")
+        is_demo = bool(tenant.get("is_demo"))
         brand_block = json.dumps({
             "tenant_id":   tenant["id"],
             "tenant_slug": tenant["slug"],
@@ -198,16 +214,34 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             "accent":      tenant["brand_accent"],
             "logo_url":    tenant.get("logo_url") or "",
             "app_name":    tenant["app_name"],
+            "is_demo":     is_demo,
         })
         injected = html.replace(
             "<!--BRAND_INJECT-->",
             f'<script>window.__BRAND__ = {brand_block};</script>',
         )
+        if is_demo:
+            wm = (tenant.get("name") or "").replace("<","&lt;")
+            watermark = (
+                "<style>"
+                "#__demo_wm{position:fixed;left:50%;bottom:14px;"
+                "transform:translateX(-50%);z-index:2147483647;"
+                "background:rgba(15,23,42,.92);color:#fff;"
+                "font:600 11px/1 Inter,system-ui,sans-serif;"
+                "letter-spacing:.04em;text-transform:uppercase;"
+                "padding:8px 16px;border-radius:999px;pointer-events:none;"
+                "box-shadow:0 4px 24px rgba(0,0,0,.25);}"
+                "</style>"
+                f"<div id=\"__demo_wm\">Sales Preview — Not Affiliated With {wm}</div>"
+            )
+            injected = injected.replace("</body>", watermark + "</body>", 1)
         body = injected.encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/html; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Cache-Control", "no-store" if is_demo else "no-cache")
+        if is_demo:
+            self.send_header("X-Robots-Tag", "noindex, nofollow, nosnippet, noarchive")
         self._security_headers()
         self.end_headers()
         self.wfile.write(body)
@@ -239,9 +273,27 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_OPTIONS(self) -> None:
         self.send_response(204); self._cors(); self.send_header("Content-Length", "0"); self.end_headers()
 
+    def do_DELETE(self) -> None:
+        path = self._path()
+        if path.startswith("/api/wizard"):
+            if wizard.handle(self, "DELETE", path):
+                return
+        return self._j({"error": "not found"}, 404)
+
     def do_GET(self) -> None:
         path = self._path()
         host = (self.headers.get("Host") or "").split(":")[0].lower()
+
+        # Wizard + demo routes are host-agnostic. Resolve them before
+        # tenant lookup so they work on apex without subdomain DNS.
+        if path.startswith("/api/wizard"):
+            if wizard.handle(self, "GET", path):
+                return
+        if path in ("/admin/onboard", "/admin/onboard/"):
+            return self._serve_static("onboard.html", "text/html; charset=utf-8")
+        if path.startswith("/demo/") or path.startswith("/api/demo/"):
+            return self._demo_route("GET", path)
+
         tenant = self._resolve_tenant()
 
         # Apex (marketing site) — no tenant resolved
@@ -291,6 +343,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self) -> None:
         path = self._path()
         host = (self.headers.get("Host") or "").split(":")[0].lower()
+
+        # Wizard + demo routes — host-agnostic
+        if path.startswith("/api/wizard"):
+            if wizard.handle(self, "POST", path):
+                return
+        if path.startswith("/api/demo/"):
+            return self._demo_route("POST", path)
+
         tenant = self._resolve_tenant()
 
         # Apex routes (no tenant)
@@ -456,6 +516,155 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     # ────────────────────────────────────────────────────────────────
     #  Tenant-scoped APIs
     # ────────────────────────────────────────────────────────────────
+    # ─── demo gate ──────────────────────────────────────────────────
+    def _demo_route(self, method: str, path: str) -> None:
+        clean = path.rstrip("/")
+        # POST /api/demo/<slug>/login
+        if method == "POST" and clean.startswith("/api/demo/") and clean.endswith("/login"):
+            slug = clean[len("/api/demo/"):-len("/login")]
+            if not slug:
+                return self._j({"error": "slug required"}, 400)
+            if not self._rate(f"demo-gate:{slug}", limit=8, window_sec=300):
+                return
+            body = self._body()
+            password = (body.get("password") or "").strip()
+            tenant = provisioner.verify_demo_password(slug, password)
+            if not tenant:
+                return self._j({"error": "invalid password or expired"}, 401)
+            token = self._issue_demo_session(tenant)
+            return self._j({
+                "ok": True,
+                "redirect_url": f"/?tenant={tenant['slug']}&token={token}",
+                "brand": {
+                    "name": tenant["name"],
+                    "primary": tenant["brand_primary"],
+                    "accent": tenant["brand_accent"],
+                },
+            })
+
+        # GET /demo/<slug>(?key=…)
+        if method == "GET" and clean.startswith("/demo/"):
+            slug = clean[len("/demo/"):]
+            qs = self._qparams()
+            key = (qs.get("key") or [None])[0]
+            row = db.fetch_one(
+                """select slug, name, logo_url, brand_primary, brand_accent,
+                          is_demo, demo_expires_at
+                   from tenants where slug = $1""",
+                slug,
+            )
+            if not row or not row.get("is_demo"):
+                self.send_response(404); self.end_headers()
+                self.wfile.write(b"Demo not found.")
+                return
+            if key:
+                tenant = provisioner.verify_demo_password(slug, key)
+                if tenant:
+                    token = self._issue_demo_session(tenant)
+                    self.send_response(302)
+                    self.send_header(
+                        "Location", f"/?tenant={tenant['slug']}&token={token}",
+                    )
+                    self.end_headers()
+                    return
+            return self._serve_demo_gate(row, key_attempted=bool(key))
+
+        return self._j({"error": "not found"}, 404)
+
+    def _issue_demo_session(self, tenant: dict[str, Any]) -> str:
+        u = db.fetch_one(
+            "select id from users where tenant_id = $1 and role = 'owner' limit 1",
+            tenant["id"],
+        )
+        if not u:
+            return ""
+        return issue_session(
+            user_id=u["id"], tenant_id=tenant["id"],
+            ip=self._client_ip(),
+            ua=("demo-gate;" + self.headers.get("User-Agent", ""))[:300],
+        )
+
+    def _serve_demo_gate(self, t: dict[str, Any], key_attempted: bool = False) -> None:
+        primary = t.get("brand_primary") or "#0F172A"
+        accent  = t.get("brand_accent")  or "#22C55E"
+        name    = t.get("name") or "Demo"
+        logo    = t.get("logo_url") or ""
+        slug    = t.get("slug") or ""
+        err = ("<p class='err'>That password didn't work. Try again, or ask "
+               "the sender for the latest link.</p>" if key_attempted else "")
+        logo_html = (f"<img src='{logo}' alt='' onerror='this.remove()'>" if logo else "")
+        page = f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Sales preview — {name}</title>
+<style>
+  html,body{{margin:0;padding:0;height:100%;background:#FAFAF8;
+    font:400 15px/1.4 Inter,system-ui,sans-serif;color:#0A0A0C;}}
+  .wrap{{max-width:480px;margin:8vh auto 0;padding:0 24px;text-align:center;}}
+  .card{{background:#fff;border:1px solid #E8E5DF;border-radius:16px;
+    padding:40px 32px;box-shadow:0 8px 32px rgba(15,23,42,.06);}}
+  img{{max-height:64px;max-width:240px;margin-bottom:16px;display:block;
+    margin-left:auto;margin-right:auto;}}
+  h1{{font:600 22px/1.2 Newsreader,Georgia,serif;margin:0 0 6px;}}
+  .sub{{color:#5C5F66;font-size:14px;margin-bottom:28px;}}
+  .pill{{display:inline-block;padding:5px 12px;border-radius:999px;
+    background:{primary};color:#fff;font-weight:600;font-size:11px;
+    letter-spacing:.05em;text-transform:uppercase;margin-bottom:24px;}}
+  input[type=password]{{width:100%;padding:14px 16px;border:1px solid #E8E5DF;
+    border-radius:10px;font-size:15px;background:#fff;}}
+  input:focus{{outline:none;border-color:{accent};}}
+  button{{width:100%;margin-top:14px;padding:14px;border:0;border-radius:10px;
+    background:{primary};color:#fff;font-weight:600;font-size:14px;
+    cursor:pointer;letter-spacing:.02em;}}
+  .err{{color:#A8456B;font-size:13px;margin:14px 0 0;}}
+  footer{{margin-top:24px;font-size:11px;color:#8A8E94;line-height:1.5;}}
+</style>
+</head><body>
+<div class="wrap"><div class="card">
+  <span class="pill">Sales Preview</span>
+  {logo_html}
+  <h1>{name}</h1>
+  <p class="sub">This is a private preview prepared for you.<br>
+     Not affiliated with {name}.</p>
+  <form id="f">
+    <input id="pw" name="password" type="password" placeholder="Access password" autofocus required>
+    <button type="submit">Open preview</button>
+    {err}
+  </form>
+</div>
+<footer>Powered by ELH Coach · Sales engineering preview · Expires automatically.</footer>
+</div>
+<script>
+document.getElementById('f').addEventListener('submit', async (e)=>{{
+  e.preventDefault();
+  const pw = document.getElementById('pw').value;
+  const r = await fetch('/api/demo/{slug}/login', {{
+    method:'POST', headers:{{'Content-Type':'application/json'}},
+    body: JSON.stringify({{password: pw}}),
+  }});
+  if (!r.ok) {{
+    document.querySelectorAll('.err').forEach(n=>n.remove());
+    const e2 = document.createElement('p'); e2.className='err';
+    e2.textContent = r.status===429 ? 'Too many attempts. Try again in a few minutes.' : 'Invalid password.';
+    document.getElementById('f').appendChild(e2);
+    return;
+  }}
+  const j = await r.json();
+  location.href = j.redirect_url;
+}});
+</script>
+</body></html>"""
+        body = page.encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("X-Robots-Tag", "noindex, nofollow, nosnippet, noarchive")
+        self.send_header("Cache-Control", "no-store, private")
+        self._security_headers()
+        self.end_headers()
+        self.wfile.write(body)
+
     def _api_login(self, tenant: dict[str, Any]) -> None:
         if not self._rate("login", limit=10, window_sec=60):
             return
