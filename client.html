@@ -135,7 +135,38 @@ input[type=email],input[type=password],input[type=number],input[type=text]{displ
       <div class="quick">
         <button onclick="openLogMeal()"><span class="icon">🍽️</span><span class="lbl">Log meal</span></button>
         <button onclick="openLogWeight()"><span class="icon">⚖️</span><span class="lbl">Weight</span></button>
-        <button onclick="alert('Apple Health sync coming soon — open the iOS app.')"><span class="icon">⌚</span><span class="lbl">Sync Health</span></button>
+        <button onclick="openLogGlucose()"><span class="icon">🩸</span><span class="lbl">Glucose</span></button>
+      </div>
+
+      <div id="card-recovery" class="card hidden">
+        <h2>Today's readiness</h2>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div id="rcv-score" style="font:800 38px sans-serif;color:var(--accent);min-width:64px;text-align:center">—</div>
+          <div style="flex:1">
+            <div id="rcv-tier" style="font-weight:600;text-transform:uppercase;font-size:12px;letter-spacing:.05em;color:var(--text-dim)">—</div>
+            <div id="rcv-advice" style="margin-top:4px;font-size:14px">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="card-cycle" class="card hidden">
+        <h2 id="cycle-title">Cycle</h2>
+        <div id="cycle-body" class="muted">—</div>
+      </div>
+
+      <div id="card-workout" class="card hidden">
+        <h2>Today's workout</h2>
+        <div id="workout-body" class="muted">—</div>
+      </div>
+
+      <div id="card-glucose" class="card hidden">
+        <h2>Glucose — last 14 days</h2>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;margin-top:6px">
+          <div><div style="font:800 24px sans-serif" id="g-tir">—</div><div class="lbl" style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em">in range</div></div>
+          <div><div style="font:800 24px sans-serif" id="g-mean">—</div><div class="lbl" style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em">mean mg/dL</div></div>
+          <div><div style="font:800 24px sans-serif" id="g-gmi">—</div><div class="lbl" style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em">est A1C</div></div>
+          <div><div style="font:800 24px sans-serif" id="g-n">—</div><div class="lbl" style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.06em">readings</div></div>
+        </div>
       </div>
 
       <div class="card">
@@ -275,6 +306,65 @@ async function loadToday() {
     ? '<div style="display:flex;align-items:center;gap:12px"><span class="engagement-pill '+eng.risk_tier+'">'+eng.risk_tier.replace('_',' ')+'</span>' +
       '<span style="font-size:14px;color:var(--text-dim)">Score <b>'+eng.score+'</b> · '+eng.days_active_30+' active days this month</span></div>'
     : 'Log a meal or workout to start your streak.';
+
+  // Recovery, cycle, workout, glucose — all best-effort
+  loadRecovery(); loadCycle(); loadTodayWorkout(); loadGlucose();
+}
+
+async function loadRecovery() {
+  try {
+    const r = await api('/api/me/recovery');
+    if (!r || !r.score) return;  // hide card if no data
+    document.getElementById('rcv-score').textContent = r.score;
+    document.getElementById('rcv-tier').textContent = r.tier || '';
+    document.getElementById('rcv-advice').textContent = r.advice || '';
+    document.getElementById('card-recovery').classList.remove('hidden');
+  } catch (e) { /* silent */ }
+}
+
+async function loadCycle() {
+  try {
+    const c = await api('/api/me/cycle');
+    if (!c || !c.set_up) return;
+    document.getElementById('cycle-title').textContent = 'Cycle — ' + (c.phase || 'tracking');
+    const tip = c.tip || c.recommendation || '';
+    document.getElementById('cycle-body').innerHTML =
+      '<div style="font-size:14px">Day <b>' + (c.day_in_cycle || '?') + '</b> of <b>' + (c.cycle_length || 28) + '</b></div>' +
+      (tip ? '<div style="margin-top:8px;font-size:14px">' + escapeHtml(tip) + '</div>' : '');
+    document.getElementById('card-cycle').classList.remove('hidden');
+  } catch (e) { /* silent */ }
+}
+
+async function loadTodayWorkout() {
+  try {
+    const w = await api('/api/me/today/workout');
+    if (!w || !w.workout) return;
+    const wo = w.workout;
+    const exs = (wo.exercises || []).slice(0, 6);
+    const exHtml = exs.map(e =>
+      '<div style="font-size:14px;padding:6px 0;border-bottom:1px solid var(--border-soft)">' +
+      '<b>' + escapeHtml(e.name || 'Exercise') + '</b>' +
+      ' · ' + (e.sets || 0) + '×' + (e.reps || '?') +
+      (e.rpe ? ' @ RPE ' + e.rpe : '') + '</div>'
+    ).join('');
+    document.getElementById('workout-body').innerHTML =
+      '<div style="font-weight:600">' + escapeHtml(wo.name || w.program_name || 'Today') +
+      ' <span class="muted" style="font-weight:400;font-size:13px">· Day ' + (w.day_of_program || '?') + '</span></div>' +
+      '<div style="margin-top:10px">' + (exs.length ? exHtml : '<div class="muted">Rest day — recover well.</div>') + '</div>';
+    document.getElementById('card-workout').classList.remove('hidden');
+  } catch (e) { /* silent */ }
+}
+
+async function loadGlucose() {
+  try {
+    const g = await api('/api/me/glucose/tir');
+    if (!g || !g.tir || g.tir.n_readings < 3) return;
+    document.getElementById('g-tir').textContent  = g.tir.in_range_pct + '%';
+    document.getElementById('g-mean').textContent = g.tir.mean_glucose;
+    document.getElementById('g-gmi').textContent  = g.tir.gmi;
+    document.getElementById('g-n').textContent    = g.tir.n_readings;
+    document.getElementById('card-glucose').classList.remove('hidden');
+  } catch (e) { /* silent */ }
 }
 
 function switchTab(t) {
@@ -304,7 +394,12 @@ async function loadMessages() {
 function openLogMeal() {
   document.getElementById('modal-body').innerHTML = `
     <h2>Log a meal</h2>
-    <p class="sub">Quick entry — your coach sees this in real time.</p>
+    <p class="sub">Snap, scan, or type — your coach sees this in real time.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <button class="btn-primary" onclick="openPhotoLog()" style="background:var(--accent)"><span style="font-size:18px">📸</span> Photo</button>
+      <button class="btn-primary" onclick="openBarcodeLog()" style="background:var(--accent)"><span style="font-size:18px">📊</span> Barcode</button>
+    </div>
+    <p class="sub" style="margin:8px 0 6px;font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.06em;text-align:center">Or enter manually</p>
     <label><span class="lab">Item</span><input id="m-name" placeholder="e.g. Greek yogurt + berries"></label>
     <div class="row k3">
       <label><span class="lab">Cal</span><input id="m-cal" type="number"></label>
@@ -314,13 +409,120 @@ function openLogMeal() {
     <label><span class="lab">Fat (g)</span><input id="m-fat" type="number"></label>
     <button class="btn-primary" onclick="submitMeal()">Add to today</button>
     <button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="closeModal()">Cancel</button>
+    <div id="meal-alerts" style="margin-top:12px"></div>
   `;
   document.getElementById('modal').classList.add('on');
 }
 
+function openPhotoLog() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>Snap your meal</h2>
+    <p class="sub">Use your camera or pick a photo. We'll identify foods + estimate macros automatically.</p>
+    <input id="ph-file" type="file" accept="image/*" capture="environment" style="margin:14px 0;width:100%">
+    <div id="ph-status" class="muted" style="font-size:14px;margin:14px 0">Pick a photo above to start.</div>
+    <div id="ph-result" style="margin-top:12px"></div>
+    <button class="btn-primary" id="ph-go" disabled onclick="submitPhoto()">Analyze photo</button>
+    <button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="closeModal()">Cancel</button>
+  `;
+  document.getElementById('modal').classList.add('on');
+  document.getElementById('ph-file').addEventListener('change', () => {
+    const f = document.getElementById('ph-file').files[0];
+    if (!f) return;
+    if (f.size > 4_500_000) { document.getElementById('ph-status').textContent = 'Image too big — try a smaller one.'; return; }
+    document.getElementById('ph-status').textContent = `Ready: ${f.name} (${Math.round(f.size/1024)} KB)`;
+    document.getElementById('ph-go').disabled = false;
+  });
+}
+
+async function submitPhoto() {
+  const f = document.getElementById('ph-file').files[0];
+  if (!f) return;
+  document.getElementById('ph-status').textContent = 'Analyzing… this takes 5–10 seconds.';
+  document.getElementById('ph-go').disabled = true;
+  try {
+    const reader = new FileReader();
+    const b64 = await new Promise((res, rej) => {
+      reader.onload = () => res(String(reader.result).split(',')[1] || '');
+      reader.onerror = rej;
+      reader.readAsDataURL(f);
+    });
+    const r = await api('/api/me/meal/from-photo', { method:'POST', body: JSON.stringify({ image_b64: b64, mime: f.type || 'image/jpeg' }) });
+    const items = r.items || [];
+    if (!items.length) {
+      document.getElementById('ph-status').textContent = 'Couldn\'t recognize food in that photo. Try a clearer shot or enter manually.';
+      document.getElementById('ph-go').disabled = false;
+      return;
+    }
+    document.getElementById('ph-result').innerHTML = items.map(i =>
+      `<div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin:8px 0">
+        <div style="font-weight:600">${escapeHtml(i.name || 'Item')}</div>
+        <div class="muted" style="font-size:13px">${escapeHtml(i.portion || '—')} · ${i.calories||0} cal · ${i.protein||0}g pro · ${i.carbs||0}g carb · ${i.fat||0}g fat</div>
+      </div>`).join('');
+    document.getElementById('ph-status').textContent = `Recognized ${items.length} item${items.length>1?'s':''} — confirm to log.`;
+    document.getElementById('ph-go').textContent = 'Add to today';
+    document.getElementById('ph-go').disabled = false;
+    document.getElementById('ph-go').onclick = async () => {
+      const resp = await api('/api/me/meal', { method:'POST', body: JSON.stringify({ items, source: 'photo' }) });
+      handleMealResponse(resp);
+    };
+  } catch (e) {
+    document.getElementById('ph-status').textContent = 'Photo analysis failed: ' + e.message;
+    document.getElementById('ph-go').disabled = false;
+  }
+}
+
+function openBarcodeLog() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>Scan a barcode</h2>
+    <p class="sub">Type or paste the barcode digits — UPC-A, EAN-13, or GTIN. We pull from OpenFoodFacts + USDA.</p>
+    <label><span class="lab">Barcode</span><input id="bc-code" inputmode="numeric" pattern="[0-9]*" placeholder="0123456789012"></label>
+    <button class="btn-primary" onclick="submitBarcode()">Look up</button>
+    <button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="closeModal()">Cancel</button>
+    <div id="bc-result" style="margin-top:14px"></div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+async function submitBarcode() {
+  const code = (document.getElementById('bc-code').value || '').replace(/\D/g, '');
+  if (!code) return;
+  document.getElementById('bc-result').innerHTML = '<p class="muted">Looking up…</p>';
+  try {
+    const r = await api('/api/me/meal/from-barcode', { method:'POST', body: JSON.stringify({ code }) });
+    const item = r.item || {};
+    document.getElementById('bc-result').innerHTML = `
+      <div style="border:1px solid var(--border);border-radius:10px;padding:10px;margin:8px 0">
+        <div style="font-weight:600">${escapeHtml(item.name || 'Product')}</div>
+        <div class="muted" style="font-size:13px">${escapeHtml(item.brand || '')} · ${item.calories||0} cal · ${item.protein||0}g pro · ${item.carbs||0}g carb · ${item.fat||0}g fat</div>
+        <button class="btn-primary" style="margin-top:10px" onclick='logBarcodeItem(${JSON.stringify(item).replace(/'/g, "\\'")})'>Add to today</button>
+      </div>`;
+  } catch (e) {
+    document.getElementById('bc-result').innerHTML = `<p style="color:var(--bad)">Not found: ${escapeHtml(e.message)}</p>`;
+  }
+}
+
+async function logBarcodeItem(item) {
+  const resp = await api('/api/me/meal', { method:'POST', body: JSON.stringify({ items:[item], source:'barcode' }) });
+  handleMealResponse(resp);
+}
+
+function handleMealResponse(resp) {
+  const alerts = (resp && resp.allergen_alerts) || [];
+  if (alerts.length) {
+    const html = alerts.map(a =>
+      `<div style="background:#FEE2E2;border:1px solid #FCA5A5;border-radius:10px;padding:10px 12px;margin-bottom:8px">
+        <div style="font-weight:600;color:var(--bad)">⚠ ${escapeHtml(a.allergen || 'Allergen alert')}</div>
+        <div style="font-size:13px;color:var(--bad)">${escapeHtml(a.message || a.note || 'Contains an allergen you flagged.')}</div>
+      </div>`).join('');
+    alert('Allergen alert: ' + alerts.map(a => a.allergen || 'flagged').join(', '));
+    document.getElementById('meal-alerts') && (document.getElementById('meal-alerts').innerHTML = html);
+  }
+  closeModal(); loadToday();
+}
+
 async function submitMeal() {
   try {
-    await api('/api/me/meal', { method:'POST', body: JSON.stringify({
+    const resp = await api('/api/me/meal', { method:'POST', body: JSON.stringify({
       items: [{
         name: document.getElementById('m-name').value || 'Meal',
         calories: Number(document.getElementById('m-cal').value || 0),
@@ -330,8 +532,29 @@ async function submitMeal() {
       }],
       source: 'manual',
     })});
+    handleMealResponse(resp);
+  } catch (e) { alert(e.message); }
+}
+
+function openLogGlucose() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>Log glucose</h2>
+    <p class="sub">Reading from a CGM, finger-prick, or lab. We'll plot your time-in-range automatically.</p>
+    <label><span class="lab">Glucose (mg/dL)</span><input id="gl-val" type="number" min="20" max="600"></label>
+    <button class="btn-primary" onclick="submitGlucose()">Save</button>
+    <button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="closeModal()">Cancel</button>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+async function submitGlucose() {
+  try {
+    await api('/api/me/biometric', { method:'POST', body: JSON.stringify({ glucose_mgdl: Number(document.getElementById('gl-val').value || 0) }) });
     closeModal(); loadToday();
   } catch (e) { alert(e.message); }
+}
+
+function escapeHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function openLogWeight() {
