@@ -73,17 +73,12 @@ input:focus,select:focus{border-color:var(--primary)}
   <label>Plan</label>
   <div class="plan-cards">
     <div class="plan-card on" data-plan="coach">
-      <div class="pn">Coach</div>
-      <div class="pp">$89/mo · subdomain · 25 clients</div>
+      <div class="pn">Coach subscription</div>
+      <div class="pp">$89/mo · branded subdomain · 25 clients</div>
     </div>
-    <div class="plan-card" data-plan="studio">
-      <div class="pn">Studio</div>
-      <div class="pp">$399/mo · subdomain · 5 trainers</div>
-    </div>
-    <div class="plan-card" data-plan="brand">
-      <div class="pn">Custom Domain</div>
-      <div class="pp">$2,500/mo · own domain · ∞</div>
-    </div>
+  </div>
+  <div class="upgrade-note" style="font-size:13px;color:var(--text-dim,#666);margin:-4px 0 18px;line-height:1.5">
+    Want your own domain ($2,500 once + $200/yr) or native iOS+Android apps ($4,500 once + $300/yr)? Set up the subscription first, then upgrade from your account.
   </div>
 
   <div class="cycle-toggle">
@@ -103,7 +98,7 @@ input:focus,select:focus{border-color:var(--primary)}
 <script>
 const params = new URLSearchParams(location.search);
 const initialPlan = params.get('plan');
-let plan = ['coach','studio','brand'].includes(initialPlan) ? initialPlan : 'coach';
+let plan = 'coach';  // only one base plan now — Studio/Brand killed 2026-05-05
 let cycle = 'monthly';
 
 document.querySelectorAll('.plan-card').forEach(c => {
