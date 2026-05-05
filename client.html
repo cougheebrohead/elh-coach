@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#22C55E">
+<title>Client App</title>
+<!--BRAND_INJECT-->
+<style>
+:root {
+  --primary: #0F172A;
+  --accent:  #22C55E;
+  --bg:      #0a0e1a;
+  --bg-card: #111827;
+  --bg-soft: #1f2937;
+  --border:  #1f2937;
+  --text:    #f8fafc;
+  --text-dim:#94a3b8;
+  --good: #22c55e; --warn:#f59e0b; --bad:#ef4444;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--text);font:16px/1.5 'Inter',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+button{font:inherit;cursor:pointer;border:none;background:transparent;color:inherit}
+
+.shell{max-width:560px;margin:0 auto;padding-bottom:80px;min-height:100vh}
+header{padding:24px 20px 8px;display:flex;align-items:center;justify-content:space-between}
+header .greet{font:800 22px sans-serif;letter-spacing:-0.01em}
+header .sub{color:var(--text-dim);font-size:13px;margin-top:2px}
+header .avatar{width:36px;height:36px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-weight:600}
+
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:18px;margin:12px 20px}
+.card h2{font:600 18px sans-serif;margin-bottom:10px}
+
+.ring-card{padding:24px 20px;text-align:center}
+.ring{position:relative;width:200px;height:200px;margin:0 auto}
+.ring svg{transform:rotate(-90deg)}
+.ring .pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring .pct .num{font:800 44px/1 sans-serif;letter-spacing:-0.02em}
+.ring .pct .lbl{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;margin-top:4px}
+.macro-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}
+.macro{text-align:center}
+.macro .num{font:600 18px sans-serif}
+.macro .lbl{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em}
+
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 20px}
+.quick button{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:14px 8px;text-align:center;transition:transform .12s}
+.quick button:active{transform:scale(0.97)}
+.quick button .icon{font-size:24px;display:block;margin-bottom:6px}
+.quick button .lbl{font-size:12px;font-weight:600}
+
+.coach-row{display:flex;align-items:center;gap:12px}
+.coach-row .av{width:44px;height:44px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-weight:600}
+.coach-row .info{flex:1;min-width:0}
+.coach-row .info .nm{font-weight:600}
+.coach-row .info .sub{font-size:12px;color:var(--text-dim)}
+
+nav.tabbar{position:fixed;bottom:0;left:0;right:0;background:rgba(10,14,26,0.96);backdrop-filter:blur(18px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0 max(10px, env(safe-area-inset-bottom));z-index:50}
+nav.tabbar button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px 12px;color:var(--text-dim);font-size:11px;font-weight:500}
+nav.tabbar button.on{color:var(--accent)}
+nav.tabbar button .icon{font-size:22px}
+
+.login{padding:48px 20px;max-width:420px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;justify-content:center}
+.login h1{font:800 32px sans-serif;margin-bottom:6px;letter-spacing:-0.02em}
+.login .lead{color:var(--text-dim);margin-bottom:28px}
+input[type=email],input[type=password],input[type=number],input[type=text]{display:block;width:100%;padding:13px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;outline:none;margin-bottom:12px;color:var(--text);font:inherit}
+.btn-primary{display:block;width:100%;padding:14px;background:var(--accent);color:#052e16;border-radius:10px;font-weight:700;font-size:15px;margin-top:8px;border:none}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:none;align-items:flex-end;justify-content:center;z-index:100}
+.modal.on{display:flex}
+.sheet{background:var(--bg-card);border-radius:18px 18px 0 0;padding:24px;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;border:1px solid var(--border);border-bottom:none}
+.sheet h2{font:800 22px sans-serif;margin-bottom:8px;letter-spacing:-0.02em}
+.sheet .sub{color:var(--text-dim);font-size:14px;margin-bottom:20px}
+.sheet label{display:block;margin-bottom:14px}
+.sheet label .lab{font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:6px;display:block}
+.sheet .row{display:grid;gap:8px}
+.sheet .row.k3{grid-template-columns:repeat(3,1fr)}
+
+.engagement-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:100px;font-size:12px;font-weight:600}
+.engagement-pill.crushing{background:rgba(34,197,94,0.15);color:#86EFAC}
+.engagement-pill.on_track{background:rgba(59,130,246,0.15);color:#93C5FD}
+.engagement-pill.slipping{background:rgba(245,158,11,0.15);color:#FCD34D}
+.engagement-pill.ghosting{background:rgba(239,68,68,0.15);color:#FCA5A5}
+
+.empty{text-align:center;padding:32px 16px;color:var(--text-dim)}
+.empty h4{color:var(--text);font-weight:600;margin-bottom:6px}
+.hidden{display:none!important}
+.muted{color:var(--text-dim)}
+</style>
+</head>
+<body>
+
+<div id="login" class="login hidden">
+  <h1 id="brand-login">CoachHQ</h1>
+  <p class="lead" id="login-lead">Sign in to your coach's app.</p>
+  <input id="email" type="email" placeholder="Email" autocomplete="email">
+  <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+  <div id="login-err" class="hidden" style="color:var(--bad);font-size:13px"></div>
+  <button class="btn-primary" onclick="doLogin()">Sign in</button>
+</div>
+
+<div id="app" class="hidden">
+  <div class="shell">
+    <header>
+      <div><div class="greet" id="greet">Hi —</div><div class="sub" id="greet-sub">—</div></div>
+      <div class="avatar" id="avatar">—</div>
+    </header>
+
+    <div id="v-today">
+      <div class="card ring-card">
+        <div class="ring">
+          <svg viewBox="0 0 100 100" width="200" height="200">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#1f2937" stroke-width="6"/>
+            <circle id="ring-prog" cx="50" cy="50" r="44" fill="none" stroke="var(--accent)"
+                    stroke-width="6" stroke-linecap="round"
+                    stroke-dasharray="276.46" stroke-dashoffset="276"/>
+          </svg>
+          <div class="pct">
+            <div class="num" id="cal-num">—</div>
+            <div class="lbl">cal of <span id="cal-target">—</span></div>
+          </div>
+        </div>
+        <div class="macro-row">
+          <div class="macro"><div class="num" id="macro-p">—</div><div class="lbl">protein</div></div>
+          <div class="macro"><div class="num" id="macro-c">—</div><div class="lbl">carbs</div></div>
+          <div class="macro"><div class="num" id="macro-f">—</div><div class="lbl">fat</div></div>
+        </div>
+      </div>
+
+      <div class="quick">
+        <button onclick="openLogMeal()"><span class="icon">🍽️</span><span class="lbl">Log meal</span></button>
+        <button onclick="openLogWeight()"><span class="icon">⚖️</span><span class="lbl">Weight</span></button>
+        <button onclick="alert('Apple Health sync coming soon — open the iOS app.')"><span class="icon">⌚</span><span class="lbl">Sync Health</span></button>
+      </div>
+
+      <div class="card">
+        <h2>Your coach</h2>
+        <div class="coach-row" id="coach-row"><div class="muted">Loading…</div></div>
+        <button class="btn-primary" style="margin-top:12px" onclick="switchTab('messages')">Open messages</button>
+      </div>
+
+      <div class="card">
+        <h2>Your week</h2>
+        <div id="engagement-body" class="muted">Log a meal or workout to start your streak.</div>
+      </div>
+    </div>
+
+    <div id="v-messages" class="hidden">
+      <div style="padding:8px 20px"><h2 style="font:800 24px sans-serif">Messages</h2></div>
+      <div id="msg-list" style="margin:0 20px"><p class="muted">Loading…</p></div>
+    </div>
+
+    <div id="v-progress" class="hidden">
+      <div style="padding:8px 20px"><h2 style="font:800 24px sans-serif">Progress</h2></div>
+      <div class="empty card"><h4>Coming soon</h4><p>Photos, weight chart, body comp.</p></div>
+    </div>
+
+    <div id="v-account" class="hidden">
+      <div style="padding:8px 20px"><h2 style="font:800 24px sans-serif">Account</h2></div>
+      <div class="card">
+        <h2>Privacy</h2>
+        <p class="muted" style="font-size:14px;margin-bottom:14px">Export your data or request deletion at any time.</p>
+        <button class="btn-primary" onclick="alert('Data export queued — JSON+CSV will email within 24h.')">Export my data</button>
+      </div>
+      <div class="card">
+        <h2>Sign out</h2>
+        <button class="btn-primary" style="background:transparent;color:var(--bad);border:1px solid var(--bad)" onclick="doLogout()">Sign out</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="tabbar">
+    <button data-tab="today" class="on" onclick="switchTab('today')"><span class="icon">🏠</span><span>Today</span></button>
+    <button data-tab="messages" onclick="switchTab('messages')"><span class="icon">💬</span><span>Messages</span></button>
+    <button data-tab="progress" onclick="switchTab('progress')"><span class="icon">📈</span><span>Progress</span></button>
+    <button data-tab="account" onclick="switchTab('account')"><span class="icon">⚙️</span><span>Account</span></button>
+  </nav>
+</div>
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()">
+  <div id="modal-body" class="sheet"></div>
+</div>
+
+<script>
+const BRAND = window.__BRAND__ || {name:'CoachHQ',primary:'#0F172A',accent:'#22C55E'};
+document.documentElement.style.setProperty('--primary', BRAND.primary);
+document.documentElement.style.setProperty('--accent', BRAND.accent);
+document.title = BRAND.app_name || BRAND.name;
+document.getElementById('brand-login').textContent = BRAND.name;
+document.getElementById('login-lead').textContent = `Sign in to your ${BRAND.name} account.`;
+
+let token = localStorage.getItem('chq_token');
+const qToken = new URLSearchParams(location.search).get('token');
+if (qToken) { token = qToken; localStorage.setItem('chq_token', token); history.replaceState({},'',location.pathname); }
+
+let me = null;
+
+async function api(path, opts={}) {
+  const h = {'Content-Type':'application/json'};
+  if (token) h['Authorization'] = 'Bearer ' + token;
+  const r = await fetch(path, { ...opts, headers: { ...h, ...(opts.headers||{}) } });
+  if (r.status === 401) { token = null; localStorage.removeItem('chq_token'); render(); return null; }
+  if (!r.ok) {
+    const d = await r.json().catch(()=>({error:'request failed'}));
+    throw new Error(d.error || 'request failed');
+  }
+  return r.json();
+}
+
+async function doLogin() {
+  const err = document.getElementById('login-err'); err.classList.add('hidden');
+  try {
+    const r = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      password: document.getElementById('password').value,
+    })});
+    const d = await r.json();
+    if (!r.ok) { err.textContent = d.error || 'Sign-in failed.'; err.classList.remove('hidden'); return; }
+    token = d.token; localStorage.setItem('chq_token', token); render();
+  } catch (e) { err.textContent = 'Connection failed.'; err.classList.remove('hidden'); }
+}
+
+async function doLogout() {
+  if (token) await api('/api/logout', { method:'POST' });
+  token = null; localStorage.removeItem('chq_token'); render();
+}
+
+async function render() {
+  if (!token) {
+    document.getElementById('login').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
+    return;
+  }
+  const d = await api('/api/me');
+  if (!d) return;
+  me = d;
+  if (d.user.role !== 'client') { location.href = '/'; return; }
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('greet').textContent = 'Hi, ' + (d.user.name||'').split(' ')[0];
+  document.getElementById('greet-sub').textContent = BRAND.name;
+  document.getElementById('avatar').textContent = (d.user.name||'?').split(' ').map(s=>s[0]).join('').slice(0,2).toUpperCase();
+  loadToday();
+}
+
+async function loadToday() {
+  const d = await api('/api/me/today');
+  if (!d) return;
+  const calT = Math.round(d.today.calorie_target || 2000);
+  const calN = Math.round(d.today.calories || 0);
+  document.getElementById('cal-num').textContent = calN;
+  document.getElementById('cal-target').textContent = calT;
+  const pct = Math.min(1, calN / calT);
+  const C = 2 * Math.PI * 44;
+  document.getElementById('ring-prog').setAttribute('stroke-dasharray', C);
+  document.getElementById('ring-prog').setAttribute('stroke-dashoffset', C * (1 - pct));
+  document.getElementById('macro-p').textContent = (d.today.protein||0) + 'g';
+
+  if (d.coach && d.coach.coach_name) {
+    document.getElementById('coach-row').innerHTML =
+      '<div class="av">'+(d.coach.coach_name[0]||'?')+'</div>' +
+      '<div class="info"><div class="nm">'+d.coach.coach_name+'</div>' +
+      '<div class="sub">Your coach is here when you need them.</div></div>';
+  } else {
+    document.getElementById('coach-row').innerHTML = '<div class="muted">Your coach will be in touch.</div>';
+  }
+
+  const eng = d.engagement;
+  document.getElementById('engagement-body').innerHTML = eng
+    ? '<div style="display:flex;align-items:center;gap:12px"><span class="engagement-pill '+eng.risk_tier+'">'+eng.risk_tier.replace('_',' ')+'</span>' +
+      '<span style="font-size:14px;color:var(--text-dim)">Score <b>'+eng.score+'</b> · '+eng.days_active_30+' active days this month</span></div>'
+    : 'Log a meal or workout to start your streak.';
+}
+
+function switchTab(t) {
+  document.querySelectorAll('nav.tabbar button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  ['today','messages','progress','account'].forEach(x => document.getElementById('v-'+x).classList.toggle('hidden', x !== t));
+  if (t === 'messages') loadMessages();
+}
+
+async function loadMessages() {
+  if (!me) return;
+  const list = document.getElementById('msg-list');
+  list.innerHTML = '<p class="muted">Loading…</p>';
+  try {
+    const d = await api('/api/messages/' + me.user.id);
+    if (!d.messages.length) { list.innerHTML = '<div class="empty"><h4>No messages yet</h4><p>Your coach will be in touch.</p></div>'; return; }
+    list.innerHTML = d.messages.map(m => {
+      const mine = m.sender_id === me.user.id;
+      return '<div style="margin:8px 0;display:flex;justify-content:'+(mine?'flex-end':'flex-start')+'">' +
+             '<div style="background:'+(mine?'var(--accent)':'var(--bg-card)')+';color:'+(mine?'#052e16':'var(--text)')+';padding:10px 14px;border-radius:14px;max-width:80%;border:1px solid '+(mine?'var(--accent)':'var(--border)')+'">' +
+             m.body + '<div style="font-size:11px;opacity:.7;margin-top:4px">'+new Date(m.sent_at).toLocaleString()+'</div></div></div>';
+    }).join('');
+  } catch (e) {
+    list.innerHTML = '<div class="empty"><h4>Couldn\'t load</h4><p>'+e.message+'</p></div>';
+  }
+}
+
+function openLogMeal() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>Log a meal</h2>
+    <p class="sub">Quick entry — your coach sees this in real time.</p>
+    <label><span class="lab">Item</span><input id="m-name" placeholder="e.g. Greek yogurt + berries"></label>
+    <div class="row k3">
+      <label><span class="lab">Cal</span><input id="m-cal" type="number"></label>
+      <label><span class="lab">Pro (g)</span><input id="m-pro" type="number"></label>
+      <label><span class="lab">Carb (g)</span><input id="m-carb" type="number"></label>
+    </div>
+    <label><span class="lab">Fat (g)</span><input id="m-fat" type="number"></label>
+    <button class="btn-primary" onclick="submitMeal()">Add to today</button>
+    <button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="closeModal()">Cancel</button>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+async function submitMeal() {
+  try {
+    await api('/api/me/meal', { method:'POST', body: JSON.stringify({
+      items: [{
+        name: document.getElementById('m-name').value || 'Meal',
+        calories: Number(document.getElementById('m-cal').value || 0),
+        protein:  Number(document.getElementById('m-pro').value || 0),
+        carbs:    Number(document.getElementById('m-carb').value || 0),
+        fat:      Number(document.getElementById('m-fat').value || 0),
+      }],
+      source: 'manual',
+    })});
+    closeModal(); loadToday();
+  } catch (e) { alert(e.message); }
+}
+
+function openLogWeight() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>Weight check-in</h2>
+    <label><span class="lab">Weight (kg)</span><input id="w-kg" type="number" step="0.1"></label>
+    <button class="btn-primary" onclick="submitWeight()">Save</button>
+    <button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="closeModal()">Cancel</button>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+async function submitWeight() {
+  try {
+    await api('/api/me/biometric', { method:'POST', body: JSON.stringify({ weight_kg: Number(document.getElementById('w-kg').value || 0) }) });
+    closeModal(); loadToday();
+  } catch (e) { alert(e.message); }
+}
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
+
+render();
+</script>
+</body>
+</html>

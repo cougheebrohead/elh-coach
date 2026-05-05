@@ -76,6 +76,7 @@ from billing import (            # noqa: E402
     create_checkout, handle_stripe_webhook,
     PLAN_PRICES,
 )
+import trainer_analytics  # noqa: E402
 from ratelimit import allow      # noqa: E402
 
 PORT = int(os.environ.get("PORT", "8080"))
@@ -182,9 +183,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
-    def _serve_branded_index(self, tenant: dict[str, Any]) -> None:
-        """Serve index.html with tenant brand variables injected."""
-        fpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.html")
+    def _serve_branded_index(self, tenant: dict[str, Any], fname: str = "app.html") -> None:
+        """Serve a branded SPA shell with tenant brand variables injected."""
+        fpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), fname)
         if not os.path.isfile(fpath):
             self.send_response(404); self.end_headers(); return
         with open(fpath, "rb") as f:
@@ -260,16 +261,32 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if path == "/api/billing/portal":
             return self._api_billing_portal(tenant)
 
+        # ─── Trainer console v2 ─────────────────────────────────
+        if path == "/api/trainer/kpis":
+            return self._api_trainer_kpis(tenant)
+        if path == "/api/trainer/roster":
+            return self._api_trainer_roster(tenant)
+        if path.startswith("/api/clients/") and path.endswith("/overview"):
+            return self._api_client_overview(tenant, path.split("/")[3])
+        if path == "/api/programs":
+            return self._api_list_programs(tenant)
+
+        # ─── Member-facing endpoints ─────────────────────────────
+        if path == "/api/me/today":
+            return self._api_me_today(tenant)
+
         # Static + branded SPA. Anything under /api/ that didn't match is 404.
         if path.startswith("/api/"):
             return self._j({"error": "not found"}, 404)
-        if path in ("", "/", "/coach", "/client", "/login", "/signup", "/account", "/dashboard"):
-            return self._serve_branded_index(tenant)
+        if path in ("", "/", "/coach", "/login", "/signup", "/account", "/dashboard"):
+            return self._serve_branded_index(tenant, "app.html")
+        if path in ("/me", "/client"):
+            return self._serve_branded_index(tenant, "client.html")
         ext = os.path.splitext(path)[1]
         if ext in MIME:
             return self._serve_static(path.lstrip("/"), MIME[ext], cache=True)
         # SPA route — serve branded index so client-side routing can take over
-        return self._serve_branded_index(tenant)
+        return self._serve_branded_index(tenant, "app.html")
 
     def do_POST(self) -> None:
         path = self._path()
@@ -300,6 +317,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self._api_send_message(tenant, client_id)
         if path == "/api/checkout":
             return self._api_checkout(tenant)
+        if path == "/api/programs":
+            return self._api_create_program(tenant)
+        if path.startswith("/api/clients/") and path.endswith("/note"):
+            return self._api_add_note(tenant, path.split("/")[3])
+        if path == "/api/me/meal":
+            return self._api_member_log_meal(tenant)
+        if path == "/api/me/biometric":
+            return self._api_member_log_biometric(tenant)
         return self._j({"error": "not found"}, 404)
 
     # ────────────────────────────────────────────────────────────────
@@ -640,6 +665,166 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if tenant.get("custom_domain"):
             return f"https://{tenant['custom_domain']}"
         return f"https://{tenant['slug']}.{APEX_HOST}"
+
+    # ────────────────────────────────────────────────────────────────
+    #  Trainer console v2
+    # ────────────────────────────────────────────────────────────────
+    def _api_trainer_kpis(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        coach_id = sess["user_id"] if sess["role"] == "coach" else None
+        return self._j(trainer_analytics.trainer_kpis(tenant["id"], coach_id=coach_id))
+
+    def _api_trainer_roster(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        from urllib.parse import urlparse, parse_qs
+        qs = parse_qs(urlparse(self.path).query)
+        coach_id = sess["user_id"] if sess["role"] == "coach" else (qs.get("coach_id") or [None])[0]
+        rows = trainer_analytics.trainer_roster(
+            tenant["id"], coach_id=coach_id,
+            q=(qs.get("q") or [None])[0],
+            risk_tier=(qs.get("risk_tier") or [None])[0],
+            limit=int((qs.get("limit") or ["200"])[0]),
+        )
+        return self._j({"clients": rows})
+
+    def _api_client_overview(self, tenant: dict[str, Any], client_id: str) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        data = trainer_analytics.client_overview(tenant["id"], client_id)
+        if not data.get("user"):
+            return self._j({"error": "not found"}, 404)
+        return self._j(data)
+
+    def _api_list_programs(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        return self._j({"programs": trainer_analytics.list_programs(tenant["id"])})
+
+    def _api_create_program(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if sess["role"] not in ("owner", "admin", "coach"):
+            return self._j({"error": "forbidden"}, 403)
+        body = self._body()
+        slug = (body.get("name") or "").lower().replace(" ", "-")[:40]
+        if not slug:
+            return self._j({"error": "name required"}, 400)
+        row = db.fetch_one(
+            """insert into programs
+               (tenant_id, coach_id, name, slug, program_type, duration_days,
+                description, nutrition_json, workouts_json)
+               values ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb)
+               returning id""",
+            tenant["id"], sess["user_id"],
+            body.get("name"), slug,
+            body.get("program_type") or "combined",
+            int(body.get("duration_days") or 28),
+            body.get("description") or "",
+            json.dumps(body.get("nutrition") or {}),
+            json.dumps(body.get("workouts") or []),
+        )
+        return self._j({"id": row["id"]}, 201)
+
+    def _api_add_note(self, tenant: dict[str, Any], client_id: str) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        body = self._body()
+        text = (body.get("body") or "").strip()[:5000]
+        if not text:
+            return self._j({"error": "body required"}, 400)
+        db.execute(
+            """insert into trainer_notes (tenant_id, coach_id, client_id, body)
+               values ($1,$2,$3,$4)""",
+            tenant["id"], sess["user_id"], client_id, text,
+        )
+        return self._j({"ok": True}, 201)
+
+    # ────────────────────────────────────────────────────────────────
+    #  Member-facing endpoints (the client app)
+    # ────────────────────────────────────────────────────────────────
+    def _api_me_today(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if sess["role"] != "client":
+            return self._j({"error": "clients only"}, 403)
+        today_meals = db.fetch_all(
+            """select totals_json from meals
+               where tenant_id = $1 and client_id = $2 and log_date = current_date""",
+            tenant["id"], sess["user_id"],
+        )
+        cals = sum(int((m.get("totals_json") or {}).get("calories", 0)) for m in today_meals)
+        protein = sum(int((m.get("totals_json") or {}).get("protein", 0)) for m in today_meals)
+        profile = db.fetch_one(
+            "select * from client_profiles where user_id = $1", sess["user_id"],
+        )
+        coach = db.fetch_one(
+            """select cc.coach_id, c.name as coach_name
+               from coach_clients cc join users c on c.id = cc.coach_id
+               where cc.tenant_id = $1 and cc.client_id = $2 and cc.status = 'active' limit 1""",
+            tenant["id"], sess["user_id"],
+        )
+        unread = db.fetch_one(
+            """select count(*)::int as n from messages
+               where tenant_id = $1 and client_id = $2 and sender_id != $2 and read_at is null""",
+            tenant["id"], sess["user_id"],
+        )
+        engagement = db.fetch_one(
+            "select score, risk_tier, days_active_30 from engagement_score where tenant_id = $1 and client_id = $2",
+            tenant["id"], sess["user_id"],
+        )
+        target_kg = (profile or {}).get("weight_kg") or 70
+        return self._j({
+            "today": {
+                "calories": cals, "protein": protein,
+                "calorie_target": int(float(target_kg) * 30),
+                "protein_target": int(float(target_kg) * 1.6),
+            },
+            "profile": profile,
+            "coach": coach,
+            "unread_messages": (unread or {}).get("n", 0),
+            "engagement": engagement,
+        })
+
+    def _api_member_log_meal(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if sess["role"] != "client":
+            return self._j({"error": "clients only"}, 403)
+        body = self._body()
+        items = body.get("items") or []
+        totals = {
+            "calories": sum(int(i.get("calories") or 0) for i in items),
+            "protein":  sum(int(i.get("protein")  or 0) for i in items),
+            "carbs":    sum(int(i.get("carbs")    or 0) for i in items),
+            "fat":      sum(int(i.get("fat")      or 0) for i in items),
+        }
+        db.execute(
+            """insert into meals (tenant_id, client_id, log_date, items_json, totals_json, source)
+               values ($1,$2, current_date, $3::jsonb, $4::jsonb, $5)""",
+            tenant["id"], sess["user_id"],
+            json.dumps(items), json.dumps(totals),
+            (body.get("source") or "manual"),
+        )
+        return self._j({"ok": True, "totals": totals}, 201)
+
+    def _api_member_log_biometric(self, tenant: dict[str, Any]) -> None:
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if sess["role"] != "client":
+            return self._j({"error": "clients only"}, 403)
+        body = self._body()
+        db.execute(
+            """insert into biometrics
+               (tenant_id, client_id, reading_at, weight_kg, body_fat_pct,
+                heart_rate_bpm, source)
+               values ($1,$2, now(),$3,$4,$5,$6)""",
+            tenant["id"], sess["user_id"],
+            body.get("weight_kg"), body.get("body_fat_pct"),
+            body.get("heart_rate_bpm"), body.get("source") or "manual",
+        )
+        return self._j({"ok": True}, 201)
 
 
 # ════════════════════════════════════════════════════════════════════

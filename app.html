@@ -8,235 +8,478 @@
 <!--BRAND_INJECT-->
 <style>
 :root {
-  /* Default brand vars — overridden at runtime by window.__BRAND__ */
   --primary: #0F172A;
   --accent:  #22C55E;
   --bg:      #0a0e1a;
   --bg-card: #111827;
+  --bg-soft: #1f2937;
   --border:  #1f2937;
   --text:    #f8fafc;
   --text-dim:#94a3b8;
   --text-faint:#64748b;
+  --good:    #22c55e;
+  --warn:    #f59e0b;
+  --bad:     #ef4444;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  background: var(--bg); color: var(--text);
-  font: 16px/1.5 'Inter',-apple-system,system-ui,sans-serif;
-  -webkit-font-smoothing: antialiased;
-}
-.shell { min-height: 100vh; }
-.hdr {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 20px; border-bottom:1px solid var(--border);
-  background:rgba(10,14,26,0.85); backdrop-filter:blur(18px);
-  position:sticky; top:0; z-index:50;
-}
-.hdr .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; }
-.hdr .brand img { height:28px; }
-.tabs { display:flex; gap:4px; border-bottom:1px solid var(--border); padding:0 16px; }
-.tab {
-  padding:14px 16px; color:var(--text-dim);
-  border-bottom:2px solid transparent;
-  cursor:pointer; font-weight:500; transition:all .15s;
-}
-.tab.on { color:var(--accent); border-bottom-color:var(--accent); }
-.view { padding:24px 20px; max-width:760px; margin:0 auto; }
-.empty { text-align:center; padding:64px 20px; color:var(--text-dim); }
-.empty h2 { font-size:22px; color:var(--text); margin-bottom:10px; font-weight:700; }
-.empty p { max-width:440px; margin:0 auto; line-height:1.6; }
-.card {
-  background:var(--bg-card); border:1px solid var(--border);
-  border-radius:12px; padding:18px; margin-bottom:12px;
-}
-.btn {
-  background:var(--accent); color:#052e16;
-  padding:10px 18px; border-radius:8px; border:none;
-  font-weight:600; cursor:pointer; font-size:14px;
-}
-.btn-ghost { background:transparent; color:var(--text); border:1px solid var(--border); }
-input, textarea {
-  width:100%; padding:11px 14px;
-  background:#0f172a; border:1px solid var(--border);
-  border-radius:10px; color:var(--text); font:inherit; outline:none;
-}
-input:focus, textarea:focus { border-color:var(--accent); }
-.label { font-size:13px; color:var(--text-dim); margin-bottom:6px; display:block; }
-.row { display:flex; gap:8px; }
-.gap16 > * + * { margin-top:16px; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--text);font:15px/1.5 'Inter',-apple-system,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:none;background:transparent;color:inherit}
+a{color:var(--accent);text-decoration:none}
+
+/* Layout */
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+@media(max-width:920px){.app{grid-template-columns:1fr}}
+aside{background:rgba(0,0,0,0.3);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column;gap:4px}
+@media(max-width:920px){aside{display:none}}
+aside .brand{padding:0 24px 24px;font:800 22px -apple-system,sans-serif;letter-spacing:-0.02em}
+aside .brand span{color:var(--accent)}
+aside nav button{display:flex;align-items:center;gap:12px;padding:10px 24px;color:var(--text-dim);font-size:14px;font-weight:500;width:100%;text-align:left;border-left:3px solid transparent;transition:all .12s}
+aside nav button:hover{color:var(--text);background:rgba(255,255,255,0.04)}
+aside nav button.on{color:var(--accent);background:rgba(34,197,94,0.08);border-left-color:var(--accent)}
+aside .me{margin-top:auto;padding:18px 24px;border-top:1px solid var(--border);font-size:13px}
+aside .me .nm{font-weight:600}
+aside .me .role{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.06em}
+
+main{padding:32px 36px;max-width:1440px;width:100%;overflow-x:hidden}
+@media(max-width:680px){main{padding:20px}}
+.head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;gap:24px;flex-wrap:wrap}
+.head h1{font:800 32px/1.05 -apple-system,sans-serif;letter-spacing:-0.025em}
+.head .sub{color:var(--text-dim);font-size:14px;margin-top:6px}
+
+.btn{padding:9px 16px;border-radius:8px;font-weight:600;font-size:13px;background:var(--accent);color:#052e16}
+.btn:hover{background:#4ade80}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn.ghost:hover{border-color:var(--text-dim)}
+.btn.sm{padding:6px 11px;font-size:12px}
+input,select,textarea{font:inherit;padding:10px 12px;background:#0f172a;border:1px solid var(--border);border-radius:8px;color:var(--text);outline:none;transition:border-color .12s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+
+.row{display:grid;gap:16px}
+.row.k4{grid-template-columns:repeat(4,1fr)}
+.row.k3{grid-template-columns:repeat(3,1fr)}
+.row.k2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:980px){.row.k4{grid-template-columns:repeat(2,1fr)}.row.k3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:540px){.row.k4,.row.k3,.row.k2{grid-template-columns:1fr}}
+
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-faint);font-weight:700;margin-bottom:8px}
+.kpi .value{font:800 32px/1 -apple-system,sans-serif;letter-spacing:-0.01em}
+
+.pill{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:600}
+.pill.crushing{background:rgba(34,197,94,0.15);color:#86EFAC}
+.pill.on_track{background:rgba(59,130,246,0.15);color:#93C5FD}
+.pill.slipping{background:rgba(245,158,11,0.15);color:#FCD34D}
+.pill.ghosting{background:rgba(239,68,68,0.15);color:#FCA5A5}
+
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;padding:11px 14px;font-weight:600;color:var(--text-dim);font-size:12px;text-transform:uppercase;letter-spacing:0.06em;border-bottom:1px solid var(--border)}
+td{padding:13px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .1s}
+tbody tr:hover{background:rgba(255,255,255,0.03);cursor:pointer}
+.tbl-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.tbl-card .head-row{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:12px}
+.tbl-card .head-row h3{font:600 16px sans-serif;color:var(--text);margin:0}
+.tbl-card .filters{display:flex;gap:8px;flex-wrap:wrap}
+.tbl-card .filters input,.tbl-card .filters select{font-size:13px;padding:7px 11px}
+
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin:-8px -4px 24px;padding:0 4px;overflow-x:auto}
+.tabs button{padding:12px 18px;color:var(--text-dim);font-weight:500;font-size:14px;border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal.on{display:flex}
+.modal-card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:32px;max-width:560px;width:100%;max-height:90vh;overflow-y:auto}
+.modal-card h2{font:800 24px sans-serif;margin-bottom:8px;letter-spacing:-0.02em}
+label.field{display:block;margin-bottom:14px}
+label.field .lab{font-size:12px;font-weight:600;color:var(--text-dim);margin-bottom:6px;display:block}
+label.field input,label.field select,label.field textarea{width:100%}
+
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--bg-card);border:1px solid var(--border);border-radius:16px;padding:36px;max-width:420px;width:100%}
+.login-card h1{font:800 28px sans-serif;margin-bottom:6px;letter-spacing:-0.02em}
+.login-card .sub{color:var(--text-dim);font-size:14px;margin-bottom:24px}
+
+canvas{display:block;width:100%}
+.chart{height:200px;background:rgba(255,255,255,0.02);border-radius:8px;padding:12px}
+
+.empty{padding:48px 24px;text-align:center;color:var(--text-dim)}
+.empty h4{color:var(--text);font-size:18px;margin-bottom:6px}
+
+.hidden{display:none!important}
+.muted{color:var(--text-dim)}
+.right{text-align:right}
 </style>
 </head>
 <body>
 
-<div class="shell">
-
-<!-- ─── Login pane ─── -->
-<div id="loginPane" style="display:none">
-  <div class="view">
-    <div class="card" style="max-width:380px;margin:80px auto">
-      <div class="brand" style="font-weight:800;font-size:22px;margin-bottom:8px" id="brandLogin">Brand</div>
-      <p style="color:var(--text-dim);margin-bottom:24px;font-size:14px" id="welcomeMsg">Welcome back. Sign in to continue.</p>
-      <label class="label">Email</label>
-      <input id="loginEmail" type="email" autocomplete="email">
-      <label class="label" style="margin-top:14px">Password</label>
-      <input id="loginPass" type="password" autocomplete="current-password">
-      <div id="loginErr" style="color:#ef4444;font-size:13px;margin-top:10px;display:none"></div>
-      <button class="btn" style="width:100%;margin-top:18px" onclick="doLogin()">Sign in</button>
-    </div>
+<!-- LOGIN -->
+<div id="login" class="login hidden">
+  <div class="login-card">
+    <h1 id="brand-login">CoachHQ</h1>
+    <p class="sub" id="login-lead">Welcome back. Sign in.</p>
+    <label class="field"><span class="lab">Email</span><input id="email" type="email" autocomplete="email"></label>
+    <label class="field"><span class="lab">Password</span><input id="password" type="password" autocomplete="current-password"></label>
+    <div id="login-err" class="hidden" style="color:var(--bad);font-size:13px;margin:-8px 0 14px"></div>
+    <button class="btn" style="width:100%;padding:12px" onclick="doLogin()">Sign in</button>
   </div>
 </div>
 
-<!-- ─── Coach pane ─── -->
-<div id="coachPane" style="display:none">
-  <div class="hdr">
-    <div class="brand"><span id="brandTop">Brand</span></div>
-    <button class="btn-ghost btn" onclick="doLogout()">Log out</button>
-  </div>
-  <div class="tabs">
-    <div class="tab on" onclick="switchTab('roster')">Roster</div>
-    <div class="tab" onclick="switchTab('messages')">Messages</div>
-    <div class="tab" onclick="switchTab('account')">Account</div>
-  </div>
-  <div id="tabRoster" class="view">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-      <h2 style="font-size:24px;font-weight:800">Your roster</h2>
-      <button class="btn" onclick="document.getElementById('inviteModal').style.display='flex'">+ Invite client</button>
+<!-- APP -->
+<div id="app" class="app hidden">
+  <aside>
+    <div class="brand"><span id="brand-name">CoachHQ</span></div>
+    <nav>
+      <button data-view="dashboard" class="on">📊 Dashboard</button>
+      <button data-view="roster">👥 Roster</button>
+      <button data-view="programs">📋 Programs</button>
+      <button data-view="schedule">📅 Schedule</button>
+      <button data-view="account">⚙️ Account</button>
+    </nav>
+    <div class="me">
+      <div class="nm" id="me-name">—</div>
+      <div class="role" id="me-role">—</div>
+      <a href="#" onclick="doLogout();return false" style="color:var(--text-dim);font-size:12px;display:block;margin-top:8px">Sign out</a>
     </div>
-    <div id="rosterList"><div class="empty"><h2>Your first client awaits.</h2><p>Tap "+ Invite client" to send your first invite. They'll get an email with a sign-in link to your branded app.</p></div></div>
-  </div>
-  <div id="tabMessages" class="view" style="display:none">
-    <h2 style="font-size:24px;font-weight:800;margin-bottom:20px">Messages</h2>
-    <div id="msgList"><div class="empty"><h2>No threads yet.</h2><p>Once your clients log meals or you nudge them, conversations show up here.</p></div></div>
-  </div>
-  <div id="tabAccount" class="view" style="display:none">
-    <h2 style="font-size:24px;font-weight:800;margin-bottom:20px">Account</h2>
-    <div class="card">
-      <div style="font-size:13px;color:var(--text-dim);margin-bottom:6px">PLAN</div>
-      <div style="font-size:20px;font-weight:700" id="acctPlan">Coach</div>
-      <button class="btn" style="margin-top:14px" onclick="openBilling()">Manage billing</button>
-    </div>
-  </div>
+  </aside>
+  <main id="main"></main>
 </div>
 
-<!-- ─── Invite modal ─── -->
-<div id="inviteModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);align-items:center;justify-content:center;z-index:100;padding:20px" onclick="if(event.target===this)this.style.display='none'">
-  <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:28px;max-width:380px;width:100%">
-    <h3 style="font-size:18px;font-weight:700;margin-bottom:6px">Invite a client</h3>
-    <p style="color:var(--text-dim);font-size:13px;margin-bottom:20px">They'll get an email with a one-tap sign-in link.</p>
-    <label class="label">Their name</label>
-    <input id="invName">
-    <label class="label" style="margin-top:14px">Their email</label>
-    <input id="invEmail" type="email">
-    <div id="invErr" style="color:#ef4444;font-size:13px;margin-top:10px;display:none"></div>
-    <div class="row" style="margin-top:18px">
-      <button class="btn-ghost btn" style="flex:1" onclick="document.getElementById('inviteModal').style.display='none'">Cancel</button>
-      <button class="btn" style="flex:2" onclick="doInvite()">Send invite</button>
-    </div>
-  </div>
-</div>
-
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()">
+  <div id="modal-body" class="modal-card"></div>
 </div>
 
 <script>
-const BRAND = window.__BRAND__ || { name:'CoachHQ', primary:'#0F172A', accent:'#22C55E', logo_url:'', app_name:'CoachHQ' };
+const BRAND = window.__BRAND__ || {name:'CoachHQ',primary:'#0F172A',accent:'#22C55E'};
 document.documentElement.style.setProperty('--primary', BRAND.primary);
 document.documentElement.style.setProperty('--accent',  BRAND.accent);
-document.title = BRAND.app_name;
-document.getElementById('brandLogin').textContent = BRAND.name;
-document.getElementById('brandTop').textContent  = BRAND.name;
-document.getElementById('welcomeMsg').textContent = 'Welcome to ' + BRAND.name + '. Sign in to continue.';
+document.title = BRAND.app_name || BRAND.name;
+document.getElementById('brand-name').textContent = BRAND.name;
+document.getElementById('brand-login').textContent = BRAND.name;
+document.getElementById('login-lead').textContent = `Sign in to ${BRAND.name}.`;
 
-let token = localStorage.getItem('chq_token') || null;
+let token = localStorage.getItem('chq_token');
+const qToken = new URLSearchParams(location.search).get('token');
+if (qToken) { token = qToken; localStorage.setItem('chq_token', token); history.replaceState({},'',location.pathname); }
+
 let me = null;
 
-async function api(path, opts) {
-  const h = { 'Content-Type':'application/json' };
+async function api(path, opts={}) {
+  const h = {'Content-Type':'application/json'};
   if (token) h['Authorization'] = 'Bearer ' + token;
-  const r = await fetch(path, { ...opts, headers: h });
+  const r = await fetch(path, { ...opts, headers: { ...h, ...(opts.headers||{}) } });
   if (r.status === 401) { token = null; localStorage.removeItem('chq_token'); render(); return null; }
+  if (!r.ok) {
+    const d = await r.json().catch(()=>({error:'request failed'}));
+    throw new Error(d.error || 'request failed');
+  }
   return r.json();
 }
 
 async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-  const password = document.getElementById('loginPass').value;
-  const err = document.getElementById('loginErr');
-  err.style.display = 'none';
-  const d = await fetch('/api/login', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ email, password })
-  }).then(r => r.json()).catch(() => null);
-  if (!d || d.error) { err.textContent = d?.error || 'Sign-in failed.'; err.style.display = ''; return; }
-  token = d.token; me = d.user;
-  localStorage.setItem('chq_token', token);
-  render();
+  const err = document.getElementById('login-err'); err.classList.add('hidden');
+  try {
+    const r = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      password: document.getElementById('password').value,
+    })});
+    const d = await r.json();
+    if (!r.ok) { err.textContent = d.error || 'Sign-in failed.'; err.classList.remove('hidden'); return; }
+    token = d.token; localStorage.setItem('chq_token', token);
+    render();
+  } catch (e) { err.textContent = 'Connection failed.'; err.classList.remove('hidden'); }
 }
 
 async function doLogout() {
   if (token) await api('/api/logout', { method:'POST' });
-  token = null; me = null;
-  localStorage.removeItem('chq_token');
-  render();
-}
-
-async function loadRoster() {
-  const d = await api('/api/clients');
-  if (!d || !d.clients) return;
-  const list = d.clients;
-  const el = document.getElementById('rosterList');
-  if (!list.length) {
-    el.innerHTML = '<div class="empty"><h2>Your first client awaits.</h2><p>Tap "+ Invite client" to send your first invite.</p></div>';
-    return;
-  }
-  el.innerHTML = list.map(c => `
-    <div class="card">
-      <div style="font-weight:700;font-size:16px">${c.name}</div>
-      <div style="color:var(--text-dim);font-size:13px;margin-top:2px">${c.email}</div>
-    </div>
-  `).join('');
-}
-
-async function doInvite() {
-  const name = document.getElementById('invName').value.trim();
-  const email = document.getElementById('invEmail').value.trim().toLowerCase();
-  const err = document.getElementById('invErr');
-  err.style.display = 'none';
-  if (!name || !email) { err.textContent = 'Name and email required.'; err.style.display = ''; return; }
-  const d = await api('/api/invite-client', { method:'POST', body: JSON.stringify({ name, email }) });
-  if (!d || d.error) { err.textContent = d?.error || 'Invite failed.'; err.style.display = ''; return; }
-  document.getElementById('inviteModal').style.display = 'none';
-  document.getElementById('invName').value = '';
-  document.getElementById('invEmail').value = '';
-  loadRoster();
-}
-
-async function openBilling() {
-  const d = await api('/api/billing/portal');
-  if (d && d.url) window.location.href = d.url;
-}
-
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('on', t.textContent.toLowerCase().includes(name)));
-  document.getElementById('tabRoster').style.display   = name === 'roster' ? '' : 'none';
-  document.getElementById('tabMessages').style.display = name === 'messages' ? '' : 'none';
-  document.getElementById('tabAccount').style.display  = name === 'account' ? '' : 'none';
+  token = null; localStorage.removeItem('chq_token'); render();
 }
 
 async function render() {
   if (!token) {
-    document.getElementById('loginPane').style.display = '';
-    document.getElementById('coachPane').style.display = 'none';
+    document.getElementById('login').classList.remove('hidden');
+    document.getElementById('app').classList.add('hidden');
     return;
   }
   const d = await api('/api/me');
-  if (!d || !d.user) { document.getElementById('loginPane').style.display = ''; return; }
-  me = d.user;
-  document.getElementById('loginPane').style.display = 'none';
-  document.getElementById('coachPane').style.display = '';
-  document.getElementById('acctPlan').textContent = (d.tenant?.plan || 'coach').replace(/^./, c => c.toUpperCase());
-  if (me.role === 'coach' || me.role === 'admin' || me.role === 'owner') {
-    loadRoster();
-  }
+  if (!d) return;
+  me = d;
+
+  // Clients go to /me
+  if (d.user.role === 'client') { location.href = '/me'; return; }
+
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('me-name').textContent = d.user.name;
+  document.getElementById('me-role').textContent = (d.user.role || '');
+
+  document.querySelectorAll('aside nav button').forEach(b => b.onclick = () => switchView(b.dataset.view));
+  switchView('dashboard');
 }
+
+function switchView(name) {
+  document.querySelectorAll('aside nav button').forEach(b => b.classList.toggle('on', b.dataset.view === name));
+  const view = VIEWS[name];
+  if (!view) return;
+  document.getElementById('main').innerHTML = '<div class="head"><div><h1>'+view.title+'</h1><p class="sub">Loading…</p></div></div>';
+  view.render().catch(e => {
+    document.getElementById('main').innerHTML = '<div class="empty"><h4>Couldn\'t load</h4><p>'+e.message+'</p></div>';
+  });
+}
+
+function $main() { return document.getElementById('main'); }
+function fmt(n){ if(n==null) return '—'; n=Number(n); return Math.abs(n)>=1000?n.toLocaleString():n.toString(); }
+function relativeTime(iso){ if(!iso) return '—'; const d=(Date.now()-new Date(iso).getTime())/86400000; if(d<1)return 'today'; if(d<2)return 'yesterday'; if(d<7)return Math.round(d)+'d ago'; if(d<30)return Math.round(d/7)+'w ago'; return Math.round(d/30)+'mo ago'; }
+
+function sparkline(canvas, values, color) {
+  const ctx = canvas.getContext('2d');
+  const W = canvas.clientWidth * devicePixelRatio;
+  const H = canvas.clientHeight * devicePixelRatio;
+  canvas.width = W; canvas.height = H; ctx.clearRect(0,0,W,H);
+  if (!values.length) return;
+  const max = Math.max(...values, 1), min = Math.min(...values, 0);
+  const range = (max-min) || 1;
+  ctx.strokeStyle = color; ctx.lineWidth = 2 * devicePixelRatio; ctx.beginPath();
+  values.forEach((v,i) => {
+    const x = (i / (values.length-1 || 1)) * W;
+    const y = H - ((v - min) / range) * H * 0.85 - H*0.05;
+    if (i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath();
+  ctx.fillStyle = color + '22'; ctx.fill();
+}
+
+const VIEWS = {};
+
+VIEWS.dashboard = { title:'Dashboard', async render() {
+  const k = await api('/api/trainer/kpis');
+  $main().innerHTML = `
+    <div class="head">
+      <div><h1>Welcome back, ${(me.user.name||'').split(' ')[0]}</h1>
+      <p class="sub">Your roster at a glance</p></div>
+      <div><button class="btn" onclick="openInviteModal()">+ Invite client</button></div>
+    </div>
+    <div class="row k4">
+      <div class="kpi card"><div class="label">Active clients</div><div class="value">${fmt(k.active_clients)}</div></div>
+      <div class="kpi card"><div class="label">New this week</div><div class="value">${fmt(k.new_7d)}</div></div>
+      <div class="kpi card"><div class="label">At risk</div><div class="value" style="${k.at_risk>0?'color:var(--warn)':''}">${fmt(k.at_risk)}</div></div>
+      <div class="kpi card"><div class="label">Avg engagement</div><div class="value">${k.avg_engagement || '—'}</div></div>
+    </div>
+    <div class="row k2" style="margin-top:18px">
+      <div class="kpi card"><div class="label">Sessions completed (7d)</div><div class="value">${fmt(k.sessions_7d)}</div></div>
+      <div class="kpi card"><div class="label">Messages sent (7d)</div><div class="value">${fmt(k.messages_7d)}</div></div>
+    </div>
+  `;
+}};
+
+VIEWS.roster = { title:'Roster', async render() {
+  const filters = window.__rf || { q:'', risk_tier:'' };
+  const params = new URLSearchParams();
+  if (filters.q) params.set('q', filters.q);
+  if (filters.risk_tier) params.set('risk_tier', filters.risk_tier);
+  const d = await api('/api/trainer/roster?' + params);
+  $main().innerHTML = `
+    <div class="head"><div><h1>Roster</h1><p class="sub">${d.clients.length} clients · click any row to drill in</p></div>
+    <div><button class="btn" onclick="openInviteModal()">+ Invite client</button></div></div>
+    <div class="tbl-card">
+      <div class="head-row">
+        <h3>${d.clients.length} clients</h3>
+        <div class="filters">
+          <input type="search" placeholder="Search name or email" id="r-q" value="${filters.q}">
+          <select id="r-risk">
+            <option value="">All risk</option>
+            <option value="crushing" ${filters.risk_tier==='crushing'?'selected':''}>Crushing</option>
+            <option value="on_track" ${filters.risk_tier==='on_track'?'selected':''}>On track</option>
+            <option value="slipping" ${filters.risk_tier==='slipping'?'selected':''}>Slipping</option>
+            <option value="ghosting" ${filters.risk_tier==='ghosting'?'selected':''}>Ghosting</option>
+          </select>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Client</th><th>Goal</th><th>Score</th><th>Status</th><th>Meals 7d</th><th>Last login</th><th>Joined</th></tr></thead>
+        <tbody>
+          ${d.clients.map(c=>`<tr onclick="openClient('${c.id}')">
+            <td><b>${c.name}</b><br><span class="muted" style="font-size:12px">${c.email}</span></td>
+            <td class=muted>${c.goal||'—'}</td>
+            <td><b>${c.score||'—'}</b></td>
+            <td>${c.risk_tier ? '<span class="pill '+c.risk_tier+'">'+c.risk_tier.replace('_',' ')+'</span>' : '—'}</td>
+            <td>${c.meals_7d||0}/7</td>
+            <td class=muted>${relativeTime(c.last_login_at)}</td>
+            <td class=muted>${relativeTime(c.joined_at)}</td>
+          </tr>`).join('') || '<tr><td colspan=7 class=empty><h4>No clients match these filters</h4></td></tr>'}
+        </tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('r-q').oninput = e => { filters.q = e.target.value; window.__rf = filters; clearTimeout(window.__rt); window.__rt = setTimeout(()=>switchView('roster'),300); };
+  document.getElementById('r-risk').onchange = e => { filters.risk_tier = e.target.value; window.__rf = filters; switchView('roster'); };
+}};
+
+VIEWS.programs = { title:'Programs', async render() {
+  const d = await api('/api/programs');
+  $main().innerHTML = `
+    <div class="head"><div><h1>Programs &amp; templates</h1><p class="sub">${d.programs.length} programs</p></div>
+    <div><button class="btn" onclick="openProgramModal()">+ New program</button></div></div>
+    <div class="row k3">
+      ${d.programs.map(p=>`<div class="card">
+        <h3 style="font-size:18px;margin-bottom:6px">${p.name}</h3>
+        <p class="muted" style="font-size:12px;text-transform:uppercase;letter-spacing:0.05em">${p.program_type.replace('_',' ')}</p>
+        <div style="display:flex;gap:18px;margin-top:14px;font-size:13px">
+          <div><div class="muted">Active</div><b>${p.active||0}</b></div>
+          <div><div class="muted">Completed</div><b>${p.completed||0}</b></div>
+          <div><div class="muted">Duration</div><b>${p.duration_days}d</b></div>
+        </div>
+      </div>`).join('') || '<div class="empty card"><h4>No programs yet</h4><p>Build a workout, nutrition, or combined campaign for your clients.</p></div>'}
+    </div>
+  `;
+}};
+
+VIEWS.schedule = { title:'Schedule', async render() {
+  $main().innerHTML = `
+    <div class="head"><div><h1>Schedule</h1><p class="sub">Sessions, classes, and bookings</p></div></div>
+    <div class="empty card">
+      <h4>Calendar coming next</h4>
+      <p>Drag-drop session scheduling, Zoom/Meet auto-links, and a client-facing booking page are queued for the next release.</p>
+    </div>
+  `;
+}};
+
+VIEWS.account = { title:'Account', async render() {
+  $main().innerHTML = `
+    <div class="head"><div><h1>${BRAND.name}</h1><p class="sub">Workspace settings</p></div></div>
+    <div class="row k2">
+      <div class="card">
+        <h3 style="margin-bottom:14px">Plan</h3>
+        <div class="kpi" style="padding:0"><div class="value">${(me.tenant?.plan||'').replace(/^./,c=>c.toUpperCase())}</div></div>
+        <button class="btn" style="margin-top:14px" onclick="openBilling()">Manage billing</button>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:14px">Branding</h3>
+        <p class="muted" style="font-size:13px">Tenant name, accent color, custom domain (Brand tier).</p>
+        <div style="margin-top:14px;font-size:14px"><b>Workspace:</b> ${me.tenant?.name||''}</div>
+        <div><b>Subdomain:</b> ${me.tenant?.slug||''}.coachhq.app</div>
+      </div>
+    </div>
+  `;
+}};
+
+async function openClient(id) {
+  const d = await api('/api/clients/' + id + '/overview');
+  document.getElementById('modal-body').innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px">
+      <div><h2>${d.user.name}</h2><p class="muted">${d.user.email}</p></div>
+      <button class="btn ghost sm" onclick="closeModal()">Close</button>
+    </div>
+    <div class="tabs" id="c-tabs">
+      <button class="on" data-ct="overview">Overview</button>
+      <button data-ct="nutrition">Nutrition</button>
+      <button data-ct="programs">Programs</button>
+      <button data-ct="notes">Notes</button>
+    </div>
+    <div id="ct-overview">
+      <div class="row k2">
+        <div><div class="muted" style="font-size:12px">Engagement</div><b>${(d.engagement||{}).score || '—'} <span class="pill ${(d.engagement||{}).risk_tier||''}">${((d.engagement||{}).risk_tier||'').replace('_',' ')}</span></b></div>
+        <div><div class="muted" style="font-size:12px">Last login</div><b>${relativeTime(d.user.last_login_at)}</b></div>
+        <div><div class="muted" style="font-size:12px">Goal</div><b>${(d.profile||{}).goal||'—'}</b></div>
+        <div><div class="muted" style="font-size:12px">Coach</div><b>${d.user.coach_name||'—'}</b></div>
+      </div>
+      <h3 style="margin-top:18px;margin-bottom:8px">Weight (last 30 days)</h3>
+      <canvas id="c-weight" class="chart" style="height:120px"></canvas>
+    </div>
+    <div id="ct-nutrition" class="hidden">
+      <table><thead><tr><th>Date</th><th>Cal</th><th>Pro</th></tr></thead>
+      <tbody>${d.nutrition.slice(0,14).map(n=>`<tr><td>${n.date}</td><td>${fmt(n.calories)}</td><td>${fmt(n.protein)}</td></tr>`).join('') || '<tr><td colspan=3 class=muted>No meals logged.</td></tr>'}</tbody></table>
+    </div>
+    <div id="ct-programs" class="hidden">
+      ${d.enrollments.length ? d.enrollments.map(e=>`<div class="card" style="margin-top:8px"><b>${e.program_name}</b><br><span class="muted" style="font-size:12px">${e.status} · ${e.adherence_pct||0}% adherence</span></div>`).join('') : '<p class=muted>Not enrolled.</p>'}
+    </div>
+    <div id="ct-notes" class="hidden">
+      <textarea id="note-body" placeholder="Add a private note about this client…" rows="3" style="width:100%"></textarea>
+      <button class="btn sm" style="margin-top:8px" onclick="addNote('${id}')">Save note</button>
+      <div style="margin-top:14px">${d.notes.length ? d.notes.map(n=>`<div style="background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;margin-top:6px;font-size:14px">${n.body}<div class=muted style="font-size:11px;margin-top:4px">${relativeTime(n.created_at)}</div></div>`).join('') : '<p class=muted>No notes yet.</p>'}</div>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('on');
+  document.querySelectorAll('#c-tabs button').forEach(b => b.onclick = () => {
+    document.querySelectorAll('#c-tabs button').forEach(x => x.classList.toggle('on', x===b));
+    ['overview','nutrition','programs','notes'].forEach(t => document.getElementById('ct-'+t).classList.toggle('hidden', t !== b.dataset.ct));
+  });
+  const ws = (d.weight||[]).slice().reverse().map(w => Number(w.weight_kg));
+  if (ws.length) sparkline(document.getElementById('c-weight'), ws, '#22C55E');
+}
+
+async function addNote(clientId) {
+  const body = document.getElementById('note-body').value.trim();
+  if (!body) return;
+  try { await api('/api/clients/'+clientId+'/note', { method:'POST', body: JSON.stringify({body}) }); openClient(clientId); }
+  catch (e) { alert(e.message); }
+}
+
+function openInviteModal() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>Invite a client</h2>
+    <p class="muted">They'll get a one-tap sign-in link.</p>
+    <label class="field"><span class="lab">Name</span><input id="i-name"></label>
+    <label class="field"><span class="lab">Email</span><input id="i-email" type="email"></label>
+    <div id="i-err" class="hidden" style="color:var(--bad);font-size:13px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitInvite()">Send invite</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+async function submitInvite() {
+  const err = document.getElementById('i-err'); err.classList.add('hidden');
+  try {
+    await api('/api/invite-client', { method:'POST', body: JSON.stringify({
+      name: document.getElementById('i-name').value.trim(),
+      email: document.getElementById('i-email').value.trim().toLowerCase(),
+    })});
+    closeModal();
+    switchView('roster');
+  } catch (e) { err.textContent = e.message; err.classList.remove('hidden'); }
+}
+
+function openProgramModal() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>New program</h2>
+    <p class="muted">Build a workout, nutrition, or combined campaign.</p>
+    <label class="field"><span class="lab">Name</span><input id="p-name" placeholder="e.g. 8-Week Recomp"></label>
+    <label class="field"><span class="lab">Type</span><select id="p-type"><option value="combined">Combined</option><option value="workout_template">Workout</option><option value="nutrition_template">Nutrition</option><option value="campaign">Campaign</option></select></label>
+    <label class="field"><span class="lab">Duration (days)</span><input id="p-duration" type="number" value="28"></label>
+    <label class="field"><span class="lab">Description</span><textarea id="p-desc" rows="3"></textarea></label>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn" onclick="submitProgram()">Create</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+async function submitProgram() {
+  try {
+    await api('/api/programs', { method:'POST', body: JSON.stringify({
+      name: document.getElementById('p-name').value.trim() || 'Untitled',
+      program_type: document.getElementById('p-type').value,
+      duration_days: Number(document.getElementById('p-duration').value || 28),
+      description: document.getElementById('p-desc').value.trim(),
+    })});
+    closeModal();
+    switchView('programs');
+  } catch (e) { alert(e.message); }
+}
+
+async function openBilling() {
+  try {
+    const d = await api('/api/billing/portal');
+    if (d && d.url) location.href = d.url;
+  } catch (e) { alert(e.message); }
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('on'); }
 
 render();
 </script>
