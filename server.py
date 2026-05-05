@@ -279,7 +279,20 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def _resolve_tenant(self) -> dict[str, Any] | None:
         host = (self.headers.get("Host") or "").split(":")[0].lower()
-        return tenant_resolver(host)
+        t = tenant_resolver(host)
+        if t:
+            return t
+        # Apex-fallback override: ?tenant=<slug>. Lets the SPA work on
+        # apex (onrender.com or pre-DNS apex) when wildcard SSL isn't
+        # available yet for *.elhcoach.app subdomains.
+        qs = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+        slug = (qs.get("tenant") or [None])[0]
+        if slug:
+            return db.fetch_one(
+                "select * from tenants where slug = $1 and billing_status != 'canceled'",
+                slug,
+            )
+        return None
 
     def _serve_static(self, name: str, mime: str, cache: bool = False) -> None:
         fpath = os.path.join(os.path.dirname(os.path.abspath(__file__)), name)
