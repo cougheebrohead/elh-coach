@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Pricing — ELH Coach</title>
-<meta name="description" content="Three tiers. Subdomain to white-label custom domain. Built for the way coaches actually scale.">
+<meta name="description" content="One subscription. One real-domain upgrade. Optional native apps. Built for the way coaches actually scale.">
 <style>
 :root {
   --bg:        #FFFFFF;
@@ -81,8 +81,8 @@ footer a{color:var(--text-dim);text-decoration:none}
 </div>
 
 <div class="wrap">
-  <h1>Three ways to run a coaching business.</h1>
-  <p class="sub">Start on a subdomain. Grow into a studio. Graduate to your own domain. Same platform, different stage of the game.</p>
+  <h1>One subscription. One upgrade. Real ownership.</h1>
+  <p class="sub">Start with the subscription. When the business is ready, own your real domain — and the monthly fee goes away. Add native App Store apps any time.</p>
 
   <div class="cycle-toggle">
     <button class="on" id="bMo">Monthly</button>
@@ -91,72 +91,83 @@ footer a{color:var(--text-dim);text-decoration:none}
 
   <div class="tiers">
 
-    <div class="tier">
+    <div class="tier featured">
       <h3>Coach</h3>
-      <div class="tag">Subdomain</div>
+      <div class="tag">Subscription · subdomain</div>
       <div class="price">$<span class="amt" data-mo="89" data-an="74">89</span><small>/mo</small></div>
-      <div class="annual-note" data-mo="" data-an="Billed $890/yr — save $178">&nbsp;</div>
+      <div class="annual-note" data-mo="" data-an="Billed $890/yr — 2 months free">&nbsp;</div>
       <p class="desc">For solo trainers and dietitians running a real book of business on a polished branded subdomain.</p>
       <ul>
         <li>Branded subdomain (yourname.elhcoach.app)</li>
         <li>Up to 25 active clients</li>
-        <li>Native iOS app + PWA, your accent color</li>
+        <li>Native iOS + PWA, your accent color</li>
         <li>AI photo + barcode food logging</li>
-        <li>Workouts, programs, templates</li>
-        <li>In-app messaging w/ read receipts</li>
-        <li>Cycle-aware coaching, biomarker alerts</li>
-        <li>Email support · 24h response</li>
+        <li>Cycle-aware coaching, lab parsing</li>
+        <li>Workouts, programs, in-app messaging</li>
+        <li>Stripe Connect — your account, your money</li>
+        <li>14-day free trial · email support · 24h response</li>
       </ul>
       <div class="cta"><a href="/signup?plan=coach">Start 14-day trial</a></div>
     </div>
 
-    <div class="tier featured">
-      <h3>Studio</h3>
-      <div class="tag">Subdomain · multi-trainer</div>
-      <div class="price">$<span class="amt" data-mo="399" data-an="333">399</span><small>/mo</small></div>
-      <div class="annual-note" data-mo="" data-an="Billed $3,990/yr — save $798">&nbsp;</div>
-      <p class="desc">For studios and small gyms with a roster of trainers and a growing client base.</p>
+    <div class="tier">
+      <h3>Real Domain Upgrade</h3>
+      <div class="tag">One-time + annual maintenance</div>
+      <div class="price">$2,500<small> once</small></div>
+      <div class="annual-note">+ $200/yr maintenance · monthly fee stops</div>
+      <p class="desc">Move off the subdomain onto your own brand. Once you upgrade, the $89/mo subscription disappears — you're paying maintenance only.</p>
       <ul>
-        <li>Branded subdomain (yourstudio.elhcoach.app)</li>
-        <li>Up to 5 trainers, 200 active clients</li>
-        <li>Per-trainer roster ownership</li>
-        <li>Group nutrition challenges</li>
-        <li>Stripe Connect for sub-trainer payouts</li>
-        <li>Advanced analytics &amp; reports</li>
-        <li>Priority support · 4h response</li>
-        <li>Quarterly business review</li>
+        <li>Real domain (yourbrand.com)</li>
+        <li>Unlimited active clients</li>
+        <li>Full white-label — no platform branding anywhere</li>
+        <li>SSO: Google / Okta / Azure AD</li>
+        <li>Per-tenant REST API + webhooks</li>
+        <li>BAA-ready for clinical workflows</li>
+        <li>Dedicated CSM · 1-hour SLA · phone support</li>
+        <li>By year 3, you save money <em>and</em> own your brand</li>
       </ul>
-      <div class="cta"><a href="/signup?plan=studio">Start 14-day trial</a></div>
+      <div class="cta"><a href="/contact?upgrade=domain">Talk to us</a></div>
     </div>
 
     <div class="tier">
-      <h3>Custom Domain</h3>
-      <div class="tag">Your own domain · white-label</div>
-      <div class="price">$<span class="amt" data-mo="2500" data-an="2083">2,500</span><small>/mo</small></div>
-      <div class="annual-note" data-mo="" data-an="Billed $25,000/yr — save $5,000">&nbsp;</div>
-      <p class="desc">Your domain. Your name on every screen, every push, every email. For coaching brands ready to own the room.</p>
+      <h3>Native Apps Add-On</h3>
+      <div class="tag">Optional · any tier</div>
+      <div class="price">$4,500<small> once</small></div>
+      <div class="annual-note">+ $300/yr maintenance</div>
+      <p class="desc">Real native iOS + Android apps in the App Store and Play Store, listed under your developer account — not ours.</p>
       <ul>
-        <li>Custom domain (e.g. app.yourbrand.com)</li>
-        <li>Full white-label — no ELH Coach branding</li>
-        <li>Unlimited trainers + clients</li>
-        <li>Custom email sender domain</li>
-        <li>SSO (Google, Okta, Azure AD)</li>
-        <li>Per-tenant REST API + webhooks</li>
-        <li>BAA available (HIPAA-ready)</li>
-        <li>Dedicated success manager · 1h SLA · phone</li>
+        <li>Native iOS + Android apps</li>
+        <li>Listed under your developer account</li>
+        <li>Includes signing, store submission, screenshots, copy</li>
+        <li>Annual maintenance covers OS-update rebuilds</li>
+        <li>Resubmission on every iOS/Android major version</li>
+        <li>Available on subdomain or real-domain tier</li>
+        <li>Push notifications + biometric unlock</li>
+        <li>Native HealthKit + Google Fit integration</li>
       </ul>
-      <div class="cta"><a href="/signup?plan=brand">Talk to us</a></div>
+      <div class="cta"><a href="/contact?upgrade=native">Talk to us</a></div>
     </div>
 
   </div>
 
+  <div class="break-story" style="margin:64px auto 0;max-width:760px;background:var(--bg-soft);border:1px solid var(--border-soft);border-radius:14px;padding:32px 36px;">
+    <h3 style="font:500 22px var(--serif);color:var(--primary);margin-bottom:14px;letter-spacing:-0.01em">The breakeven story</h3>
+    <p style="color:var(--text-dim);font-size:15px;line-height:1.65">
+      Year 1 on the subscription: <strong style="color:var(--primary)">$1,068</strong>.
+      Upgrade to the real domain in Year 1: <strong style="color:var(--primary)">$2,700</strong> ($2,500 + $200).
+      Year 2 onward with the upgrade: <strong style="color:var(--primary)">$200/yr</strong>.
+      By Year 3, you've spent less than three years of subscription <em>and</em> you own your brand outright.
+    </p>
+  </div>
+
   <div class="faq">
     <h2>Frequently asked</h2>
-    <details><summary>Can I move up a tier later?</summary><p>Yes — upgrade in the billing portal at any time. Subdomain → custom domain takes us about 24h to migrate; existing client logins keep working through automatic redirects.</p></details>
-    <details><summary>What happens after my trial ends?</summary><p>You'll get a reminder three days before billing starts. If you don't cancel, you'll be charged for whichever plan you signed up under. Cancel anytime, no friction.</p></details>
-    <details><summary>HIPAA / BAA?</summary><p>Custom Domain tier only. We execute the Business Associate Agreement before any PHI flows through the platform.</p></details>
-    <details><summary>What if I exceed my client limit?</summary><p>Soft warning, never an auto-charge. We'll reach out and have a real conversation about whether the next tier fits.</p></details>
-    <details><summary>Can I export my data if I leave?</summary><p>Always. JSON + CSV export of every client, meal log, message, program, biometric. Your data is yours.</p></details>
+    <details><summary>What happens to the $89/mo when I upgrade to my real domain?</summary><p>It stops. The Real Domain Upgrade replaces the subscription — you pay $200/yr maintenance instead. We migrate your tenant to your domain in about 24 hours; existing client logins keep working through automatic redirects.</p></details>
+    <details><summary>What happens after my trial ends?</summary><p>You'll get a reminder three days before billing starts. If you don't add a card, your account locks until you do. Cancel anytime, no friction, no clawback.</p></details>
+    <details><summary>HIPAA / BAA?</summary><p>BAA-ready on the Real Domain tier. We execute the Business Associate Agreement before any PHI flows through the platform.</p></details>
+    <details><summary>What if I exceed 25 clients on the subscription?</summary><p>Soft warning, never an auto-charge. We'll reach out and have a real conversation about whether the Real Domain Upgrade fits — that's where unlimited clients live.</p></details>
+    <details><summary>Do I have to buy the native apps?</summary><p>No. Most coaches start on the PWA (which installs to the home screen) and add native apps when their book of business justifies the App Store / Play Store presence. Available at any tier.</p></details>
+    <details><summary>Can I export my data if I leave?</summary><p>Always. JSON + CSV export of every client, meal log, message, program, biometric. Your data is yours, on every tier.</p></details>
     <details><summary>Referral / partner program?</summary><p>Yes — partnerships@elhcoach.app. 20% recurring for the first year of every account you refer.</p></details>
   </div>
 </div>

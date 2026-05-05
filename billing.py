@@ -221,10 +221,44 @@ def handle_stripe_webhook(body: bytes, sig_header: str) -> None:
     obj = (event.get("data") or {}).get("object") or {}
 
     if etype == "checkout.session.completed":
-        tenant_id = (obj.get("metadata") or {}).get("elhcoach_tenant_id")
+        meta = obj.get("metadata") or {}
+        tenant_id = meta.get("elhcoach_tenant_id")
         sub_id = obj.get("subscription")
-        plan = (obj.get("metadata") or {}).get("plan", "coach")
-        if tenant_id and sub_id:
+        upgrade_sku = meta.get("upgrade_sku")  # 'domain' or 'native' if upgrade flow
+        plan = meta.get("plan", "coach")
+
+        if tenant_id and sub_id and upgrade_sku == "domain":
+            # Real Domain Upgrade: cancel the Coach $89/mo sub; the new sub_id
+            # is the $200/yr maintenance recurring (with $2,500 add_invoice setup).
+            t = db.fetch_one("select stripe_subscription_id from tenants where id = $1", tenant_id)
+            old_sub = (t or {}).get("stripe_subscription_id")
+            if old_sub and old_sub != sub_id:
+                try:
+                    _stripe("DELETE", f"subscriptions/{old_sub}", None)
+                except Exception:
+                    pass  # already cancelled / not found — non-fatal
+            db.execute(
+                """update tenants
+                   set stripe_subscription_id = $1, billing_status = 'active',
+                       plan = 'domain', updated_at = now()
+                   where id = $2""",
+                sub_id, tenant_id,
+            )
+
+        elif tenant_id and sub_id and upgrade_sku == "native":
+            # Native Apps Add-On: keep the existing Coach/Domain sub running;
+            # native maintenance becomes a SECOND subscription on the customer.
+            # Track by setting a flag — don't overwrite stripe_subscription_id.
+            db.execute(
+                """update tenants
+                   set native_subscription_id = $1, native_active = true,
+                       updated_at = now()
+                   where id = $2""",
+                sub_id, tenant_id,
+            )
+
+        elif tenant_id and sub_id:
+            # Initial Coach subscription (or other base-plan checkout)
             db.execute(
                 """update tenants
                    set stripe_subscription_id = $1, billing_status = 'active',
@@ -236,17 +270,23 @@ def handle_stripe_webhook(body: bytes, sig_header: str) -> None:
     elif etype in ("customer.subscription.updated", "customer.subscription.created"):
         sub_id = obj.get("id")
         status = obj.get("status", "")
-        cancel_at_period_end = obj.get("cancel_at_period_end", False)
         new_status = (
             "canceled" if status in ("canceled", "incomplete_expired") else
             "past_due" if status == "past_due" else
             "active"  if status in ("active", "trialing") else
             status
         )
+        # Route to whichever column matches the sub_id (base sub or native add-on).
         db.execute(
             """update tenants
                set billing_status = $1, updated_at = now()
                where stripe_subscription_id = $2""",
+            new_status, sub_id,
+        )
+        db.execute(
+            """update tenants
+               set native_active = ($1 = 'active'), updated_at = now()
+               where native_subscription_id = $2""",
             new_status, sub_id,
         )
 
@@ -254,6 +294,10 @@ def handle_stripe_webhook(body: bytes, sig_header: str) -> None:
         sub_id = obj.get("id")
         db.execute(
             "update tenants set billing_status = 'canceled', updated_at = now() where stripe_subscription_id = $1",
+            sub_id,
+        )
+        db.execute(
+            "update tenants set native_active = false, updated_at = now() where native_subscription_id = $1",
             sub_id,
         )
 

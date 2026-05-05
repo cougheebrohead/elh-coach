@@ -450,6 +450,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self._api_send_message(tenant, client_id)
         if path == "/api/checkout":
             return self._api_checkout(tenant)
+        if path == "/api/upgrade/checkout":
+            return self._api_upgrade_checkout(tenant)
         if path == "/api/programs":
             return self._api_create_program(tenant)
         if path.startswith("/api/clients/") and path.endswith("/note"):
@@ -791,6 +793,30 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 tenant_id=tenant["id"], owner_email=u["email"],
                 plan=plan, billing_cycle=billing,
                 success_url=f"{self._tenant_url(tenant)}/?upgraded=1",
+                cancel_url=f"{self._tenant_url(tenant)}/?upgrade_cancelled=1",
+            )
+            return self._j({"url": checkout["url"]})
+        except Exception as e:
+            _capture(e)
+            return self._j({"error": str(e)}, 400)
+
+    def _api_upgrade_checkout(self, tenant: dict[str, Any]) -> None:
+        """One-time + recurring upgrade SKUs:
+           sku=domain → $2,500 setup + $200/yr maintenance
+           sku=native → $4,500 setup + $300/yr maintenance"""
+        sess = self._auth_user(tenant["id"])
+        if not sess or sess["role"] not in ("owner", "admin"):
+            return self._j({"error": "forbidden"}, 403)
+        d = self._body()
+        sku = (d.get("sku") or "").lower()
+        if sku not in ("domain", "native"):
+            return self._j({"error": "invalid sku"}, 400)
+        u = db.fetch_one("select email from users where id = $1", sess["user_id"])
+        from billing import create_upgrade_checkout
+        try:
+            checkout = create_upgrade_checkout(
+                tenant_id=tenant["id"], owner_email=u["email"], sku=sku,
+                success_url=f"{self._tenant_url(tenant)}/?upgraded={sku}",
                 cancel_url=f"{self._tenant_url(tenant)}/?upgrade_cancelled=1",
             )
             return self._j({"url": checkout["url"]})
