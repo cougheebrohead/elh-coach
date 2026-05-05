@@ -183,10 +183,13 @@ function setCycle(mode) {
   bAn.classList.toggle('on', mode === 'annual');
   document.querySelectorAll('.amt').forEach(el => {
     const v = mode === 'monthly' ? el.dataset.mo : el.dataset.an;
-    el.textContent = Number(v).toLocaleString();
+    if (v != null) el.textContent = Number(v).toLocaleString();
   });
+  // Only toggle notes that opted into the cycle (have data-mo / data-an).
+  // Cards with static notes (one-time SKUs) are left untouched.
   document.querySelectorAll('.annual-note').forEach(el => {
-    el.innerHTML = mode === 'annual' ? el.dataset.an : '&nbsp;';
+    if (!('mo' in el.dataset) && !('an' in el.dataset)) return;
+    el.innerHTML = mode === 'annual' ? (el.dataset.an || '') : (el.dataset.mo || '&nbsp;');
   });
 }
 bMo.addEventListener('click', () => setCycle('monthly'));
