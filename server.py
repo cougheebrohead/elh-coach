@@ -1179,6 +1179,133 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         )
         return self._j({"ok": True}, 201)
 
+    # ────────────────────────────────────────────────────────────────
+    #  Lab reports — photo OCR via fitapp_core.scan_lab
+    # ────────────────────────────────────────────────────────────────
+    def _lab_upload_allowed(self, tenant: dict[str, Any]) -> bool:
+        """Gate: tenant on trial OR studio/brand plan OR custom-domain
+        (real-domain $2,500 upgrade) inherits premium access."""
+        if tenant.get("billing_status") == "trial":
+            return True
+        if tenant.get("plan") in ("studio", "brand"):
+            return True
+        if (tenant.get("custom_domain") or "").strip():
+            return True
+        return False
+
+    def _lab_gate_response(self, tenant: dict[str, Any]) -> None:
+        return self._j({
+            "error": "Lab uploads require Premium",
+            "plan": tenant.get("plan") or "coach",
+            "feature": "lab_upload",
+            "upgrade_url": "/account",
+        }, 402)
+
+    def _api_member_lab_photo(self, tenant: dict[str, Any]) -> None:
+        """Photo of a lab report → parsed biomarker values for client review.
+        Does NOT auto-save; client confirms in /api/me/lab/save."""
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if sess["role"] != "client":
+            return self._j({"error": "clients only"}, 403)
+        if not self._lab_upload_allowed(tenant):
+            return self._lab_gate_response(tenant)
+        if not self._rate(f"lab:{sess['user_id']}", limit=20, window_sec=60 * 60):
+            return
+        body = self._body()
+        b64 = (body.get("image_b64") or "").strip()
+        mime = (body.get("mime") or "image/jpeg").strip()
+        if not b64 or len(b64) > 8_000_000:
+            return self._j({"error": "image required (base64, < 6MB)"}, 400)
+        try:
+            image_bytes = base64.b64decode(b64, validate=False)
+        except Exception:
+            return self._j({"error": "image decode failed"}, 400)
+        try:
+            from fitapp_core import scan_lab
+        except ImportError:
+            return self._j({"error": "lab engine unavailable"}, 503)
+        try:
+            parsed = scan_lab(image_bytes, mime) or {}
+        except Exception as e:
+            _capture(e)
+            return self._j({"error": f"lab parse failed: {e}"}, 502)
+        # Engine returns dict of biomarker → value. Pass through to client.
+        return self._j({"ok": True, "parsed": parsed}, 200)
+
+    def _api_member_lab_save(self, tenant: dict[str, Any]) -> None:
+        """Persist a confirmed lab report after client edits."""
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if sess["role"] != "client":
+            return self._j({"error": "clients only"}, 403)
+        if not self._lab_upload_allowed(tenant):
+            return self._lab_gate_response(tenant)
+        body = self._body()
+        panel_name = (body.get("panel_name") or "").strip()[:120]
+        drawn_at = (body.get("drawn_at") or "").strip()[:10]   # ISO date
+        results = body.get("results") or {}
+        provider = (body.get("provider") or "manual").strip()[:40]
+        if not panel_name:
+            return self._j({"error": "panel_name required"}, 400)
+        if not drawn_at or not re.match(r"^\d{4}-\d{2}-\d{2}$", drawn_at):
+            return self._j({"error": "drawn_at must be YYYY-MM-DD"}, 400)
+        if not isinstance(results, dict) or not results:
+            return self._j({"error": "results required"}, 400)
+        try:
+            row = db.fetch_one(
+                """insert into lab_results
+                   (tenant_id, client_id, panel_name, drawn_at, provider, results_json)
+                   values ($1,$2,$3,$4::date,$5,$6::jsonb)
+                   returning id""",
+                tenant["id"], sess["user_id"],
+                panel_name, drawn_at, provider, json.dumps(results),
+            )
+        except Exception as e:
+            _capture(e)
+            return self._j({"error": f"save failed: {e}"}, 500)
+        return self._j({"ok": True, "id": row["id"]}, 201)
+
+    def _api_member_list_labs(self, tenant: dict[str, Any]) -> None:
+        """Current client's lab history, newest first, max 50."""
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if sess["role"] != "client":
+            return self._j({"error": "clients only"}, 403)
+        rows = db.fetch_all(
+            """select id, panel_name, drawn_at::text as drawn_at,
+                      provider, results_json, created_at::text as created_at
+               from lab_results
+               where tenant_id = $1 and client_id = $2
+               order by drawn_at desc, created_at desc
+               limit 50""",
+            tenant["id"], sess["user_id"],
+        )
+        return self._j({"labs": rows}, 200)
+
+    def _api_client_labs(self, tenant: dict[str, Any], client_id: str) -> None:
+        """Coach-only view of a specific client's lab history."""
+        sess = self._require_trainer(tenant)
+        if not sess: return
+        if sess["role"] == "coach":
+            on_roster = db.fetch_one(
+                """select 1 as ok from coach_clients
+                   where tenant_id = $1 and coach_id = $2 and client_id = $3""",
+                tenant["id"], sess["user_id"], client_id,
+            )
+            if not on_roster:
+                return self._j({"error": "forbidden"}, 403)
+        rows = db.fetch_all(
+            """select id, panel_name, drawn_at::text as drawn_at,
+                      provider, results_json, created_at::text as created_at
+               from lab_results
+               where tenant_id = $1 and client_id = $2
+               order by drawn_at desc, created_at desc
+               limit 50""",
+            tenant["id"], client_id,
+        )
+        return self._j({"labs": rows}, 200)
+
     def _api_member_glucose_tir(self, tenant: dict[str, Any]) -> None:
         """Time-in-range summary for the last 14 days."""
         sess = self._auth_user(tenant["id"])

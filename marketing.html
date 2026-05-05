@@ -544,6 +544,34 @@ html.js .reveal:not(.in) { transform:translateY(12px); }
   </div>
 </section>
 
+<!-- ─── LAB OCR SHOWCASE ────────────────────────────────────── -->
+<section class="coach-portal" style="background:var(--cream);padding:140px 0">
+  <div class="container">
+    <div class="grid" style="display:grid;grid-template-columns:1.4fr 1fr;gap:64px;align-items:center;">
+      <div class="reveal">
+        <div class="dash-shot">
+          <div class="browser-bar">
+            <div class="dots"><span></span><span></span><span></span></div>
+            <div class="url">bodybychosen.elhcoach.app/app#labs</div>
+          </div>
+          <img src="/screenshots/coach_client_labs.png" alt="Coach Portal — full lab history for one client showing comprehensive metabolic, lipid, A1C, vitamin D, ferritin, CRP across multiple draws" loading="lazy">
+        </div>
+      </div>
+      <div class="reveal">
+        <span class="eyebrow">Bloodwork, in the app</span>
+        <h2>Snap a lab report. <em>Get the trend.</em></h2>
+        <p class="lead-sm" style="margin-bottom:18px">Your client snaps a photo of the printout — A1C, lipid panel (LDL / HDL / triglycerides / total), TSH / T3 / T4, vitamin D, ferritin, CRP, fasting glucose. We OCR it, they confirm, the panel hits their history.</p>
+        <p class="lead-sm">You see the trend instantly: every draw, every value, with high/low flags and the deltas vs prior. The end of "can you forward me your last labs?" forever.</p>
+      </div>
+    </div>
+    <div class="reveal" style="margin-top:64px;display:flex;justify-content:center">
+      <div class="phone-frame" style="max-width:380px">
+        <img src="/screenshots/client_lab_snap.png" alt="Client app lab modal — Comprehensive Metabolic + Lipid + A1C panel with editable values from Quest Diagnostics, ready to save to history" loading="lazy">
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ─── CLIENT APP ──────────────────────────────────────────── -->
 <section class="client-app-section" id="client-app">
   <div class="container">
@@ -654,6 +682,12 @@ html.js .reveal:not(.in) { transform:translateY(12px); }
         <div class="num">— 09 / Money</div>
         <h3>Stripe Connect billing</h3>
         <p>Your Stripe account, your money, your control. Set the prices, run the charges, get paid directly. We don't take a cut of your transactions — ever.</p>
+      </div>
+
+      <div class="walk-card reveal">
+        <div class="num">— 10 / Bloodwork</div>
+        <h3>Snap a lab report. Get the trend.</h3>
+        <p>A1C, lipid panel (LDL / HDL / triglycerides / total), TSH / T3 / T4, vitamin D, ferritin, CRP, fasting glucose — extracted from a photo via OCR. Client confirms, history charts the deltas. The coach view shows every panel, side by side.</p>
       </div>
     </div>
   </div>
@@ -766,6 +800,7 @@ html.js .reveal:not(.in) { transform:translateY(12px); }
         <tr><td>Cycle-aware coaching</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">included</span></td></tr>
         <tr><td>Glucose / Time-in-Range</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">included</span></td></tr>
         <tr><td>Recovery / readiness score</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">included</span></td></tr>
+        <tr><td>Lab report parsing (OCR)</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">included</span></td></tr>
         <tr><td>Stripe Connect (your account)</td><td><span class="no">platform takes %</span></td><td><span class="no">platform takes %</span></td><td class="us"><span class="yes">100% to you</span></td></tr>
         <tr><td>BAA / HIPAA-ready</td><td><span class="no">—</span></td><td><span class="no">—</span></td><td class="us"><span class="yes">on upgrade</span></td></tr>
         <tr><td><strong>Real domain ownership path</strong></td><td><span class="no">never</span></td><td><span class="no">never</span></td><td class="us"><span class="star">$2,500 once · own forever</span></td></tr>
