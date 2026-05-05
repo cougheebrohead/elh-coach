@@ -32,10 +32,32 @@ STRIPE_SECRET = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 
 PLAN_PRICES: dict[str, dict[str, str]] = {
+    # Coach subscription tier — the only recurring base tier (Studio + Brand
+    # killed 2026-05-05). When a tenant upgrades to "domain" or buys "native"
+    # add-on, the Coach subscription is cancelled server-side on
+    # checkout.session.completed.
     "coach":  {
         "monthly": os.environ.get("STRIPE_PRICE_COACH_MONTHLY", ""),
         "annual":  os.environ.get("STRIPE_PRICE_COACH_ANNUAL", ""),
     },
+    # Real Domain Upgrade — one-time setup fee + annual maintenance.
+    # Replaces the monthly Coach subscription with ownership.
+    "domain": {
+        "setup":       os.environ.get("STRIPE_PRICE_DOMAIN_SETUP", ""),       # $2,500 one-time
+        "maintenance": os.environ.get("STRIPE_PRICE_DOMAIN_MAINTENANCE", ""), # $200/yr
+    },
+    # Native iOS + Android apps — optional add-on, available at any tier.
+    # One-time setup + annual maintenance for OS-update rebuild + resubmission.
+    "native": {
+        "setup":       os.environ.get("STRIPE_PRICE_NATIVE_SETUP", ""),       # $4,500 one-time
+        "maintenance": os.environ.get("STRIPE_PRICE_NATIVE_MAINTENANCE", ""), # $300/yr
+    },
+}
+
+# Deprecated tiers (kept for back-compat reads on legacy webhook events
+# that arrive after killed-plan customers churn out). DO NOT route new
+# checkouts through these.
+DEPRECATED_PLAN_PRICES = {
     "studio": {
         "monthly": os.environ.get("STRIPE_PRICE_STUDIO_MONTHLY", ""),
         "annual":  os.environ.get("STRIPE_PRICE_STUDIO_ANNUAL", ""),
@@ -105,6 +127,51 @@ def create_checkout(*, tenant_id: str, owner_email: str, plan: str,
         "metadata[plan]": plan,
         "metadata[billing_cycle]": billing_cycle,
         "subscription_data[trial_period_days]": "14",  # 14-day trial on every new sub
+    })
+    return {"url": session["url"], "session_id": session["id"]}
+
+
+def create_upgrade_checkout(*, tenant_id: str, owner_email: str, sku: str,
+                            success_url: str, cancel_url: str) -> dict[str, Any]:
+    """Checkout for one-time + recurring combos:
+       sku='domain' = $2,500 setup + $200/yr maintenance
+       sku='native' = $4,500 setup + $300/yr maintenance
+    Stripe runs these as a 'subscription' mode session that includes the
+    one-time setup as add_invoice_items on the first invoice."""
+    sku = sku.lower()
+    if sku not in ("domain", "native"):
+        raise RuntimeError(f"Unknown upgrade sku: {sku}")
+
+    setup_price = PLAN_PRICES[sku]["setup"]
+    maint_price = PLAN_PRICES[sku]["maintenance"]
+    if not setup_price or not maint_price:
+        raise RuntimeError(f"Stripe price not configured for {sku}")
+
+    # Get-or-create Stripe customer
+    t = db.fetch_one("select stripe_customer_id from tenants where id = $1", tenant_id)
+    customer_id = (t or {}).get("stripe_customer_id")
+    if not customer_id:
+        cust = _stripe("POST", "customers", {
+            "email": owner_email,
+            "metadata[elhcoach_tenant_id]": tenant_id,
+        })
+        customer_id = cust["id"]
+        db.execute(
+            "update tenants set stripe_customer_id = $1, updated_at = now() where id = $2",
+            customer_id, tenant_id,
+        )
+
+    session = _stripe("POST", "checkout/sessions", {
+        "customer": customer_id,
+        "mode": "subscription",
+        "line_items[0][price]": maint_price,           # recurring annual maintenance
+        "line_items[0][quantity]": "1",
+        "subscription_data[add_invoice_items][0][price]": setup_price,  # one-time setup on first invoice
+        "subscription_data[add_invoice_items][0][quantity]": "1",
+        "success_url": success_url,
+        "cancel_url": cancel_url,
+        "metadata[elhcoach_tenant_id]": tenant_id,
+        "metadata[upgrade_sku]": sku,
     })
     return {"url": session["url"], "session_id": session["id"]}
 
