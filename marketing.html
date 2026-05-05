@@ -111,11 +111,8 @@ h3 { font:500 24px/1.25 var(--serif); }
   box-shadow:inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 .phone-frame img { border-radius:34px; display:block; width:100%; }
-.phone-frame.tilt-l { transform:rotate(-3deg); }
-.phone-frame.tilt-r { transform:rotate(3deg); }
 
 .hero-visual { position:relative; }
-.hero-visual .phone-frame { transform:rotate(-2deg); }
 .hero-visual::after {
   content:''; position:absolute; top:-40px; right:-40px; width:160px; height:160px;
   background:radial-gradient(circle, var(--oxblood-soft) 0%, transparent 70%);
@@ -136,22 +133,40 @@ h3 { font:500 24px/1.25 var(--serif); }
 .problem .stat { font:500 64px/1 var(--serif); color:var(--gold-soft); margin:32px 0 8px; }
 .problem .stat-l { font-size:14px; color:rgba(250,246,238,0.5); }
 
-.tool-chaos { position:relative; height:380px; }
-.tool { position:absolute; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08); padding:16px 20px; border-radius:12px; font-size:13px; font-weight:600; color:rgba(250,246,238,0.8); display:flex; align-items:center; gap:10px; backdrop-filter:blur(8px); transition:all .3s; }
-.tool:hover { transform:scale(1.05); border-color:var(--oxblood-rich); }
-.tool .icn { width:24px; height:24px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }
-.tool-1 { top:20px; left:0; transform:rotate(-3deg); }
+.tool-chaos { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+@media(max-width:520px){ .tool-chaos { grid-template-columns:repeat(2,1fr); } }
+.tool {
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1);
+  padding:20px 18px; border-radius:12px; display:flex; align-items:center; gap:12px;
+  font-size:14px; font-weight:600; color:rgba(250,246,238,0.78);
+  position:relative; overflow:hidden;
+  transition:transform .25s ease, border-color .25s ease, color .25s ease;
+}
+.tool:hover { transform:translateY(-3px); border-color:var(--oxblood-rich); color:rgba(250,246,238,0.55); }
+.tool .icn { width:30px; height:30px; border-radius:7px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }
+/* The strikethrough — subtle oxblood line across each tile says "we replace this" */
+.tool::after {
+  content:''; position:absolute; left:14%; right:14%; top:50%; height:1.5px;
+  background:var(--oxblood-rich); opacity:0.5;
+  transform:rotate(-3deg); transform-origin:center;
+  transition:opacity .25s ease;
+}
+.tool:hover::after { opacity:0.85; }
 .tool-1 .icn { background:#FF6B6B; color:#fff; }
-.tool-2 { top:0; right:20px; transform:rotate(4deg); }
 .tool-2 .icn { background:#3CDFFF; color:#000; }
-.tool-3 { top:130px; left:60px; transform:rotate(2deg); }
 .tool-3 .icn { background:#4A154B; color:#fff; }
-.tool-4 { top:160px; right:0; transform:rotate(-5deg); }
 .tool-4 .icn { background:#0F9D58; color:#fff; }
-.tool-5 { bottom:60px; left:20px; transform:rotate(3deg); }
 .tool-5 .icn { background:#635BFF; color:#fff; }
-.tool-6 { bottom:0; right:50px; transform:rotate(-2deg); }
 .tool-6 .icn { background:#FF7A59; color:#fff; }
+/* Caption below grid: "→ replaced by one ELH Coach" */
+.tool-replaces {
+  margin-top:24px; padding:18px 22px; background:rgba(107,22,32,0.18);
+  border:1px solid var(--oxblood-rich); border-radius:12px;
+  display:flex; align-items:center; gap:14px;
+  font-size:14px; color:var(--cream);
+}
+.tool-replaces .arr { font-size:20px; color:var(--gold-soft); flex-shrink:0; }
+.tool-replaces strong { color:var(--gold-soft); }
 
 /* ─── COACH PORTAL ─────────────────────────────────────────── */
 .coach-portal { padding:140px 0; background:var(--cream-soft); position:relative; overflow:hidden; }
@@ -159,10 +174,7 @@ h3 { font:500 24px/1.25 var(--serif); }
 .dash-shot {
   position:relative; border-radius:18px; overflow:hidden;
   box-shadow:var(--shadow-deep); border:1px solid var(--border);
-  transform:perspective(2000px) rotateX(2deg);
-  transform-origin:50% 100%; transition:transform .5s;
 }
-.dash-shot:hover { transform:perspective(2000px) rotateX(0); }
 .dash-shot::before {
   content:''; position:absolute; inset:0; pointer-events:none;
   background:linear-gradient(180deg, transparent 70%, rgba(10,22,40,0.06) 100%);
@@ -433,13 +445,19 @@ html.js .reveal:not(.in) { transform:translateY(12px); }
         <div class="stat">$0</div>
         <div class="stat-l">— how much equity you build in someone else's brand.</div>
       </div>
-      <div class="tool-chaos reveal">
-        <div class="tool tool-1"><div class="icn">T</div>Trainerize</div>
-        <div class="tool tool-2"><div class="icn">M</div>MyFitnessPal</div>
-        <div class="tool tool-3"><div class="icn">#</div>Slack</div>
-        <div class="tool tool-4"><div class="icn">D</div>Google Drive</div>
-        <div class="tool tool-5"><div class="icn">S</div>Stripe</div>
-        <div class="tool tool-6"><div class="icn">C</div>Calendly</div>
+      <div class="reveal">
+        <div class="tool-chaos">
+          <div class="tool tool-1"><div class="icn">T</div>Trainerize</div>
+          <div class="tool tool-2"><div class="icn">M</div>MyFitnessPal</div>
+          <div class="tool tool-3"><div class="icn">#</div>Slack</div>
+          <div class="tool tool-4"><div class="icn">D</div>Google Drive</div>
+          <div class="tool tool-5"><div class="icn">S</div>Stripe</div>
+          <div class="tool tool-6"><div class="icn">C</div>Calendly</div>
+        </div>
+        <div class="tool-replaces">
+          <span class="arr">→</span>
+          <div>All six replaced by <strong>one</strong> branded ELH Coach app — under your name, on your domain when you want it.</div>
+        </div>
       </div>
     </div>
   </div>
@@ -495,7 +513,7 @@ html.js .reveal:not(.in) { transform:translateY(12px); }
       <h2>Every client. <em>One screen.</em> Ranked by who needs you most.</h2>
       <p class="lead-sm">Crushing, on track, slipping, ghosting. Score-based risk tiers powered by adherence + check-ins + last-login. The end of "I think Sarah's drifting but I'm not sure."</p>
     </div>
-    <div class="dash-shot reveal" style="transform:none">
+    <div class="dash-shot reveal">
       <div class="browser-bar">
         <div class="dots"><span></span><span></span><span></span></div>
         <div class="url">bodybychosen.elhcoach.app/app#roster</div>
@@ -515,7 +533,7 @@ html.js .reveal:not(.in) { transform:translateY(12px); }
         <p class="lead-sm" style="margin-bottom:24px">Workout templates, nutrition templates, hybrid campaigns. Push a program update and every client on it sees it on their next session — without you copy-pasting between PDFs ever again.</p>
         <p class="lead-sm">Built-in templates for the way real coaches work: PPL, peak-week prep, postnatal return-to-lift, GLP-1 protein floors, glucose resets, cycle-aware hypertrophy.</p>
       </div>
-      <div class="dash-shot reveal" style="transform:none">
+      <div class="dash-shot reveal">
         <div class="browser-bar">
           <div class="dots"><span></span><span></span><span></span></div>
           <div class="url">bodybychosen.elhcoach.app/app#programs</div>
@@ -566,7 +584,7 @@ html.js .reveal:not(.in) { transform:translateY(12px); }
         </ul>
       </div>
       <div class="reveal">
-        <div class="phone-frame tilt-r">
+        <div class="phone-frame">
           <img src="/screenshots/client_today.png" alt="Client app today screen — branded as Body by Chosen with macro ring and readiness score" loading="lazy">
         </div>
       </div>
