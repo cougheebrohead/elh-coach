@@ -378,6 +378,7 @@ async function openClient(id) {
       <button class="on" data-ct="overview">Overview</button>
       <button data-ct="nutrition">Nutrition</button>
       <button data-ct="programs">Programs</button>
+      <button data-ct="labs">Labs</button>
       <button data-ct="notes">Notes</button>
     </div>
     <div id="ct-overview">
@@ -389,6 +390,7 @@ async function openClient(id) {
       </div>
       <h3 style="margin-top:18px;margin-bottom:8px">Weight (last 30 days)</h3>
       <canvas id="c-weight" class="chart" style="height:120px"></canvas>
+      <div id="c-labs-snippet" style="margin-top:18px"></div>
     </div>
     <div id="ct-nutrition" class="hidden">
       <table><thead><tr><th>Date</th><th>Cal</th><th>Pro</th></tr></thead>
@@ -396,6 +398,9 @@ async function openClient(id) {
     </div>
     <div id="ct-programs" class="hidden">
       ${d.enrollments.length ? d.enrollments.map(e=>`<div class="card" style="margin-top:8px"><b>${e.program_name}</b><br><span class="muted" style="font-size:12px">${e.status} · ${e.adherence_pct||0}% adherence</span></div>`).join('') : '<p class=muted>Not enrolled.</p>'}
+    </div>
+    <div id="ct-labs" class="hidden">
+      <div id="c-labs-full"><p class=muted>Loading…</p></div>
     </div>
     <div id="ct-notes" class="hidden">
       <textarea id="note-body" placeholder="Add a private note about this client…" rows="3" style="width:100%"></textarea>
@@ -406,10 +411,71 @@ async function openClient(id) {
   document.getElementById('modal').classList.add('on');
   document.querySelectorAll('#c-tabs button').forEach(b => b.onclick = () => {
     document.querySelectorAll('#c-tabs button').forEach(x => x.classList.toggle('on', x===b));
-    ['overview','nutrition','programs','notes'].forEach(t => document.getElementById('ct-'+t).classList.toggle('hidden', t !== b.dataset.ct));
+    ['overview','nutrition','programs','labs','notes'].forEach(t => document.getElementById('ct-'+t).classList.toggle('hidden', t !== b.dataset.ct));
+    if (b.dataset.ct === 'labs') loadClientLabs(id);
   });
   const ws = (d.weight||[]).slice().reverse().map(w => Number(w.weight_kg));
   if (ws.length) sparkline(document.getElementById('c-weight'), ws, '#0A1628');
+  loadClientLabsSnippet(id);
+}
+
+async function loadClientLabsSnippet(clientId) {
+  try {
+    const d = await api('/api/clients/' + clientId + '/labs');
+    const labs = (d.labs || []).slice(0, 5);
+    const target = document.getElementById('c-labs-snippet');
+    if (!target) return;
+    if (!labs.length) {
+      target.innerHTML = '<h3 style="margin-bottom:8px">Recent labs</h3><p class=muted style="font-size:13px">No labs uploaded yet.</p>';
+      return;
+    }
+    target.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:baseline">
+        <h3 style="margin:0">Recent labs</h3>
+        <a href="#" style="font-size:13px" onclick="event.preventDefault();document.querySelector('#c-tabs button[data-ct=labs]').click()">View all →</a>
+      </div>` +
+      '<div style="margin-top:8px">' +
+      labs.map(l => `<div style="font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <b>${escapeHtml(l.panel_name)}</b> <span class="muted" style="font-size:12px">· ${l.drawn_at} · ${escapeHtml(l.provider||'')}</span>
+      </div>`).join('') +
+      '</div>';
+  } catch (e) { /* silent */ }
+}
+
+async function loadClientLabs(clientId) {
+  const target = document.getElementById('c-labs-full');
+  target.innerHTML = '<p class=muted>Loading…</p>';
+  try {
+    const d = await api('/api/clients/' + clientId + '/labs');
+    const labs = d.labs || [];
+    if (!labs.length) {
+      target.innerHTML = '<p class=muted>No labs uploaded yet. Ask your client to snap their next report.</p>';
+      return;
+    }
+    target.innerHTML = labs.map(lab => {
+      const bm = lab.results_json || {};
+      const rows = Object.entries(bm).map(([k, v]) => {
+        const c = v.flag === 'high' ? '#fca5a5' : v.flag === 'low' ? '#fde68a' : '#86efac';
+        return `<tr>
+          <td style="padding:4px 6px">${escapeHtml(k.replace(/_/g,' '))}</td>
+          <td style="padding:4px 6px;text-align:right"><b>${v.value ?? '—'}</b> <span class=muted style="font-size:11px">${escapeHtml(v.unit||'')}</span></td>
+          <td style="padding:4px 6px;text-align:right"><span style="color:${c};font-size:11px;text-transform:uppercase">${v.flag||''}</span></td>
+        </tr>`;
+      }).join('');
+      return `<div style="border:1px solid rgba(255,255,255,0.08);border-radius:8px;padding:12px;margin-top:10px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div><b>${escapeHtml(lab.panel_name)}</b> <span class="muted" style="font-size:12px">· ${lab.drawn_at}</span></div>
+          <div class="muted" style="font-size:12px">${escapeHtml(lab.provider||'')}</div>
+        </div>
+        ${rows ? '<table style="width:100%;font-size:13px;margin-top:8px"><tbody>' + rows + '</tbody></table>' : '<p class="muted" style="font-size:13px">No values.</p>'}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    target.innerHTML = '<p class=muted>Couldn\'t load labs.</p>';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 async function addNote(clientId) {

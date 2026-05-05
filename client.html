@@ -136,6 +136,7 @@ input[type=email],input[type=password],input[type=number],input[type=text]{displ
         <button onclick="openLogMeal()"><span class="icon">🍽️</span><span class="lbl">Log meal</span></button>
         <button onclick="openLogWeight()"><span class="icon">⚖️</span><span class="lbl">Weight</span></button>
         <button onclick="openLogGlucose()"><span class="icon">🩸</span><span class="lbl">Glucose</span></button>
+        <button onclick="openSnapLab()"><span class="icon">🧪</span><span class="lbl">Snap a lab</span></button>
       </div>
 
       <div id="card-recovery" class="card hidden">
@@ -188,7 +189,11 @@ input[type=email],input[type=password],input[type=number],input[type=text]{displ
 
     <div id="v-progress" class="hidden">
       <div style="padding:8px 20px"><h2 style="font:800 24px sans-serif">Progress</h2></div>
-      <div class="empty card"><h4>Coming soon</h4><p>Photos, weight chart, body comp.</p></div>
+      <div id="lab-history-card" class="card">
+        <h2>Lab history</h2>
+        <div id="lab-history-body" class="muted" style="font-size:14px">Loading…</div>
+      </div>
+      <div class="empty card" style="margin-top:12px"><h4>More coming soon</h4><p>Photos, weight chart, body comp.</p></div>
     </div>
 
     <div id="v-account" class="hidden">
@@ -371,6 +376,155 @@ function switchTab(t) {
   document.querySelectorAll('nav.tabbar button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
   ['today','messages','progress','account'].forEach(x => document.getElementById('v-'+x).classList.toggle('hidden', x !== t));
   if (t === 'messages') loadMessages();
+  if (t === 'progress') loadLabHistory();
+}
+
+// ─── Lab report capture + history ───────────────────────────────────
+function openSnapLab() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>Snap a lab report</h2>
+    <p class="sub">A1C, lipids, vitamin D, ferritin, CRP — pulled from a photo. Your coach sees the trend instantly.</p>
+    <input id="lab-file" type="file" accept="image/*" capture="environment" style="margin:14px 0;width:100%">
+    <div id="lab-status" class="muted" style="font-size:14px;margin:10px 0">Pick a clear, well-lit photo of the report.</div>
+    <button class="btn-primary" id="lab-go" disabled onclick="submitLabPhoto()">Analyze</button>
+    <button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="closeModal()">Cancel</button>
+    <div id="lab-result" style="margin-top:16px"></div>
+  `;
+  document.getElementById('modal').classList.add('on');
+  document.getElementById('lab-file').addEventListener('change', () => {
+    const f = document.getElementById('lab-file').files[0];
+    if (!f) return;
+    if (f.size > 9_000_000) { document.getElementById('lab-status').textContent = 'Image too big — keep it under 9 MB.'; return; }
+    document.getElementById('lab-status').textContent = `Ready: ${f.name} (${Math.round(f.size/1024)} KB)`;
+    document.getElementById('lab-go').disabled = false;
+  });
+}
+
+async function submitLabPhoto() {
+  const f = document.getElementById('lab-file').files[0];
+  if (!f) return;
+  document.getElementById('lab-status').textContent = 'Reading the report… 10–20 seconds.';
+  document.getElementById('lab-go').disabled = true;
+  try {
+    const reader = new FileReader();
+    const b64 = await new Promise((res, rej) => {
+      reader.onload = () => res(String(reader.result).split(',')[1] || '');
+      reader.onerror = rej;
+      reader.readAsDataURL(f);
+    });
+    const r = await fetch('/api/me/lab/photo', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+(token||'')},
+      body: JSON.stringify({ image_b64: b64, mime: f.type || 'image/jpeg' }),
+    });
+    if (r.status === 402) {
+      const j = await r.json();
+      document.getElementById('lab-result').innerHTML =
+        '<div style="background:#FEF3C7;border:1px solid #FCD34D;border-radius:10px;padding:12px"><b>Lab uploads are on the paid plan.</b><br><a href="'+(j.upgrade_url||'/account')+'" style="color:var(--accent)">Upgrade to unlock</a></div>';
+      document.getElementById('lab-status').textContent = '';
+      return;
+    }
+    if (!r.ok) {
+      const j = await r.json().catch(()=>({error:'Failed'}));
+      document.getElementById('lab-status').textContent = 'Couldn\'t read the report: ' + (j.error || r.status);
+      document.getElementById('lab-go').disabled = false;
+      return;
+    }
+    const d = await r.json();
+    renderLabReview(d.parsed || {});
+  } catch (e) {
+    document.getElementById('lab-status').textContent = 'Failed: ' + e.message;
+    document.getElementById('lab-go').disabled = false;
+  }
+}
+
+function renderLabReview(parsed) {
+  const today = new Date().toISOString().slice(0,10);
+  const panel = parsed.panel_name || 'Lab Panel';
+  const drawn = parsed.drawn_at || today;
+  const provider = parsed.provider || '';
+  const biomarkers = parsed.biomarkers || {};
+  const rows = Object.entries(biomarkers).map(([k, v]) => {
+    const flagColor = v.flag === 'high' ? 'var(--bad)' : v.flag === 'low' ? 'var(--warn)' : 'var(--good)';
+    const range = (v.ref_low != null || v.ref_high != null)
+      ? `<span class="muted" style="font-size:11px">(${v.ref_low ?? '—'}–${v.ref_high ?? '—'} ${v.unit||''})</span>` : '';
+    return `<tr>
+      <td style="padding:6px 4px">${escapeHtml(k.replace(/_/g,' '))}</td>
+      <td style="padding:6px 4px;text-align:right"><b>${v.value ?? '—'}</b> <span class="muted" style="font-size:12px">${escapeHtml(v.unit||'')}</span></td>
+      <td style="padding:6px 4px;text-align:right"><span style="color:${flagColor};text-transform:uppercase;font-size:11px;letter-spacing:.04em">${v.flag||''}</span> ${range}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('lab-result').innerHTML = `
+    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:6px">
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:10px">
+        <input id="lr-panel" value="${escapeHtml(panel)}" style="flex:1;padding:8px;border:1px solid var(--border);border-radius:8px;font:inherit">
+        <input id="lr-drawn" type="date" value="${escapeHtml(drawn)}" style="padding:8px;border:1px solid var(--border);border-radius:8px;font:inherit">
+      </div>
+      <input id="lr-provider" value="${escapeHtml(provider)}" placeholder="Provider (Quest, LabCorp, …)" style="width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;font:inherit;margin-bottom:8px">
+      ${rows ? '<table style="width:100%;font-size:13px"><tbody>' + rows + '</tbody></table>' : '<p class="muted">No biomarker values detected — try a clearer photo.</p>'}
+      ${rows ? `<button class="btn-primary" style="margin-top:14px" onclick='saveLab(${JSON.stringify(biomarkers).replace(/'/g, "&apos;")})'>Save to my history</button>` : ''}
+    </div>
+  `;
+  document.getElementById('lab-status').textContent = '';
+}
+
+async function saveLab(biomarkers) {
+  const panel_name = document.getElementById('lr-panel').value.trim();
+  const drawn_at = document.getElementById('lr-drawn').value;
+  const provider = document.getElementById('lr-provider').value.trim() || 'manual';
+  if (!panel_name || !drawn_at) { alert('Panel name + drawn date required.'); return; }
+  try {
+    await api('/api/me/lab/save', { method:'POST', body: JSON.stringify({
+      panel_name, drawn_at, provider, results: biomarkers,
+    })});
+    closeModal();
+    switchTab('progress');
+    loadLabHistory();
+  } catch (e) { alert('Save failed: ' + e.message); }
+}
+
+async function loadLabHistory() {
+  const body = document.getElementById('lab-history-body');
+  if (!body) return;
+  body.innerHTML = '<p class="muted">Loading…</p>';
+  try {
+    const d = await api('/api/me/labs');
+    const labs = d.labs || [];
+    if (!labs.length) {
+      body.innerHTML = '<p class="muted">No labs yet. Tap <b>Snap a lab</b> on Today to start.</p>';
+      return;
+    }
+    body.innerHTML = labs.slice(0, 10).map((lab, i) => {
+      const prior = labs[i+1];
+      const diffs = priorityDeltas(lab.results_json || {}, prior?.results_json || {});
+      return `<div style="border-bottom:1px solid var(--border-soft);padding:10px 0">
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div><b>${escapeHtml(lab.panel_name)}</b> <span class="muted" style="font-size:12px">· ${lab.drawn_at}</span></div>
+          <div class="muted" style="font-size:12px">${escapeHtml(lab.provider || '')}</div>
+        </div>
+        ${diffs.length ? '<div style="font-size:13px;margin-top:6px">' + diffs.join(' · ') + '</div>' : ''}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    body.innerHTML = '<p class="muted">Couldn\'t load history.</p>';
+  }
+}
+
+function priorityDeltas(curr, prev) {
+  const out = [];
+  for (const k of Object.keys(curr)) {
+    const c = curr[k]?.value, p = prev?.[k]?.value;
+    if (c == null || p == null) continue;
+    const d = c - p;
+    if (Math.abs(d) < 0.01) continue;
+    out.push({ k, c, p, d });
+  }
+  out.sort((a, b) => Math.abs(b.d) - Math.abs(a.d));
+  return out.slice(0, 2).map(x => {
+    const sign = x.d > 0 ? '↑' : '↓';
+    const color = x.d > 0 ? 'var(--bad)' : 'var(--good)';  // direction-only; clinical context belongs to coach
+    return `<span style="color:${color}">${sign} ${escapeHtml(x.k.replace(/_/g,' '))} ${Number(x.c).toLocaleString()}</span>`;
+  });
 }
 
 async function loadMessages() {

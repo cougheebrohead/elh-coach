@@ -407,6 +407,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self._api_member_today_workout(tenant)
         if path == "/api/me/glucose/tir":
             return self._api_member_glucose_tir(tenant)
+        if path == "/api/me/labs":
+            return self._api_member_list_labs(tenant)
+        if path.startswith("/api/clients/") and path.endswith("/labs"):
+            return self._api_client_labs(tenant, path.split("/")[3])
 
         # Static + branded SPA. Anything under /api/ that didn't match is 404.
         if path.startswith("/api/"):
@@ -464,6 +468,10 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self._api_member_meal_from_photo(tenant)
         if path == "/api/me/biometric":
             return self._api_member_log_biometric(tenant)
+        if path == "/api/me/lab/photo":
+            return self._api_member_lab_photo(tenant)
+        if path == "/api/me/lab/save":
+            return self._api_member_lab_save(tenant)
         return self._j({"error": "not found"}, 404)
 
     # ────────────────────────────────────────────────────────────────
@@ -1193,24 +1201,6 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         except Exception:
             tir = {"in_range_pct": 0, "n_readings": 0, "mean_glucose": 0, "gmi": 0}
         return self._j({"tir": tir, "readings": readings[-100:]}, 200)
-
-    def _api_member_log_biometric(self, tenant: dict[str, Any]) -> None:
-        sess = self._auth_user(tenant["id"])
-        if not sess: return self._j({"error": "unauthorized"}, 401)
-        if sess["role"] != "client":
-            return self._j({"error": "clients only"}, 403)
-        body = self._body()
-        db.execute(
-            """insert into biometrics
-               (tenant_id, client_id, reading_at, weight_kg, body_fat_pct,
-                heart_rate_bpm, source)
-               values ($1,$2, now(),$3,$4,$5,$6)""",
-            tenant["id"], sess["user_id"],
-            body.get("weight_kg"), body.get("body_fat_pct"),
-            body.get("heart_rate_bpm"), body.get("source") or "manual",
-        )
-        return self._j({"ok": True}, 201)
-
 
 # ════════════════════════════════════════════════════════════════════
 #  Server bootstrap
