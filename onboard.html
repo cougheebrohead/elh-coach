@@ -55,6 +55,9 @@
   .row-actions button{padding:6px 10px;font-size:12px;}
   .login-card{max-width:420px;margin:8vh auto;}
   .helper{font-size:12px;color:var(--faint);margin-top:6px;}
+  .mode-toggle{display:inline-flex;gap:0;border:1px solid var(--border);border-radius:10px;padding:3px;background:#fff;margin-bottom:24px;}
+  .mode-toggle button{background:transparent;color:var(--ink);font-weight:600;font-size:13px;padding:8px 16px;border-radius:7px;}
+  .mode-toggle button.active{background:var(--primary);color:#fff;}
 </style>
 </head>
 <body>
@@ -76,8 +79,12 @@
 <main>
 
 <div class="card" style="margin-bottom:24px;">
-  <h2>Stand up a branded coach demo</h2>
-  <p class="lede">Type a coach's website (or Linktree). We pull their logo + brand color, you confirm, and 30 seconds later you have a private link that opens a fully-branded copy of ELH Coach with a seeded client roster.</p>
+  <div class="mode-toggle" role="tablist">
+    <button id="mode-customer" class="active" type="button">Real coach onboarding</button>
+    <button id="mode-demo" type="button">Sales preview demo</button>
+  </div>
+  <h2 id="mode-title">Onboard a paying coach</h2>
+  <p class="lede" id="mode-lede">Coach signed up. Type their website, scrape the brand, hand them a real working URL + login. No watermark, no expiry, empty roster they fill themselves.</p>
   <div class="row">
     <div class="grow">
       <label>Coach website URL</label>
@@ -111,19 +118,40 @@
     <label>Accent</label>
     <input id="accent_color" type="text" placeholder="#22C55E">
 
-    <label>Coach contact (optional)</label>
-    <input id="prospect_contact" type="text" placeholder="Chosen, Owner">
+    <div id="customer-fields">
+      <label>Owner login email <span style="color:var(--rose)">*</span></label>
+      <input id="owner_email" type="email" placeholder="chosen@bodybychosen.com">
 
-    <label>Demo expires in</label>
-    <select id="expiry_days">
-      <option value="14">14 days</option>
-      <option value="30" selected>30 days</option>
-      <option value="60">60 days</option>
-      <option value="90">90 days</option>
-    </select>
+      <label>Owner name <span style="color:var(--rose)">*</span></label>
+      <input id="owner_name" type="text" placeholder="Chosen">
+
+      <label>Plan</label>
+      <select id="plan">
+        <option value="coach" selected>Coach ($89/mo)</option>
+        <option value="studio">Studio</option>
+        <option value="brand">Brand (Custom Domain)</option>
+      </select>
+
+      <label>Custom slug (optional — leave blank for auto-derived)</label>
+      <input id="custom_slug" type="text" placeholder="bodybychosen">
+      <p class="helper">Slug becomes their subdomain: <code><span id="slug-preview">bodybychosen</span>.elhcoach.app</code></p>
+    </div>
+
+    <div id="demo-fields" style="display:none;">
+      <label>Coach contact (optional)</label>
+      <input id="prospect_contact" type="text" placeholder="Chosen, Owner">
+
+      <label>Demo expires in</label>
+      <select id="expiry_days">
+        <option value="14">14 days</option>
+        <option value="30" selected>30 days</option>
+        <option value="60">60 days</option>
+        <option value="90">90 days</option>
+      </select>
+    </div>
 
     <div style="margin-top:22px;display:flex;gap:10px;">
-      <button id="provision-go">Provision demo</button>
+      <button id="provision-go">Create their app</button>
       <button class="ghost" id="form-reset">Cancel</button>
     </div>
     <div id="prov-err" class="err-banner" style="display:none;margin-top:14px;"></div>
@@ -167,6 +195,7 @@
 const $ = (id) => document.getElementById(id);
 const TOKEN_KEY = "elh_coach_wizard_token";
 let scraped = null, selectedColor=null, selectedLogo=null;
+let mode = "customer";
 
 function getToken(){ return localStorage.getItem(TOKEN_KEY) || ""; }
 function setToken(t){ if (t) localStorage.setItem(TOKEN_KEY, t); else localStorage.removeItem(TOKEN_KEY); }
@@ -192,6 +221,33 @@ async function api(path, opts={}){
 
 function showLogin(){ $("login").style.display="block"; $("app").style.display="none"; }
 function showApp(){ $("login").style.display="none"; $("app").style.display="block"; loadDemos(); }
+
+function setMode(m){
+  mode = m;
+  $("mode-customer").classList.toggle("active", m === "customer");
+  $("mode-demo").classList.toggle("active", m === "demo");
+  $("customer-fields").style.display = (m === "customer") ? "block" : "none";
+  $("demo-fields").style.display     = (m === "demo")     ? "block" : "none";
+  if (m === "customer") {
+    $("mode-title").textContent = "Onboard a paying coach";
+    $("mode-lede").textContent  = "Coach signed up. Type their website, scrape the brand, hand them a real working URL + login. No watermark, no expiry.";
+    $("provision-go").textContent = "Create their app";
+  } else {
+    $("mode-title").textContent = "Stand up a sales preview demo";
+    $("mode-lede").textContent  = "Pre-sales tool. Generates a private password-gated branded demo with seeded clients, watermarked, auto-expires.";
+    $("provision-go").textContent = "Provision demo";
+  }
+}
+$("mode-customer").addEventListener("click", ()=>setMode("customer"));
+$("mode-demo").addEventListener("click", ()=>setMode("demo"));
+
+function updateSlugPreview(){
+  const cs = $("custom_slug").value.trim();
+  const bn = $("brand_name").value.trim();
+  let s = cs || bn;
+  s = (s || "coach").toLowerCase().replace(/[^a-z0-9-]+/g,"-").replace(/^-+|-+$/g,"").slice(0,40) || "coach";
+  $("slug-preview").textContent = s;
+}
 
 $("li-go").addEventListener("click", async ()=>{
   const t = $("li-token").value.trim();
@@ -287,33 +343,84 @@ function drawPreview(){
 ["brand_name","tagline","logo_url","primary_color","accent_color"].forEach(id=>{
   $(id).addEventListener("input", drawPreview);
 });
+$("brand_name").addEventListener("input", updateSlugPreview);
+$("custom_slug").addEventListener("input", updateSlugPreview);
 
 $("provision-go").addEventListener("click", async ()=>{
   $("prov-err").style.display="none";
-  const body = {
-    brand_name:        $("brand_name").value.trim(),
-    primary_color:     $("primary_color").value.trim() || null,
-    accent_color:      $("accent_color").value.trim() || null,
-    logo_url:          $("logo_url").value.trim() || null,
-    source_url:        scraped?.source_url || null,
-    scraped_brand:     scraped || null,
-    prospect_contact:  $("prospect_contact").value.trim() || null,
-    expiry_days:       parseInt($("expiry_days").value || "30", 10),
+  const common = {
+    brand_name:    $("brand_name").value.trim(),
+    primary_color: $("primary_color").value.trim() || null,
+    accent_color:  $("accent_color").value.trim() || null,
+    logo_url:      $("logo_url").value.trim() || null,
+    source_url:    scraped?.source_url || null,
+    scraped_brand: scraped || null,
   };
-  if (!body.brand_name) {
+  if (!common.brand_name) {
     $("prov-err").textContent = "Display name required."; $("prov-err").style.display="block"; return;
   }
-  $("provision-go").disabled = true; $("provision-go").textContent = "Provisioning…";
+
+  let path, body;
+  if (mode === "customer") {
+    if (!$("owner_email").value.trim() || !$("owner_name").value.trim()) {
+      $("prov-err").textContent = "Owner email and name are required."; $("prov-err").style.display="block"; return;
+    }
+    path = "/api/wizard/customer";
+    body = {
+      ...common,
+      owner_email: $("owner_email").value.trim(),
+      owner_name:  $("owner_name").value.trim(),
+      plan:        $("plan").value || "coach",
+      custom_slug: $("custom_slug").value.trim() || null,
+    };
+  } else {
+    path = "/api/wizard/provision";
+    body = {
+      ...common,
+      prospect_contact: $("prospect_contact").value.trim() || null,
+      expiry_days:      parseInt($("expiry_days").value || "30", 10),
+    };
+  }
+
+  $("provision-go").disabled = true; $("provision-go").textContent = "Working…";
   try {
-    const r = await api("/api/wizard/provision", {method:"POST", body: JSON.stringify(body)});
-    showSuccess(r);
+    const r = await api(path, {method:"POST", body: JSON.stringify(body)});
+    if (mode === "customer") showCustomerSuccess(r);
+    else                     showSuccess(r);
     loadDemos();
   } catch(e){
     $("prov-err").textContent = e.message; $("prov-err").style.display="block";
   } finally {
-    $("provision-go").disabled = false; $("provision-go").textContent = "Provision demo";
+    $("provision-go").disabled = false;
+    $("provision-go").textContent = (mode === "customer") ? "Create their app" : "Provision demo";
   }
 });
+
+function showCustomerSuccess(r){
+  const lines = [
+    "BRAND      " + r.brand_name,
+    "URL        " + r.apex_url,
+    "(when SSL clears: " + r.subdomain_url + ")",
+    "",
+    "OWNER LOGIN — text these to the coach",
+    "  email     " + r.owner_email,
+    "  password  " + r.owner_temp_password,
+    "",
+    "They sign in, change their password under Account.",
+  ].join("\n");
+  $("success-out").textContent = lines;
+  $("success-card").dataset.shareUrl = r.apex_url;
+  $("success-card").dataset.creds = "URL: " + r.apex_url + "\nEmail: " + r.owner_email + "\nPassword: " + r.owner_temp_password;
+  $("success-card").querySelector("h2").textContent = "Coach is live";
+  $("copy-share").textContent = "Copy login";
+  $("copy-share").onclick = ()=>{
+    navigator.clipboard.writeText($("success-card").dataset.creds);
+    $("copy-share").textContent = "Copied!";
+    setTimeout(()=>{$("copy-share").textContent="Copy login";},1500);
+  };
+  $("success-card").style.display = "block";
+  $("success-card").scrollIntoView({behavior:"smooth"});
+}
 
 $("form-reset").addEventListener("click",()=>{
   $("form-card").style.display="none"; $("scan-url").value=""; scraped=null;
