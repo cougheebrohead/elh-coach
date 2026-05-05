@@ -394,7 +394,7 @@ function openSnapLab() {
   document.getElementById('lab-file').addEventListener('change', () => {
     const f = document.getElementById('lab-file').files[0];
     if (!f) return;
-    if (f.size > 9_000_000) { document.getElementById('lab-status').textContent = 'Image too big — keep it under 9 MB.'; return; }
+    if (f.size > 5_500_000) { document.getElementById('lab-status').textContent = 'Image too big — keep it under 5 MB.'; return; }
     document.getElementById('lab-status').textContent = `Ready: ${f.name} (${Math.round(f.size/1024)} KB)`;
     document.getElementById('lab-go').disabled = false;
   });
@@ -447,7 +447,7 @@ function renderLabReview(parsed) {
   const rows = Object.entries(biomarkers).map(([k, v]) => {
     const flagColor = v.flag === 'high' ? 'var(--bad)' : v.flag === 'low' ? 'var(--warn)' : 'var(--good)';
     const range = (v.ref_low != null || v.ref_high != null)
-      ? `<span class="muted" style="font-size:11px">(${v.ref_low ?? '—'}–${v.ref_high ?? '—'} ${v.unit||''})</span>` : '';
+      ? `<span class="muted" style="font-size:11px">(${v.ref_low ?? '—'}–${v.ref_high ?? '—'} ${escapeHtml(v.unit||'')})</span>` : '';
     return `<tr>
       <td style="padding:6px 4px">${escapeHtml(k.replace(/_/g,' '))}</td>
       <td style="padding:6px 4px;text-align:right"><b>${v.value ?? '—'}</b> <span class="muted" style="font-size:12px">${escapeHtml(v.unit||'')}</span></td>
