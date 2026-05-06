@@ -58,4 +58,4 @@ request body.
 
 ## Public API
 
-The Brand tier exposes a per-tenant REST API. See `docs/api.md` (TBD).
+The Real Domain Upgrade exposes a per-tenant REST API. See `docs/api.md` (TBD).

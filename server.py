@@ -1201,8 +1201,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     #  Lab reports — photo OCR via fitapp_core.scan_lab
     # ────────────────────────────────────────────────────────────────
     def _lab_upload_allowed(self, tenant: dict[str, Any]) -> bool:
-        """Gate: tenant on trial OR studio/brand plan OR custom-domain
-        (real-domain $2,500 upgrade) inherits premium access."""
+        """Gate: tenant on trial OR custom-domain (Real Domain Upgrade)
+        inherits premium access. Legacy studio/brand plan strings still
+        granted access for back-compat with pre-2026-05-05 customers."""
         if tenant.get("billing_status") == "trial":
             return True
         if tenant.get("plan") in ("studio", "brand"):
