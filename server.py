@@ -631,8 +631,50 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             "select id, password_hash, role, name from users where tenant_id = $1 and email = $2",
             tenant["id"], email,
         )
+        # Iron-Dome I-2: per-account lockout takes precedence over verify.
+        # Even if the password is correct, a locked account stays locked
+        # until the cool-down expires.
+        if u:
+            from auth import (
+                get_lockout_state, record_login_failure, clear_login_failures,
+                hash_needs_upgrade,
+            )
+            locked, retry_after = get_lockout_state(u["id"])
+            if locked:
+                self.send_response(423)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Retry-After", str(retry_after))
+                self.end_headers()
+                import json as _json
+                self.wfile.write(_json.dumps({
+                    "error": "Account temporarily locked due to repeated failed logins.",
+                    "retry_after_seconds": retry_after,
+                }).encode())
+                return
+
         if not u or not verify_password(password, u["password_hash"]):
+            # Increment per-account counter when we know who tried (real user
+            # row exists). Anonymous-target floods are still bounded by the
+            # per-IP rate limit above.
+            if u:
+                try:
+                    record_login_failure(u["id"])
+                except Exception:
+                    pass
             return self._j({"error": "Invalid email or password."}, 401)
+        # Successful auth — clear failure counter + lazy-migrate legacy hash
+        try:
+            clear_login_failures(u["id"])
+        except Exception:
+            pass
+        if hash_needs_upgrade(u["password_hash"]):
+            try:
+                db.execute(
+                    "update users set password_hash = $1 where id = $2",
+                    hash_password(password), u["id"],
+                )
+            except Exception:
+                pass  # non-fatal — user keeps their session
         token = issue_session(
             user_id=u["id"], tenant_id=tenant["id"],
             ip=self._client_ip(), ua=self.headers.get("User-Agent", "")[:300],
