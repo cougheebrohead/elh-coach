@@ -1,0 +1,20 @@
+# gitleaks config for elh-coach.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documentation + test patterns (not actual secrets)"
+paths = [
+  '''docs/''',
+  '''.*\.example''',
+  '''.*\.md''',
+  '''tests/''',
+]
+regexes = [
+  '''<REDACTED>''',
+  '''<paste-real-key-here>''',
+  '''sk_live_REPLACE''',
+  '''rk_live_REPLACE''',
+  '''PBKDF2_ITERATIONS''',  # constant name, not a secret
+]
