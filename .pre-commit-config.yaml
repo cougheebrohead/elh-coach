@@ -1,0 +1,14 @@
+# Iron Dome I-7: pre-commit gitleaks. Blocks any commit that contains
+# a recognized secret pattern before it ever reaches the remote.
+#
+# Install (one-time):
+#   pip install --user pre-commit
+#   pre-commit install
+# Then every `git commit` runs gitleaks against the staged diff.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.24.3
+    hooks:
+      - id: gitleaks
+        name: gitleaks (block secrets in commits)
+        args: [protect, --staged, --redact, --config=.gitleaks.toml]
