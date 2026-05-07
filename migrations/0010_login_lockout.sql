@@ -8,7 +8,8 @@
 -- ============================================================================
 
 create table if not exists user_login_failures (
-  user_id          uuid primary key references users(id) on delete cascade,
+  -- elh-coach uses bigint ids on users.id (not Supabase Auth UUIDs)
+  user_id          bigint primary key references users(id) on delete cascade,
   fail_count       integer not null default 0,
   last_fail_at     timestamptz,
   locked_until     timestamptz,
@@ -20,13 +21,12 @@ create index if not exists idx_user_login_failures_locked
   on user_login_failures (locked_until)
   where locked_until is not null;
 
--- RLS — only writable by service role (server-side only); users see their own row.
+-- RLS — service-role only (elh-coach doesn't use Supabase Auth's
+-- auth.uid() for row scoping; sessions are validated in the app layer
+-- via auth.py validate_session). Service role bypasses; deny for
+-- everything else.
 alter table user_login_failures enable row level security;
-
-drop policy if exists user_login_failures_self_select on user_login_failures;
-create policy user_login_failures_self_select on user_login_failures
-  for select to authenticated
-  using (user_id = auth.uid());
+-- No permissive policies = deny by default for non-service-role.
 
 -- The trigger below is defensive: on any UPDATE we bump updated_at.
 create or replace function _bump_login_failures_updated_at()
