@@ -1275,13 +1275,29 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return
         body = self._body()
         b64 = (body.get("image_b64") or "").strip()
-        mime = (body.get("mime") or "image/jpeg").strip()
-        if not b64 or len(b64) > 8_000_000:
-            return self._j({"error": "image required (base64, < 6MB)"}, 400)
+        if not b64 or len(b64) > 14_000_000:  # ~10MB after base64 inflation (4/3)
+            return self._j({"error": "image required (base64, < 10MB)"}, 400)
         try:
             image_bytes = base64.b64decode(b64, validate=False)
         except Exception:
             return self._j({"error": "image decode failed"}, 400)
+        # Iron Dome I-5: validate the decoded bytes via the shared helper.
+        # Magic-byte sniff catches disguised payloads; size cap is enforced
+        # post-decode (the b64 length check above only bounds the envelope).
+        try:
+            from fitapp_core.security import upload_validate, UploadError
+            try:
+                result = upload_validate(
+                    image_bytes,
+                    declared_filename=(body.get("filename") or "")[:200],
+                    max_bytes=10 * 1024 * 1024,
+                    allowed_extensions=("jpeg", "png", "heic", "pdf"),  # PDFs allowed for lab reports
+                )
+                mime = result.media_type
+            except UploadError as e:
+                return self._j({"error": str(e), "code": e.code}, e.http_status)
+        except ImportError:
+            mime = (body.get("mime") or "image/jpeg").strip()
         try:
             from fitapp_core import scan_lab
         except ImportError:

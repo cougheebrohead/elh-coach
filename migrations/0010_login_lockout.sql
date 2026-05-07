@@ -8,8 +8,10 @@
 -- ============================================================================
 
 create table if not exists user_login_failures (
-  -- elh-coach uses bigint ids on users.id (not Supabase Auth UUIDs)
-  user_id          bigint primary key references users(id) on delete cascade,
+  -- elh-coach uses uuid on users.id (verified against the live
+  -- ytdheyjfqcqrvswullyb Supabase project — NOT bpaihjbfntiheerowgcg
+  -- which is FitApp's project with bigint ids).
+  user_id          uuid primary key references users(id) on delete cascade,
   fail_count       integer not null default 0,
   last_fail_at     timestamptz,
   locked_until     timestamptz,
