@@ -1,0 +1,38 @@
+Contact: mailto:security@elh-coach.com
+Contact: mailto:support@elh-coach.com
+Expires: 2027-05-08T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://elh-coach.onrender.com/.well-known/security.txt
+Policy: https://elh-coach.com/security/policy
+
+# ELH Coach — coach-side SaaS for personal trainers + small studios.
+# We welcome reports from ethical security researchers.
+#
+# Reporting:
+#   * Send a clear write-up to security@elh-coach.com.
+#   * 90-day private window before public disclosure.
+#   * Initial response within 5 business days; triage + plan of
+#     action within 14 days of receipt.
+#
+# Eligible scope:
+#   - https://elh-coach.onrender.com/*
+#   - https://elh-coach.com/*  (when zone live)
+#   - The /api/* surface (REST + Stripe webhook)
+#   - the elh-coach-ios app once published to App Store
+#
+# Out of scope:
+#   - Third-party platforms (Stripe, Supabase, Render, Cloudflare, Anthropic)
+#   - DoS / volumetric attacks
+#   - Social engineering
+#   - Physical access scenarios
+#   - Anything in the legacy /seed/ scripts (dev-only)
+#
+# Safe Harbor:
+#   We will not pursue legal action for good-faith research consistent
+#   with this policy. Stop at proof-of-concept; never access or modify
+#   data that doesn't belong to you (use your own test signup).
+#
+# Bug bounty:
+#   Currently VDP-only (no payouts). Coordinated disclosure tracked
+#   publicly via the same HackerOne program as the rest of the ELH
+#   estate, once activated.
