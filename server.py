@@ -55,8 +55,10 @@ def _sentry_before_send(event, hint):
         if depth > 12: return obj
         if isinstance(obj, dict):
             for k in list(obj.keys()):
-                kl = k.lower() if isinstance(k, str) else ''
-                if any(s in kl for s in ('password', 'token', 'secret', 'apikey', 'api_key', 'authorization', 'cookie')):
+                # Normalize: strip non-alpha so X-Api-Key, x_api_key all
+                # collapse to xapikey for substring matching.
+                kn = re.sub(r'[^a-z0-9]', '', k.lower()) if isinstance(k, str) else ''
+                if any(s in kn for s in ('password', 'token', 'secret', 'apikey', 'authorization', 'cookie', 'signature', 'csrf')):
                     obj[k] = '<redacted>'
                 else:
                     obj[k] = walk(obj[k], depth + 1)

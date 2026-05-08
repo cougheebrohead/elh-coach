@@ -1,4 +1,4 @@
-fitapp-core @ git+https://github.com/cougheebrohead/fitapp-core.git@f035aee8172c8116b3e697c352f4ac2d1c90bc6a
+fitapp-core @ git+https://github.com/cougheebrohead/fitapp-core.git@5654dadf3734991d22f18b159fafb4804d80206c
 sentry-sdk>=2.0,<3.0
 # argon2-cffi is required by fitapp_core.security.passwords. The fitapp-core
 # dependency declares it transitively, but pin here too for reproducible
