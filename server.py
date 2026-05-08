@@ -39,6 +39,36 @@ APEX_HOST = os.environ.get("APEX_HOST", "elhcoach.app")
 # ── Sentry (no-op when DSN unset) ───────────────────────────────────
 SENTRY_ENABLED = False
 _SENTRY_DSN = os.environ.get("SENTRY_DSN", "").strip()
+
+
+def _sentry_before_send(event, hint):
+    """Iron Dome I-13/I-8 PII scrub. See FitApp server.py for the
+    canonical version."""
+    import re
+    EMAIL_RE = re.compile(r'([A-Za-z0-9._%+-]{1,2})[A-Za-z0-9._%+-]*@')
+
+    def scrub(s):
+        if not isinstance(s, str): return s
+        return EMAIL_RE.sub(r'\1***@', s)
+
+    def walk(obj, depth=0):
+        if depth > 12: return obj
+        if isinstance(obj, dict):
+            for k in list(obj.keys()):
+                kl = k.lower() if isinstance(k, str) else ''
+                if any(s in kl for s in ('password', 'token', 'secret', 'apikey', 'api_key', 'authorization', 'cookie')):
+                    obj[k] = '<redacted>'
+                else:
+                    obj[k] = walk(obj[k], depth + 1)
+            return obj
+        if isinstance(obj, list): return [walk(x, depth + 1) for x in obj]
+        return scrub(obj)
+
+    try: walk(event)
+    except Exception: pass
+    return event
+
+
 if _SENTRY_DSN:
     try:
         import sentry_sdk
@@ -48,6 +78,8 @@ if _SENTRY_DSN:
             send_default_pii=False,
             release=APP_VERSION,
             environment=os.environ.get("SENTRY_ENV", "production"),
+            before_send=_sentry_before_send,
+            before_send_transaction=_sentry_before_send,
         )
         SENTRY_ENABLED = True
         print("[ELHCoach] Sentry initialized", flush=True)
