@@ -956,11 +956,18 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         from urllib.parse import urlparse, parse_qs
         qs = parse_qs(urlparse(self.path).query)
         coach_id = sess["user_id"] if sess["role"] == "coach" else (qs.get("coach_id") or [None])[0]
+        # `?limit=foo` was throwing ValueError → 500. Clamp to a safe range
+        # and silently fall back to the default on bad input.
+        try:
+            limit = int((qs.get("limit") or ["200"])[0])
+        except (ValueError, TypeError):
+            limit = 200
+        limit = max(1, min(limit, 1000))
         rows = trainer_analytics.trainer_roster(
             tenant["id"], coach_id=coach_id,
             q=(qs.get("q") or [None])[0],
             risk_tier=(qs.get("risk_tier") or [None])[0],
-            limit=int((qs.get("limit") or ["200"])[0]),
+            limit=limit,
         )
         return self._j({"clients": rows})
 
@@ -1014,6 +1021,18 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def _api_add_note(self, tenant: dict[str, Any], client_id: str) -> None:
         sess = self._require_trainer(tenant)
         if not sess: return
+        # Coach-role users may only add notes to clients on their roster —
+        # mirrors the guard in _api_client_overview. Without this, any
+        # coach in the tenant could write notes to any client's record.
+        # owner/admin roles bypass the roster check (they see all clients).
+        if sess["role"] == "coach":
+            on_roster = db.fetch_one(
+                """select 1 as ok from coach_clients
+                   where tenant_id = $1 and coach_id = $2 and client_id = $3""",
+                tenant["id"], sess["user_id"], client_id,
+            )
+            if not on_roster:
+                return self._j({"error": "forbidden"}, 403)
         body = self._body()
         text = (body.get("body") or "").strip()[:5000]
         if not text:
