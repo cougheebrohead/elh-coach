@@ -524,6 +524,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             return self._api_member_lab_photo(tenant)
         if path == "/api/me/lab/save":
             return self._api_member_lab_save(tenant)
+        if path == "/api/me/forever-scan":
+            return self._api_member_forever_scan(tenant)
         return self._j({"error": "not found"}, 404)
 
     # ────────────────────────────────────────────────────────────────
@@ -1151,6 +1153,35 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if not entry:
             return self._j({"error": "product not found"}, 404)
         return self._j({"ok": True, "item": entry}, 200)
+
+    def _api_member_forever_scan(self, tenant: dict[str, Any]) -> None:
+        """Forever-chemicals (PFAS) barcode scanner. Universal lookup
+        across Open Food Facts, Open Beauty Facts, and Open Products
+        Facts plus the shared PFAS category-knowledge layer + generic
+        label-check guidance. Branded clients (e.g. Body by Chosen
+        tenants) inherit automatically."""
+        sess = self._auth_user(tenant["id"])
+        if not sess: return self._j({"error": "unauthorized"}, 401)
+        if sess["role"] != "client":
+            return self._j({"error": "clients only"}, 403)
+        if not self._rate(f"pfas_scan:{sess['user_id']}", limit=60, window_sec=60 * 60):
+            return
+        body = self._body()
+        code = (body.get("code") or "").strip()
+        if not code or not code.isdigit() or len(code) > 20:
+            return self._j({"error": "valid barcode required"}, 400)
+        try:
+            from fitapp_core import valid_gtin_checksum, pfas_barcode_universal, pfas_scan_response
+        except ImportError:
+            return self._j({"error": "engine unavailable"}, 500)
+        if not valid_gtin_checksum(code):
+            return self._j({"error": "invalid checksum"}, 400)
+        try:
+            barcode_result = pfas_barcode_universal(code)
+        except Exception as e:
+            return self._j({"error": f"lookup failed: {e}"}, 502)
+        composed = pfas_scan_response(barcode_result)
+        return self._j(composed, 200)
 
     def _api_member_meal_from_photo(self, tenant: dict[str, Any]) -> None:
         """Photo → meal items. Calls Gemini Flash; falls back gracefully."""

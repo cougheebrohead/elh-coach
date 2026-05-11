@@ -137,6 +137,7 @@ input[type=email],input[type=password],input[type=number],input[type=text]{displ
         <button onclick="openLogWeight()"><span class="icon">⚖️</span><span class="lbl">Weight</span></button>
         <button onclick="openLogGlucose()"><span class="icon">🩸</span><span class="lbl">Glucose</span></button>
         <button onclick="openSnapLab()"><span class="icon">🧪</span><span class="lbl">Snap a lab</span></button>
+        <button onclick="openForeverScan()"><span class="icon">🧬</span><span class="lbl">Forever scan</span></button>
       </div>
 
       <div id="card-recovery" class="card hidden">
@@ -398,6 +399,131 @@ function openSnapLab() {
     document.getElementById('lab-status').textContent = `Ready: ${f.name} (${Math.round(f.size/1024)} KB)`;
     document.getElementById('lab-go').disabled = false;
   });
+}
+
+// ─────── Forever-chemicals (PFAS) scanner ───────
+function openForeverScan() {
+  document.getElementById('modal-body').innerHTML = `
+    <h2>Forever-chemicals scan</h2>
+    <p class="sub">Scan ANY product — toothpicks, paper plates, takeout containers, cookware, dental floss, waterproof jackets — for PFAS / forever chemicals. Barcode in, full safety read out.</p>
+    <input id="pfas-cam" type="file" accept="image/*" capture="environment" style="margin:14px 0;width:100%" aria-label="Snap a photo of the barcode">
+    <div style="text-align:center;color:var(--text-dim);font-size:12px;margin:6px 0">— or —</div>
+    <input id="pfas-manual" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Type the barcode digits" style="width:100%;padding:14px;border-radius:10px;border:1px solid var(--bdr,#ddd);background:transparent;color:var(--text,inherit);font-size:16px;margin-bottom:10px">
+    <button class="btn-primary" id="pfas-go" onclick="submitForeverScan()">Scan</button>
+    <button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="closeModal()">Cancel</button>
+    <div id="pfas-status" class="muted" style="font-size:13px;margin-top:12px"></div>
+    <div id="pfas-result" style="margin-top:14px"></div>
+  `;
+  document.getElementById('modal').classList.add('on');
+}
+
+async function _readBarcodeFromFile(file) {
+  if (!('BarcodeDetector' in window)) return null;
+  try {
+    const det = new BarcodeDetector({
+      formats: ['ean_13','ean_8','upc_a','upc_e','code_128','code_39'],
+    });
+    const bitmap = await createImageBitmap(file);
+    const found = await det.detect(bitmap);
+    const codes = found.map(f => f.rawValue).filter(Boolean).sort((a,b) => b.length - a.length);
+    return codes[0] || null;
+  } catch (e) { return null; }
+}
+
+async function submitForeverScan() {
+  const camFile = document.getElementById('pfas-cam').files[0];
+  let code = (document.getElementById('pfas-manual').value || '').replace(/\D/g, '');
+  const status = document.getElementById('pfas-status');
+  const result = document.getElementById('pfas-result');
+  document.getElementById('pfas-go').disabled = true;
+  result.innerHTML = '';
+  if (!code && camFile) {
+    status.textContent = 'Reading barcode from photo…';
+    code = await _readBarcodeFromFile(camFile);
+    if (!code) {
+      status.textContent = 'Couldn\'t read the barcode from the photo. Type the digits below and try again.';
+      document.getElementById('pfas-go').disabled = false;
+      return;
+    }
+  }
+  if (!code) {
+    status.textContent = 'Take a photo of the barcode or type the digits.';
+    document.getElementById('pfas-go').disabled = false;
+    return;
+  }
+  status.textContent = `Looking up ${code}…`;
+  try {
+    const r = await fetch('/api/me/forever-scan', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+(token||'') },
+      body: JSON.stringify({ code }),
+    });
+    const d = await r.json();
+    if (!r.ok && r.status !== 200) {
+      status.textContent = 'Lookup failed: ' + (d.error || r.status);
+      document.getElementById('pfas-go').disabled = false;
+      return;
+    }
+    status.textContent = '';
+    result.innerHTML = renderForeverScan(d);
+  } catch (e) {
+    status.textContent = 'Failed: ' + e.message;
+    document.getElementById('pfas-go').disabled = false;
+  }
+}
+
+function renderForeverScan(d) {
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[c]);
+  const tox = d.toxics || {};
+  const flags = tox.flags || [];
+  const cp = d.category_pfas || null;
+  const score = tox.score;
+  const verdict = tox.verdict || (d.found === false ? '' : 'unknown');
+  const verdictColor = ({clean:'#2E7D32',caution:'#EF6C00','avoid':'#C62828',toxic:'#B71C1C',unknown:'#666'})[verdict] || '#666';
+  let h = '<div style="background:var(--card,#fff);border-radius:12px;padding:14px;border:1px solid var(--bdr,#eee)">';
+  if (d.found === false) {
+    h += `<div style="font-weight:700;font-size:15px">Not in the open databases</div>`;
+    h += `<div style="color:var(--text-dim);font-size:13px;margin-top:4px">Barcode <code>${esc(d.code)}</code> wasn't found in Open Food Facts, Open Beauty Facts, or Open Products Facts. May be regional, store-only, or a non-food item.</div>`;
+  } else {
+    h += `<div style="font-weight:700;font-size:16px">${esc(d.product_name || d.name || 'Product')}</div>`;
+    if (d.brand) h += `<div style="color:var(--text-dim);font-size:12px;margin-top:2px">${esc(d.brand)}</div>`;
+    if (d.category || d.subcategory) h += `<div style="color:#1976D2;font-size:11px;margin-top:4px">${esc(d.subcategory || d.category)}</div>`;
+    if (score != null) {
+      h += `<div style="margin-top:10px;padding:10px;border-left:3px solid ${verdictColor};background:#0001;border-radius:8px">`;
+      h += `<div style="display:flex;align-items:baseline;gap:6px"><div style="font:800 28px sans-serif;color:${verdictColor}">${score}</div><div style="font-size:11px;color:var(--text-dim)">/100 SAFETY SCORE</div></div>`;
+      h += `<div style="font-weight:700;color:${verdictColor};font-size:12px;text-transform:uppercase;margin-top:2px">${verdict}</div>`;
+      h += `</div>`;
+    }
+  }
+  if (flags.length) {
+    h += `<div style="margin-top:10px"><div style="font-size:11px;color:var(--text-dim);font-weight:700;letter-spacing:.5px">FLAGGED (${flags.length})</div>`;
+    flags.forEach(f => {
+      const sevHex = ({high:'#C62828',medium:'#EF6C00',low:'#888'})[f.severity] || '#888';
+      h += `<div style="margin-top:6px;padding:8px;border-left:3px solid ${sevHex};background:#0001;border-radius:6px"><div style="display:flex;justify-content:space-between"><div style="font-weight:600;font-size:13px">${esc(f.name)}</div><div style="font-size:9px;font-weight:800;color:${sevHex};background:${sevHex}22;padding:2px 6px;border-radius:4px">${esc((f.severity||'').toUpperCase())}</div></div><div style="font-size:11px;color:var(--text-dim);margin-top:3px">${esc(f.reason)}</div></div>`;
+    });
+    h += `</div>`;
+  }
+  if (cp) {
+    const riskHex = ({high:'#C62828',medium:'#EF6C00',low:'#2E7D32'})[cp.risk] || '#666';
+    h += `<div style="margin-top:10px;padding:10px;border-left:3px solid ${riskHex};background:#0001;border-radius:8px">`;
+    h += `<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div style="font-size:11px;font-weight:700;color:var(--text-dim);letter-spacing:.5px">FOREVER-CHEMICAL CATEGORY RISK</div><div style="font-size:10px;font-weight:800;color:${riskHex};background:${riskHex}22;padding:2px 8px;border-radius:4px">${esc((cp.risk||'').toUpperCase())}</div></div>`;
+    if (cp.note) h += `<div style="font-size:12px;line-height:1.5">${esc(cp.note)}</div>`;
+    if (cp.alt)  h += `<div style="font-size:12px;color:#2E7D32;margin-top:6px"><strong>Safer choice:</strong> ${esc(cp.alt)}</div>`;
+    h += `</div>`;
+  }
+  const gg = d.generic_guidance;
+  if (gg && Array.isArray(gg.tips) && gg.tips.length && !flags.length && !cp) {
+    h += `<div style="margin-top:10px;padding:10px;border-left:3px solid #1976D2;background:#0001;border-radius:8px">`;
+    h += `<div style="font-size:11px;font-weight:700;color:#1976D2;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px">${esc(gg.title || 'How to check the label')}</div>`;
+    gg.tips.forEach(t => { h += `<div style="font-size:12px;line-height:1.5;margin-bottom:4px;padding-left:12px;position:relative"><span style="position:absolute;left:0;color:#1976D2">•</span>${esc(t)}</div>`; });
+    h += `</div>`;
+  }
+  if (d.materials) {
+    h += `<div style="margin-top:10px"><div style="font-size:10px;color:var(--text-dim);font-weight:700;letter-spacing:.5px;margin-bottom:4px">MATERIALS / INGREDIENTS</div><div style="font-size:11px;color:var(--text-dim);line-height:1.5;background:#0001;padding:8px;border-radius:6px">${esc(d.materials)}</div></div>`;
+  }
+  h += `<div style="display:flex;gap:8px;margin-top:14px"><button class="btn-primary" style="background:transparent;color:var(--accent);border:1px solid var(--accent);flex:1" onclick="openForeverScan()">Scan another</button><button class="btn-primary" style="flex:1" onclick="closeModal()">Done</button></div>`;
+  h += `</div>`;
+  return h;
 }
 
 async function submitLabPhoto() {
