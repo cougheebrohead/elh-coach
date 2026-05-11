@@ -1,5 +1,5 @@
 fitapp-core @ git+https://github.com/cougheebrohead/fitapp-core.git@e54da82241403375b412dd961085bcd409fbd6d6
-sentry-sdk>=2.0,<3.0
+sentry-sdk>=2.59.0,<3.0
 # argon2-cffi is required by fitapp_core.security.passwords. The fitapp-core
 # dependency declares it transitively, but pin here too for reproducible
 # wheels on Render's cold start.
